@@ -1,5 +1,6 @@
 
 from pico2d import *
+sprite_size = 100
 
 class Character:
     def __init__(self, x, y, team, sprite_path):
@@ -7,6 +8,13 @@ class Character:
         # 현재 위치
         self.x = x
         self.y = y
+
+        self.head_x = self.x
+        self.head_y = self.y + sprite_size / 5
+
+        self.left_hand_x = self.x - sprite_size / 2
+        self.left_hand_y = self.y
+
         self.dir = 1 # 방향(애니메이션 용)
         self.sprite = load_image(sprite_path)
         self.frame = 0
@@ -28,9 +36,12 @@ class Character:
         self.is_attacking = False
         self.is_casting = False
 
-        self.is_cannot_move = False
+        self.is_stunned = False
         self.is_cannot_attack = False
         self.is_cannot_use_card = False
+
+        # 이펙트들
+        self.stun_effect = load_image('resource/stun_effect.png')
 
 
     def update(self):
@@ -42,8 +53,10 @@ class Character:
         if self.is_dead:
             #죽은 상태로 그리기
             pass
-        elif self.is_cannot_move:
+        elif self.is_stunned:
             # 묶인 효과 + idle 애니메이션도 멈춤
+            self.sprite.clip_draw(0, 0, 240, 240, self.x, self.y, sprite_size, sprite_size)
+            self.stun_effect.clip_draw(int(self.frame)*30, 0, 36, 36, self.head_x, self.head_y, sprite_size/2, sprite_size/2)
             pass
         elif self.is_cannot_attack:
             # 부러진 칼 + idle 애니메이션 재생
@@ -70,6 +83,10 @@ class Character:
         else:
             # IDLE 상태
             self.frame = (self.frame + self.animation_speed) % 8
+
+        if self.is_stunned:
+
+            pass
 
     def do_action(self):
         # if self.target == -1:
@@ -109,6 +126,10 @@ def handle_events():
             running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
+        elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
+            knight.is_stunned = not knight.is_stunned
+            mage.is_stunned = not mage.is_stunned
+
 
 def reset_world():
     global window_width, window_height
