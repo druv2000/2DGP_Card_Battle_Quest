@@ -2,6 +2,15 @@
 from pico2d import *
 sprite_size = 100
 
+class Effect:
+    def __init__(self, name, duration):
+        self.name = name
+        self.duration = duration
+        self.start_time = get_time()
+
+    def is_active(self):
+        return get_time() - self.start_time < self.duration
+
 class Character:
     def __init__(self, x, y, team, sprite_path):
 
@@ -28,7 +37,11 @@ class Character:
         self.attack_range = 0
         self.attack_speed = 0
         self.attack_damage = 0
-        self.health_point = 0
+        self.max_health_point = 0
+        self.cur_health_point = 0
+
+        # 활성화된 효과들을 저장하는 리스트
+        self.effects = []
 
         # 각종 상태들
         self.is_dead = False
@@ -43,18 +56,28 @@ class Character:
         # 이펙트들
         self.stun_effect = load_image('resource/stun_effect.png')
 
+    def add_effect(self, effect):
+        self.effects.append(effect)
+
+    def apply_effect(self):
+        self.is_stunned = False
+        for effect in self.effects:
+            if effect.name == 'stun':
+                self.is_stunned = True;
+            else:
+                pass
 
     def update(self):
-        # self.frame =(self.frame + self.animation_speed) % 8
+        self.apply_effect()
         self.animation_update()
         self.do_action()
+        self.effects = [effect for effect in  self.effects if effect.is_active()]
 
     def draw(self):
         if self.is_dead:
             #죽은 상태로 그리기
             pass
         elif self.is_stunned:
-            # 묶인 효과 + idle 애니메이션도 멈춤
             self.sprite.clip_draw(0, 0, 240, 240, self.x, self.y, sprite_size, sprite_size)
             self.stun_effect.clip_draw(int(self.frame)*30, 0, 36, 36, self.head_x, self.head_y, sprite_size/2, sprite_size/2)
             pass
@@ -85,7 +108,6 @@ class Character:
             self.frame = (self.frame + self.animation_speed) % 8
 
         if self.is_stunned:
-
             pass
 
     def do_action(self):
@@ -116,6 +138,9 @@ class Mage(Character):
         self.attack_speed = 1.0
         self.attack_damage = 25
 
+# 지정한 캐릭터(character)에게 지정한 효과(effect_name)를 지정한 시간(duration)동안 부여함
+def apply_effect(character, effect_name, duration):
+    character.add_effect(Effect(effect_name, duration))
 
 def handle_events():
     global running
@@ -127,9 +152,9 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
-            knight.is_stunned = not knight.is_stunned
-            mage.is_stunned = not mage.is_stunned
-
+            apply_effect(knight, 'stun', 3)
+        elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
+            apply_effect(mage, 'stun', 1)
 
 def reset_world():
     global window_width, window_height
@@ -153,7 +178,6 @@ def render_world():
     for o in world:
         o.draw()
     update_canvas()
-
 
 def main():
     window_width, window_height = 1600, 900
