@@ -1,5 +1,7 @@
 
 from pico2d import *
+import math
+
 sprite_size = 100
 
 class Effect:
@@ -95,7 +97,15 @@ class Character:
             # 쓰러진 모습으로 약간 튀어올랐다가 떨어짐
             pass
         elif self.is_moving:
-            # 통통 튀는 느낌의 애니메이션. 이동속도에 따라 속도가 달라짐
+            if not self.is_stunned:
+                if (int(self.frame) == 0 or int(self.frame) == 1 or
+                    int(self.frame) == 4 or int(self.frame) == 5):
+                    self.y += 1.3
+                elif (int(self.frame) == 2 or int(self.frame) == 3 or
+                    int(self.frame) == 6 or int(self.frame) == 7):
+                    self.y -= 1.3
+
+            self.frame = (self.frame + self.animation_speed) % 8
             pass
         elif self.is_attacking:
             # 앞 뒤로 흔들거리기 림월드 공격 애니메이션 참고. 공격속도에 따라 속도가 달라짐
@@ -118,6 +128,20 @@ class Character:
         #         attack_target(self.target)
         # else:
         #     self.target = find_target()
+        pass
+
+    def moving_temp(self):
+        if not self.is_stunned:
+            self.is_moving = True
+            self.x += self.move_speed
+            self.set_new_coord()
+        pass
+
+    def set_new_coord(self):
+        self.head_x = self.x
+        self.head_y = self.y + sprite_size / 5
+        self.left_hand_x = self.x - sprite_size / 2
+        self.left_hand_y = self.y
         pass
 
 class Knight(Character):
@@ -154,7 +178,8 @@ def handle_events():
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
             apply_effect(knight, 'stun', 3)
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-            apply_effect(mage, 'stun', 1)
+            # apply_effect(mage, 'stun', 1)
+            pass
 
 def reset_world():
     global window_width, window_height
