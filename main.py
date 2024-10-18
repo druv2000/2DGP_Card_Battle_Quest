@@ -84,6 +84,7 @@ class Character:
         for effect in self.effects:
             if effect.name == 'stun':
                 self.is_stunned = True;
+                self.target = self.find_target(world)
             else:
                 pass
 
@@ -205,7 +206,7 @@ class Knight(Character):
     def __init__(self, x, y, team):
         super().__init__(x, y, team, 'resource/Knight_sprite.png')
         self.health_point = 150
-        self.move_speed = 2.5
+        self.move_speed = 5.0
         self.attack_range = 100
         self.attack_speed = 1.5
         self.attack_damage = 30
@@ -215,7 +216,7 @@ class Mage(Character):
         super().__init__(x, y, team, 'resource/Mage_sprite.png')
         self.health_point = 100
         self.move_speed = 2.0
-        self.attack_range = 500
+        self.attack_range = 300
         self.attack_speed = 1.0
         self.attack_damage = 25
 
@@ -242,24 +243,27 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
-            apply_effect(knight, 'stun', 3)
+            spawn_enemy_bowman(event.x, event.y)
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-            apply_effect(mage, 'stun', 1)
+            apply_effect(bowman, 'stun', 1)
             pass
 
 def reset_world():
     global window_width, window_height
-    global knight, mage
+    global knight, mage, bowman
     global running
     global world
 
     running = True
     world = []
+
     knight = Knight(10, 450, 'ally')
-    mage = Mage(1500, 450, 'enemy')
-    bowman = Bowman(100, 800, 'ally')
     world.append(knight)
+
+    mage = Mage(1500, 450, 'enemy')
     world.append(mage)
+
+    bowman = Bowman(100, 800, 'ally')
     world.append(bowman)
 
 def update_world():
@@ -271,6 +275,11 @@ def render_world():
     for o in world:
         o.draw()
     update_canvas()
+
+def spawn_enemy_bowman(x, y):
+    global world
+    new_bowman = Bowman(x, y, 'enemy')
+    world.append(new_bowman)
 
 def main():
     window_width, window_height = 1600, 900
