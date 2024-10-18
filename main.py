@@ -14,6 +14,7 @@ class Effect:
         return get_time() - self.start_time < self.duration
 
 class Character:
+    global world
     def __init__(self, x, y, team, sprite_path):
 
         # 현재 위치
@@ -26,13 +27,13 @@ class Character:
         self.left_hand_x = self.x - sprite_size / 2
         self.left_hand_y = self.y
 
-        self.dir = 1 # 방향(애니메이션 용)
+        self.sprite_dir = 1 # 방향(애니메이션 용)
         self.sprite = load_image(sprite_path)
         self.frame = 0
         self.animation_speed = 0.3
 
         self.team = team
-        self.target = -1 # 타겟 인덱스. // 타겟 없음 = -1
+        self.target = None # 타겟 인덱스. // 타겟 없음 = -1
 
         # 각 캐릭터마다 다르게 설정할 것들
         self.move_speed = 0
@@ -58,6 +59,23 @@ class Character:
         # 이펙트들
         self.stun_effect = load_image('resource/stun_effect.png')
 
+    def self_draw(self, is_stop):
+        if is_stop == False:
+            if self.sprite_dir == -1:  # 왼쪽을 바라보고 있을 때
+                self.sprite.clip_composite_draw(int(self.frame) * 240, 0, 240, 240,
+                                                0, 'h', self.x, self.y, sprite_size, sprite_size)
+            else:  # 오른쪽을 바라보고 있을 때 (기존 방식)
+                self.sprite.clip_draw(int(self.frame) * 240, 0, 240, 240,
+                                      self.x, self.y, sprite_size, sprite_size)
+        else:
+            if self.sprite_dir == -1:  # 왼쪽을 바라보고 있을 때
+                self.sprite.clip_composite_draw(0, 0, 240, 240,
+                                                0, 'h', self.x, self.y, sprite_size, sprite_size)
+            else:  # 오른쪽을 바라보고 있을 때 (기존 방식)
+                self.sprite.clip_draw(0, 0, 240, 240,
+                                      self.x, self.y, sprite_size, sprite_size)
+        pass
+
     def add_effect(self, effect):
         self.effects.append(effect)
 
@@ -80,7 +98,7 @@ class Character:
             #죽은 상태로 그리기
             pass
         elif self.is_stunned:
-            self.sprite.clip_draw(0, 0, 240, 240, self.x, self.y, sprite_size, sprite_size)
+            self.self_draw(True)
             self.stun_effect.clip_draw(int(self.frame)*30, 0, 36, 36, self.head_x, self.head_y, sprite_size/2, sprite_size/2)
             pass
         elif self.is_cannot_attack:
@@ -90,8 +108,7 @@ class Character:
             #(...)말풍선 표시
             pass
         else:
-            self.sprite.clip_draw(int(self.frame)*240, 0, 240, 240, self.x, self.y, 100, 100)
-
+            self.self_draw(False)
     def animation_update(self):
         if self.is_dead:
             # 쓰러진 모습으로 약간 튀어올랐다가 떨어짐
@@ -121,14 +138,49 @@ class Character:
             pass
 
     def do_action(self):
-        # if self.target == -1:
-        #     if attack_target(self.target) == False:
-        #         move_to_target(self.target)
-        #     else:
-        #         attack_target(self.target)
-        # else:
-        #     self.target = find_target()
-        pass
+        if self.target is None or (isinstance(self.target, Character) and self.target.is_dead):
+            self.target = self.find_target(world)
+
+        if self.target:
+            if self.attack_target(self.target) == False:
+                self.move_to_target(self.target)
+
+    def find_target(self, world):
+        closest_enemy = None
+        min_distance = float('inf')
+
+        for obj in world:
+            if obj.team != self.team and not obj.is_dead:
+                distance = math.sqrt((obj.x - self.x) ** 2 + (obj.y - self.y) ** 2)
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_enemy = obj
+
+        return closest_enemy
+
+    def move_to_target(self, target):
+        if target and isinstance(target, Character) and not self.is_stunned and not self.is_dead:
+            target_x, target_y = target.x, target.y
+            target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
+
+            if target_distance > self.attack_range:
+                direction_x = (target_x - self.x) / target_distance
+                direction_y = (target_y - self.y) / target_distance
+
+                if direction_x < 0: self.sprite_dir = -1
+                else: self.sprite_dir = 1
+
+                self.x += direction_x * self.move_speed
+                self.y += direction_y * self.move_speed
+                self.is_moving = True
+                self.set_new_coord()
+            else:
+                # 타겟 공격 가능
+                self.is_moving = False
+
+    def attack_target(self, target):
+        # 아직 구현되지 않았으므로 False를 반환
+        return False
 
     def moving_temp(self):
         if not self.is_stunned:
@@ -144,12 +196,17 @@ class Character:
         self.left_hand_y = self.y
         pass
 
+
+
+
+
+
 class Knight(Character):
     def __init__(self, x, y, team):
         super().__init__(x, y, team, 'resource/Knight_sprite.png')
         self.health_point = 150
         self.move_speed = 2.5
-        self.attack_range = 50
+        self.attack_range = 100
         self.attack_speed = 1.5
         self.attack_damage = 30
 
@@ -158,7 +215,16 @@ class Mage(Character):
         super().__init__(x, y, team, 'resource/Mage_sprite.png')
         self.health_point = 100
         self.move_speed = 2.0
-        self.attack_range = 100
+        self.attack_range = 500
+        self.attack_speed = 1.0
+        self.attack_damage = 25
+
+class Bowman(Character):
+    def __init__(self, x, y, team):
+        super().__init__(x, y, team, 'resource/Bowman_sprite.png')
+        self.health_point = 100
+        self.move_speed = 2.0
+        self.attack_range = 800
         self.attack_speed = 1.0
         self.attack_damage = 25
 
@@ -178,7 +244,7 @@ def handle_events():
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
             apply_effect(knight, 'stun', 3)
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-            # apply_effect(mage, 'stun', 1)
+            apply_effect(mage, 'stun', 1)
             pass
 
 def reset_world():
@@ -189,10 +255,12 @@ def reset_world():
 
     running = True
     world = []
-    knight = Knight(100, 450, 'ally')
+    knight = Knight(10, 450, 'ally')
     mage = Mage(1500, 450, 'enemy')
+    bowman = Bowman(100, 800, 'ally')
     world.append(knight)
     world.append(mage)
+    world.append(bowman)
 
 def update_world():
     for o in world:
@@ -209,8 +277,6 @@ def main():
     open_canvas(window_width, window_height)
     reset_world()
 
-    print(knight.team, knight.health_point)
-    print(mage.team, mage.health_point)
     while running:
         handle_events()
         update_world()
