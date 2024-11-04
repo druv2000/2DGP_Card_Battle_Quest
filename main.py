@@ -1,7 +1,10 @@
+from operator import truediv
 
 from pico2d import *
 import math
+import time
 
+window_width, window_height = 1600, 900
 sprite_size = 100
 
 class Effect:
@@ -27,9 +30,10 @@ class Character:
         self.left_hand_x = self.x - sprite_size / 2
         self.left_hand_y = self.y
 
-        self.sprite_dir = 1 # 방향(애니메이션 용)
+        self.sprite_dir = 1 # 스프라이트 방향
         self.sprite = load_image(sprite_path)
         self.frame = 0
+        self.frame_for_attack = 0
         self.animation_speed = 0.3
 
         self.team = team
@@ -39,6 +43,7 @@ class Character:
         self.move_speed = 0
         self.attack_range = 0
         self.attack_speed = 0
+        self.last_attack_time = time.time()
         self.attack_damage = 0
         self.max_health_point = 0
         self.cur_health_point = 0
@@ -58,6 +63,7 @@ class Character:
 
         # 이펙트들
         self.stun_effect = load_image('resource/stun_effect.png')
+        self.attack_sprite = load_image('resource/stun_effect.png')
 
     def self_draw(self, is_stop):
         if is_stop == False:
@@ -76,25 +82,24 @@ class Character:
                                       self.x, self.y, sprite_size, sprite_size)
         pass
 
-    def add_effect(self, effect):
-        self.effects.append(effect)
+    def sprite_draw(self, sprite, frame, size_x, size_y, is_stop):
+        if is_stop == False:
+            if self.sprite_dir == -1:  # 왼쪽을 바라보고 있을 때
+                self.sprite.clip_composite_draw(int(self.frame) * 240, 0, 240, 240,
+                                                0, 'h', self.x, self.y, sprite_size, sprite_size)
+            else:  # 오른쪽을 바라보고 있을 때 (기존 방식)
+                self.sprite.clip_draw(int(self.frame) * 240, 0, 240, 240,
+                                      self.x, self.y, sprite_size, sprite_size)
+        else:
+            if self.sprite_dir == -1:  # 왼쪽을 바라보고 있을 때
+                self.sprite.clip_composite_draw(0, 0, 240, 240,
+                                                0, 'h', self.x, self.y, sprite_size, sprite_size)
+            else:  # 오른쪽을 바라보고 있을 때 (기존 방식)
+                self.sprite.clip_draw(0, 0, 240, 240,
+                                      self.x, self.y, sprite_size, sprite_size)
+        pass
 
-    def apply_effect(self):
-        self.is_stunned = False
-        for effect in self.effects:
-            if effect.name == 'stun':
-                self.is_stunned = True;
-                self.target = self.find_target(world)
-            else:
-                pass
-
-    def update(self):
-        self.apply_effect()
-        self.animation_update()
-        self.do_action()
-        self.effects = [effect for effect in  self.effects if effect.is_active()]
-
-    def draw(self):
+    def draw_character(self):
         if self.is_dead:
             #죽은 상태로 그리기
             pass
@@ -110,7 +115,16 @@ class Character:
             pass
         else:
             self.self_draw(False)
-    def animation_update(self):
+
+    def draw_weapon(self):
+        pass
+
+    def draw_animation(self):
+        if(self.is_attacking):
+        self.attack_sprite.clip_draw(int(self.frame)*496, 0, 496, 496, self.left_hand_x, self.left_hand_y, sprite_size/2, sprite_size/2)
+        pass
+
+    def animation_update_character(self):
         if self.is_dead:
             # 쓰러진 모습으로 약간 튀어올랐다가 떨어짐
             pass
@@ -137,13 +151,51 @@ class Character:
 
         if self.is_stunned:
             pass
+        pass
+
+    def animation_update_weapon(self):
+        pass
+
+    def animation_update_effect(self):
+        pass
+
+    def add_effect(self, effect):
+        self.effects.append(effect)
+
+    def apply_effect(self):
+        self.is_stunned = False
+        for effect in self.effects:
+            if effect.name == 'stun':
+                self.is_stunned = True;
+                self.target = self.find_target(world)
+            else:
+                pass
+
+    def update(self):
+        self.apply_effect()
+        self.animation_update()
+        self.do_action()
+        self.effects = [effect for effect in  self.effects if effect.is_active()]
+
+    def draw(self):
+        self.draw_character()
+        self.draw_weapon()
+        self.draw_animation()
+
+    def animation_update(self):
+        self.animation_update_character()
+        self.animation_update_weapon()
+        self.animation_update_effect()
 
     def do_action(self):
         if self.target is None or (isinstance(self.target, Character) and self.target.is_dead):
             self.target = self.find_target(world)
 
         if self.target:
-            if self.attack_target(self.target) == False:
+            distance_to_target = math.sqrt((self.target.x - self.x) ** 2 + (self.target.y - self.y) ** 2)
+            if distance_to_target <= self.attack_range:
+                self.attack_target(self.target)
+            else:
                 self.move_to_target(self.target)
 
     def find_target(self, world):
@@ -180,8 +232,21 @@ class Character:
                 self.is_moving = False
 
     def attack_target(self, target):
-        # 아직 구현되지 않았으므로 False를 반환
+        if self.is_stunned or self.is_dead or self.is_cannot_attack:
+            return False
+
+        current_time = time.time()
+        time_since_last_attack = current_time - self.last_attack_time
+
+        if time_since_last_attack >= (1 / self.attack_speed):
+            self.last_attack_time = current_time
+            self.perform_attack(target)
+            return True
+
         return False
+
+
+
 
     def moving_temp(self):
         if not self.is_stunned:
@@ -210,6 +275,7 @@ class Knight(Character):
         self.attack_range = 100
         self.attack_speed = 1.5
         self.attack_damage = 30
+        self.attack_sprite = load_image('resource/slash1.png')
 
 class Mage(Character):
     def __init__(self, x, y, team):
@@ -219,15 +285,17 @@ class Mage(Character):
         self.attack_range = 300
         self.attack_speed = 1.0
         self.attack_damage = 25
+        self.attack_sprite = load_image('resource/slash1.png')
 
 class Bowman(Character):
     def __init__(self, x, y, team):
         super().__init__(x, y, team, 'resource/Bowman_sprite.png')
         self.health_point = 100
         self.move_speed = 2.0
-        self.attack_range = 800
+        self.attack_range = 400
         self.attack_speed = 1.0
         self.attack_damage = 25
+        self.attack_sprite = load_image('resource/slash1.png')
 
 # 지정한 캐릭터(character)에게 지정한 효과(effect_name)를 지정한 시간(duration)동안 부여함
 def apply_effect(character, effect_name, duration):
@@ -260,8 +328,8 @@ def reset_world():
     knight = Knight(10, 450, 'ally')
     world.append(knight)
 
-    mage = Mage(1500, 450, 'enemy')
-    world.append(mage)
+    # mage = Mage(1500, 450, 'enemy')
+    # world.append(mage)
 
     bowman = Bowman(100, 800, 'ally')
     world.append(bowman)
@@ -277,12 +345,14 @@ def render_world():
     update_canvas()
 
 def spawn_enemy_bowman(x, y):
-    global world
-    new_bowman = Bowman(x, y, 'enemy')
+    global world, window_height
+    screen_x = x
+    screen_y = window_height - y
+    new_bowman = Bowman(screen_x, screen_y, 'enemy')
     world.append(new_bowman)
 
 def main():
-    window_width, window_height = 1600, 900
+    global window_width, window_height
     open_canvas(window_width, window_height)
     reset_world()
 
