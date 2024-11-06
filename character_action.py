@@ -18,6 +18,7 @@ def find_closest_target(c):
                 if distance < min_distance:
                     min_distance = distance
                     closest_enemy = enemy
+
     return closest_enemy
 
 def set_new_coord(c):
@@ -33,15 +34,18 @@ def move_to_target(c):
         target_x, target_y = c.target.x, c.target.y
         target_distance = math.sqrt((target_x - c.x) ** 2 + (target_y - c.y) ** 2)
 
+        # 타겟 방향으로 방향 설정
+        c.dir_x = (target_x - c.x) / target_distance
+        c.dir_y = (target_y - c.y) / target_distance
+
+        # 타겟 방향으로 스프라이트 방향 설정
+        if c.dir_x < 0:
+            c.sprite_dir = -1
+        else:
+            c.sprite_dir = 1
+
         if target_distance > c.attack_range:
             # 타겟과의 거리가 공격 범위보다 멀다면 타겟 방향으로 이동
-            c.dir_x = (target_x - c.x) / target_distance
-            c.dir_y = (target_y - c.y) / target_distance
-            if c.dir_x < 0:
-                c.sprite_dir = -1
-            else:
-                c.sprite_dir = 1
-
             c.x += c.dir_x * c.move_speed
             c.y += c.dir_y * c.move_speed
             set_new_coord(c)
@@ -51,7 +55,7 @@ def move_to_target(c):
             pass
 
 def attack_target(c):
-    if c.attack_animation_progress :
+    if is_attack_timing(c):  # 통합된 공격 타이밍 로직 사용
         print(f'attack!')
 
 
@@ -63,6 +67,13 @@ def update_walk_animation(c):
     bounce_height = math.sin(c.frame * math.pi / 4 * bounce_frequency) * 2  # 튀는 높이
     c.y += bounce_height
 
+def is_attack_timing(c):
+    current_time = get_time()
+    time_since_last_attack = current_time - c.last_attack_time
+    if time_since_last_attack >= (1 / c.attack_speed):
+        c.last_attack_time = current_time
+        return True  # 공격을 수행할 준비가 됨
+    return False  # 공격을 수행할 준비가 아님
 
 def update_attack_animation(c):
     if c.attack_animation_progress < 1:
@@ -71,11 +82,6 @@ def update_attack_animation(c):
 
         # 뒤로 젖히는 동작 (0 ~ 0.5)
         if c.attack_animation_progress < 0.5:
-            pass
-
-
-        # 앞으로 뻗는 동작 (0.5 ~ 1)
-        else:
             if c.sprite_dir == 1:
                 progress = (c.attack_animation_progress - 0.5) * 2
                 c.x = c.original_x + 10 - progress * 20  # 앞으로 빠르게 이동
@@ -88,8 +94,10 @@ def update_attack_animation(c):
                 c.rotate = c.original_rotate - 15 + progress * 15  # 원래 각도로
             else:
                 print(f'    ERROR: sprite_dir is not 1 or -1')
-    # 재생 끝났으면 원래 위치로 복귀
-    else:
-        c.x = c.original_x
-        c.y = c.original_y
-        c.rotate = c.original_rotate
+
+        # 앞으로 뻗는 동작 (0.5 ~ 1)
+        else:
+            c.x = c.original_x
+            c.y = c.original_y
+            c.rotate = c.original_rotate
+            pass

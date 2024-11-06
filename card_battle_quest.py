@@ -28,10 +28,10 @@ def reset_world():
 
     running = True
 
-    knight = Knight(100, 400, 'ally')
+    knight = Knight(500, 800, 'ally')
     game_world.add_object(knight, 2)
 
-    mage = Mage(1500, 400, 'enemy')
+    mage = Mage(1000, 400, 'enemy')
     game_world.add_object(mage, 2)
 
 def update_world():
