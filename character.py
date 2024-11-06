@@ -3,7 +3,8 @@
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
 import game_world
-from character_action import find_closest_target, move_to_target, attack_target, animate_walk
+from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
+    update_walk_animation
 from state_machine import *
 
 import math
@@ -12,11 +13,23 @@ import math
 
 def character_draw(c):
     if c.sprite_dir == -1:  # 왼쪽을 바라보고 있을 때
-        c.image.clip_composite_draw(int(c.frame) * c.sprite_size, 0, c.sprite_size, c.sprite_size,
-                                     0, 'h', c.x, c.y, 100, 100)
-    else:  # 오른쪽을 바라보고 있을 때 (기존 방식)
-        c.image.clip_draw(int(c.frame) * c.sprite_size, 0, c.sprite_size, c.sprite_size,
-                           c.x, c.y, 100, 100)
+        c.image.clip_composite_draw(
+            int(c.frame) * c.sprite_size, 0,  # 소스의 좌표
+            c.sprite_size, c.sprite_size,     # 소스의 크기
+            -c.rotate * 3.141592 / 180,        # 회전 각도 (라디안으로 변환)
+            'h',                              # 좌우 반전
+            c.x, c.y,                         # 그려질 위치
+            100, 100                          # 그려질 크기
+        )
+    else:  # 오른쪽을 바라보고 있을 때
+        c.image.clip_composite_draw(
+            int(c.frame) * c.sprite_size, 0,  # 소스의 좌표
+            c.sprite_size, c.sprite_size,     # 소스의 크기
+            -c.rotate * 3.141592 / 180,        # 회전 각도 (라디안으로 변환)
+            '',                               # 반전 없음
+            c.x, c.y,                         # 그려질 위치
+            100, 100                          # 그려질 크기
+        )
 
 def effect_draw(effect, x, y):
     pass
@@ -54,13 +67,8 @@ class Move_to_target:
     @staticmethod
     def do(c):
         c.frame = (c.frame + c.animation_speed) % 8
-        c.walk_frame = (c.frame + 1) % 8
+        update_walk_animation(c)
         move_to_target(c)
-
-        # 통통 튀는 효과
-        bounce_frequency = 2 # 튀는 주기
-        bounce_height = math.sin(c.frame * math.pi / 4 * bounce_frequency) * 2 # 튀는 높이
-        c.y += bounce_height
 
     @staticmethod
     def draw(c):
@@ -77,6 +85,14 @@ class Attack_target:
     @staticmethod
     def do(c):
         c.frame = (c.frame + c.animation_speed) % 8
+        current_time = get_time()
+        time_since_last_attack = current_time - c.last_attack_time
+
+        if time_since_last_attack >= (1 / c.attack_speed):
+            c.last_attack_time = current_time
+            c.attack_animation_progress = 0  # 공격 애니메이션 시작
+
+        update_attack_animation(c)
         attack_target(c)
 
     @staticmethod
@@ -122,6 +138,9 @@ class Dead:
 class Character:
     def __init__(self, x, y, team, sprite_path):
         self.x, self.y = x, y
+        self.original_x, original_y = x, y
+        self.rotate, original_rotate = 0, 0
+
         self.team = team
         self.image = load_image(sprite_path)
 

@@ -21,7 +21,11 @@ def find_closest_target(c):
     return closest_enemy
 
 def set_new_coord(c):
-    # head, hand위치를 현재 캐릭터 위치로 동기화하는 함수
+    # head, hand 등 위치를 현재 캐릭터 위치로 동기화하는 함수
+    c.original_x = c.x
+    c.original_y = c.y
+
+    c.original_rotate = c.rotate
     pass
 
 def move_to_target(c):
@@ -47,20 +51,45 @@ def move_to_target(c):
             pass
 
 def attack_target(c):
-    current_time = get_time()
-    time_since_last_attack = current_time - c.last_attack_time
-
-    if time_since_last_attack >= (1 / c.attack_speed):
-        c.last_attack_time = current_time
+    if c.attack_animation_progress :
         print(f'attack!')
-        # c.perform_attack(target)
+
 
 # =============== animation ===============
 
-def animate_walk(c):
-    if (int(c.frame) == 0 or int(c.frame) == 1 or
-            int(c.frame) == 4 or int(c.frame) == 5):
-        c.y += 3
-    elif (int(c.frame) == 2 or int(c.frame) == 3 or
-          int(c.frame) == 6 or int(c.frame) == 7):
-        c.y -= 3
+def update_walk_animation(c):
+    # 통통 튀는 효과
+    bounce_frequency = 2  # 튀는 주기
+    bounce_height = math.sin(c.frame * math.pi / 4 * bounce_frequency) * 2  # 튀는 높이
+    c.y += bounce_height
+
+
+def update_attack_animation(c):
+    if c.attack_animation_progress < 1:
+        attack_aniamtion_speed = c.attack_speed / 10
+        c.attack_animation_progress += c.animation_speed * attack_aniamtion_speed  # 애니메이션 속도 조절
+
+        # 뒤로 젖히는 동작 (0 ~ 0.5)
+        if c.attack_animation_progress < 0.5:
+            pass
+
+
+        # 앞으로 뻗는 동작 (0.5 ~ 1)
+        else:
+            if c.sprite_dir == 1:
+                progress = (c.attack_animation_progress - 0.5) * 2
+                c.x = c.original_x + 10 - progress * 20  # 앞으로 빠르게 이동
+                c.y = c.original_y - 5 + progress * 5  # 원래 위치로
+                c.rotate = c.original_rotate + 15 - progress * 15  # 원래 각도로
+            elif c.sprite_dir == -1:
+                progress = (c.attack_animation_progress - 0.5) * 2
+                c.x = c.original_x - 10 + progress * 20  # 앞으로 빠르게 이동
+                c.y = c.original_y + 5 - progress * 5  # 원래 위치로
+                c.rotate = c.original_rotate - 15 + progress * 15  # 원래 각도로
+            else:
+                print(f'    ERROR: sprite_dir is not 1 or -1')
+    # 재생 끝났으면 원래 위치로 복귀
+    else:
+        c.x = c.original_x
+        c.y = c.original_y
+        c.rotate = c.original_rotate
