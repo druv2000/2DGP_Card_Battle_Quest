@@ -2,7 +2,7 @@ from pico2d import *
 
 import game_world
 from character import Character
-from knight import Knight
+from character_list import Knight, Mage
 
 
 # Game object class here
@@ -24,12 +24,15 @@ def handle_events():
 
 def reset_world():
     global running
-    global boy
+    global knight
 
     running = True
 
-    knight = Knight(800, 400, 'ally')
+    knight = Knight(100, 400, 'ally')
     game_world.add_object(knight, 2)
+
+    mage = Mage(1500, 400, 'enemy')
+    game_world.add_object(mage, 2)
 
 def update_world():
     game_world.update()
