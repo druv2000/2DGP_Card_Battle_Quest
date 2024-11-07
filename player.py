@@ -1,7 +1,7 @@
 from sdl2 import SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT
 
 import game_world
-from character_list import Soldier_elete, Mage
+from character_list import Soldier_elete, Mage, Knight
 
 
 class Player:
@@ -14,13 +14,13 @@ class Player:
             self.spawn_ally(self.cursor_x, self.cursor_y)
 
     def spawn_enemy(self, x, y):
-        new_enemy = Soldier_elete(x, y, 'enemy')
-        game_world.add_object(new_enemy, 2)  # 레이어 2에 적 추가
+        new_enemy = Mage(x, y, 'enemy')
+        game_world.add_object(new_enemy, 6)  # 레이어 2에 적 추가
         print(f"Enemy spawned at ({x}, {y})")
 
     def spawn_ally(self, x, y):
         new_ally = Mage(x, y, 'ally')
-        game_world.add_object(new_ally, 2)  # 레이어 2에 적 추가
+        game_world.add_object(new_ally, 6)  # 레이어 2에 적 추가
         print(f"Ally spawned at ({x}, {y})")
 
 player = Player()

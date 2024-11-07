@@ -1,6 +1,6 @@
 from pico2d import load_image
 
-from attack_animation import Attack_animation
+from attack_animation import Attack_animation, Mage_AttackBullet
 from character import Character
 
 
@@ -23,7 +23,7 @@ class Knight(Character):
                                                  70, 70,
                                                  8)
 
-        self.attack_projectile = None
+        self.bullet = None
 
 
 class Mage(Character):
@@ -45,7 +45,8 @@ class Mage(Character):
                                                  70, 20,
                                                  8)
 
-        self.attack_projectile = None
+        self.bullet = Mage_AttackBullet(self.x, self.y, self)
+
 
 class Soldier_elete(Character):
     def __init__(self, x, y, team):
@@ -66,4 +67,4 @@ class Soldier_elete(Character):
                                                  70, 20,
                                                  8)
 
-        self.attack_projectile = None
+        self.bullet = None

@@ -6,6 +6,7 @@ from event_system import event_system
 import game_world
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
     update_walk_animation, is_attack_timing, set_new_coord
+from game_world import change_object_layer
 from state_machine import *
 
 import math
@@ -185,13 +186,16 @@ class Dead:
     def enter(c, e):
         c.frame = 0
         c.rotate = 0
+        c.opacify = 0.5
         c.target_rotation = -90 if c.sprite_dir == 1 else 90
+
+        c.can_target = False
+        change_object_layer(c, 1)
     @staticmethod
     def exit(c, e):
         pass
     @staticmethod
     def do(c):
-        c.image.opacify(0.5)  # 투명도 설정
         if abs(c.rotate - c.target_rotation) > 10:
             if c.sprite_dir == 1:
                 c.rotate -= 5
@@ -203,6 +207,11 @@ class Dead:
                 c.x += 3
         else:
             c.rotate = c.target_rotation
+
+        if c.opacify <= 0:
+            game_world.remove_object(c)
+        c.opacify -= 0.001
+        c.image.opacify(c.opacify)
 
     @staticmethod
     def draw(c):
@@ -218,7 +227,6 @@ class Immune:
         pass
     @staticmethod
     def do(c):
-        c.image.opacify(0.2)
         c.frame = (c.frame + c.animation_speed) % 8
     @staticmethod
     def draw(c):
@@ -236,7 +244,6 @@ class Character:
 
         self.team = team
         self.image = load_image(sprite_path)
-
         self.sprite_dir = 1
         self.sprite_size = 240
 
@@ -256,6 +263,8 @@ class Character:
         self.last_attack_time = get_time() # 마지막으로 공격이 수행된 시간
         self.attack_animation_progress = 0 # 공격 애니메이션 진행 상태
         self.animation_speed = 0.3 # frame 변화 간격
+
+        self.can_target = True
 
     def update(self):
         self.state_machine.update()

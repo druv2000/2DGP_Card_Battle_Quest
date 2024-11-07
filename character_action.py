@@ -4,7 +4,9 @@ from os import close
 from pico2d import get_time, delay
 
 import character
-from game_world import world
+import game_world
+from attack_animation import Mage_AttackBullet
+from game_world import world, add_object
 from state_machine import *
 
 
@@ -14,11 +16,12 @@ def find_closest_target(c):
 
     for layer in world:
         for enemy in layer:
-            if enemy.state_machine.cur_state != character.Dead  and enemy.team != c.team:
+            if enemy.can_target and enemy.team != c.team:
                 distance = math.sqrt((enemy.x - c.x) ** 2 + (enemy.y - c.y) ** 2)
                 if distance < min_distance:
                     min_distance = distance
                     closest_enemy = enemy
+
 
     return closest_enemy
 
@@ -58,10 +61,14 @@ def move_to_target(c):
             pass
 
 def attack_target(c):
-    print(f'attack!')
-
-    if c.attack_projectile == None:
-            c.target.take_damage(c.attack_damage)
+    if c.bullet == None:
+        c.target.take_damage(c.attack_damage)
+        print(f'attack!')
+    else:
+        c.bullet.x, c.bullet.y = c.x, c.y
+        c.bullet.set_target(c.target)
+        game_world.add_object(c.bullet, 8)
+        pass
 
 # =============== animation ===============
 
