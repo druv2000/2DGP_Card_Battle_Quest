@@ -3,6 +3,7 @@ from pico2d import *
 import game_world
 from character import Character
 from character_list import Knight, Mage
+from player import player
 
 
 # Game object class here
@@ -18,7 +19,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
         else:
-            # boy.handle_event(event)
+            player.handle_event(event)
             pass
 
 
@@ -29,10 +30,16 @@ def reset_world():
     running = True
 
     knight = Knight(500, 800, 'ally')
-    game_world.add_object(knight, 2)
+    game_world.add_object(knight, 8)
 
-    mage = Mage(1000, 400, 'enemy')
-    game_world.add_object(mage, 2)
+    mage = Mage(100, 400, 'ally')
+    game_world.add_object(mage, 7)
+
+    knight2 = Knight(1000, 800, 'enemy')
+    game_world.add_object(knight2, 8)
+
+    mage2 = Mage(1500, 400, 'enemy')
+    game_world.add_object(mage2, 7)
 
 def update_world():
     game_world.update()

@@ -1,10 +1,11 @@
 import math
 from os import close
 
-from pico2d import get_time
+from pico2d import get_time, delay
 
 import character
 from game_world import world
+from state_machine import *
 
 
 def find_closest_target(c):
@@ -13,7 +14,7 @@ def find_closest_target(c):
 
     for layer in world:
         for enemy in layer:
-            if enemy.team != c.team:
+            if enemy.state_machine.cur_state != character.Dead  and enemy.team != c.team:
                 distance = math.sqrt((enemy.x - c.x) ** 2 + (enemy.y - c.y) ** 2)
                 if distance < min_distance:
                     min_distance = distance
@@ -33,6 +34,8 @@ def move_to_target(c):
     if c.target != None:
         target_x, target_y = c.target.x, c.target.y
         target_distance = math.sqrt((target_x - c.x) ** 2 + (target_y - c.y) ** 2)
+        if target_distance == 0:
+            c.x += 1
 
         # 타겟 방향으로 방향 설정
         c.dir_x = (target_x - c.x) / target_distance
@@ -55,9 +58,10 @@ def move_to_target(c):
             pass
 
 def attack_target(c):
-    if is_attack_timing(c):  # 통합된 공격 타이밍 로직 사용
-        print(f'attack!')
+    print(f'attack!')
 
+    if c.attack_projectile == None:
+            c.target.take_damage(c.attack_damage)
 
 # =============== animation ===============
 

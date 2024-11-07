@@ -16,6 +16,9 @@ def cannot_attack_target(event):
 def stunned(event):
     return event[0] == 'STUNNED'
 
+def dead(event):
+    return event[0] == 'DEAD'
+
 
 
 # ========= STATE MACHINE ==========
