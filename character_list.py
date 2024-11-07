@@ -11,7 +11,7 @@ class Knight(Character):
         self.health_point = 150
         self.move_speed = 1.0
         self.attack_range = 100
-        self.attack_speed = 2.0
+        self.attack_speed = 1.0
         self.attack_damage = 30
         self.attack_sprite = load_image('resource/slash1.png')
         self.attack_sprite_size = 496
@@ -27,4 +27,4 @@ class Mage(Character):
         self.attack_speed = 1.0
         self.attack_damage = 20
         self.attack_sprite = None
-        self.attack_sprite_size = 496
+        self.attack_sprite_size = 0

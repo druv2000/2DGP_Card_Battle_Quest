@@ -35,11 +35,12 @@ def character_draw(c):
 
 def attack_animation_draw(c):
     if c.attack_sprite != None:
+
         # 공격 애니메이션이 진행 중인지 확인
-        if c.attack_animation_progress < 1:
+        if c.attack_animation_progress < 1 and c.is_attack_performed == False:
             # 공격 스프라이트 위치 계산
-            attack_x = c.x + c.dir_x * 70
-            attack_y = c.y + c.dir_y * 70
+            attack_x = c.x + c.dir_x * 60
+            attack_y = c.y + c.dir_y * 60
 
             # 캐릭터의 방향에 따른 회전 각도 계산
             if c.dir_x < 0:
@@ -47,21 +48,26 @@ def attack_animation_draw(c):
             else:
                 rotation_angle = math.atan2(c.dir_y, c.dir_x)
 
-            # 애니메이션 프레임 계산 (0부터 3까지의 프레임)
-            frame = int(c.attack_animation_progress * 10)
-
             # 좌우 방향 결정
             flip = 'h' if c.dir_x < 0 else ''
 
             # 스프라이트 그리기
             c.attack_sprite.clip_composite_draw(
-                frame * c.attack_sprite_size, 0,
+                int(c.attack_frame) * c.attack_sprite_size, 0,
                 c.attack_sprite_size, c.attack_sprite_size,
                 rotation_angle,
                 flip,
                 attack_x, attack_y,
                 250, 250
             )
+
+            # 공격이 1회 수행되었으면(이미지상) 이후는 수행x
+            if c.attack_frame >= 7:
+                c.is_attack_performed = True
+            c.attack_frame = (c.attack_frame + 0.4) % 8
+
+            # 공격속도가 빨라서 애니메이션이 끝나기 전에 animation_progress가 끝난다면 어떻게 해야하는가에 대한 로직 필요
+            # 최소한 끝나기 전에 시작된 공격 애니메이션은 끝까지 수행해야함.
 
 # ============================================================================================
 
@@ -107,6 +113,8 @@ class Attack_target:
     @staticmethod
     def enter(c, e):
         c.frame = 0
+        c.attack_frame = 0
+        c.is_attack_performed = False
         pass
     @staticmethod
     def exit(c, e):

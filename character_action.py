@@ -72,6 +72,9 @@ def is_attack_timing(c):
     time_since_last_attack = current_time - c.last_attack_time
     if time_since_last_attack >= (1 / c.attack_speed):
         c.last_attack_time = current_time
+        c.is_attack_performed = False
+        c.attack_frame = 0
+
         return True  # 공격을 수행할 준비가 됨
     return False  # 공격을 수행할 준비가 아님
 

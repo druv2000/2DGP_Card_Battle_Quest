@@ -1,7 +1,12 @@
-# world[0]: layer 0 - background 1
-# world[1]: layer 1 - character
-# world[2]: layer 2 - background 2
-world = [[], [], []]
+# world[0]: layer 0 - background
+# world[1]: layer 1 - team_color
+# world[2]: layer 2 - main_weapon
+# world[3]: layer 3 - character
+# world[4]: layer 4 - sub_weapon
+# ...
+# world[8]: layer 8 - effect
+# world[9]: layer 9 - ui
+world = [[] for _ in range(10)]
 
 def add_object(obj, depth):
     world[depth].append(obj)
