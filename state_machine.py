@@ -53,7 +53,7 @@ class StateMachine:
 
     def add_event(self, event):
         self.event_que.append(event) # 상태 머신용 이벤트 추가
-        print(f'    DEBUG: - new event {event} is added.')
+        # print(f'    DEBUG: - new event {event} is added.')
         pass
 
     def handle_event(self, event):

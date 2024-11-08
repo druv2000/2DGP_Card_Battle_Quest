@@ -2,6 +2,7 @@
 
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
+from effects import HitEffect
 from event_system import event_system
 import game_world
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
@@ -36,47 +37,57 @@ def character_draw(c):
 
 
 def attack_animation_draw(c):
-    if c.attack_animation != None:
-        # 공격 애니메이션이 시작되었는지 확인
-        if not hasattr(c, 'animation_in_progress'):
-            c.animation_in_progress = False
+    if c.attack_animation is None:
+        return
 
-        # 새로운 공격 시작 또는 진행 중인 애니메이션 계속
-        if (c.attack_animation_progress < 1 and not c.is_attack_performed) or c.animation_in_progress:
-            if not c.animation_in_progress:
-                c.animation_in_progress = True
-                c.attack_frame = 0
+    if should_start_or_continue_animation(c):
+        initialize_animation(c)
+        update_animation_position(c)
+        calculate_rotation_and_flip(c)
+        draw_attack_sprite(c)
+        update_animation_frame(c)
+        check_animation_completion(c)
 
-            # 공격 스프라이트 위치 계산
-            c.attack_animation.x = c.x + c.dir_x * c.attack_animation.offset_x
-            c.attack_animation.y = c.y + c.dir_y * c.attack_animation.offset_y
+def should_start_or_continue_animation(c):
+    if not hasattr(c, 'animation_in_progress'):
+        c.animation_in_progress = False
+    return (c.attack_animation_progress < 1 and not c.is_attack_performed) or c.animation_in_progress
 
-            # 캐릭터의 방향에 따른 회전 각도 계산
-            rotation_angle = math.atan2(c.dir_y, c.dir_x)
-            if c.dir_x < 0:
-                rotation_angle += math.pi
+def initialize_animation(c):
+    if not c.animation_in_progress:
+        c.animation_in_progress = True
+        c.attack_frame = 0
 
-            # 좌우 방향 결정
-            flip = 'h' if c.dir_x < 0 else ''
+def update_animation_position(c):
+    c.attack_animation.x = c.x + c.dir_x * c.attack_animation.offset_x
+    c.attack_animation.y = c.y + c.dir_y * c.attack_animation.offset_y
 
-            # 스프라이트 그리기
-            c.attack_animation.image.clip_composite_draw(
-                int(c.attack_frame) * c.attack_animation.size_x, 0,
-                c.attack_animation.size_x, c.attack_animation.size_y,
-                rotation_angle,
-                flip,
-                c.attack_animation.x, c.attack_animation.y,
-                250, 250
-            )
+def calculate_rotation_and_flip(c):
+    rotation_angle = math.atan2(c.dir_y, c.dir_x)
+    if c.dir_x < 0:
+        rotation_angle += math.pi
+    flip = 'h' if c.dir_x < 0 else ''
+    return rotation_angle, flip
 
-            # 애니메이션 프레임 업데이트
-            c.attack_frame = (c.attack_frame + 0.4)
+def draw_attack_sprite(c):
+    rotation_angle, flip = calculate_rotation_and_flip(c)
+    c.attack_animation.image.clip_composite_draw(
+        int(c.attack_frame) * c.attack_animation.size_x, 0,
+        c.attack_animation.size_x, c.attack_animation.size_y,
+        rotation_angle,
+        flip,
+        c.attack_animation.x, c.attack_animation.y,
+        250, 250
+    )
 
-            # 애니메이션이 완료되었는지 확인
-            if c.attack_frame >= c.attack_animation.total_frame - 1:
-                c.animation_in_progress = False
-                c.is_attack_performed = True
-                c.attack_frame = c.attack_frame % c.attack_animation.total_frame
+def update_animation_frame(c):
+    c.attack_frame = (c.attack_frame + 0.4)
+
+def check_animation_completion(c):
+    if c.attack_frame >= c.attack_animation.total_frame - 1:
+        c.animation_in_progress = False
+        c.is_attack_performed = True
+        c.attack_frame = c.attack_frame % c.attack_animation.total_frame
 
 
 
@@ -155,13 +166,17 @@ class Attack_target:
             update_attack_animation(c)
 
             # 애니메이션의 특정 시점(예: 50% 진행)에 데미지 적용
-            if c.attack_animation_progress >= 0.5 and not c.damage_applied:
+            if c.attack_animation_progress >= 0.2 and not c.damage_applied:
                 attack_target(c)
                 c.damage_applied = True
+                if c.attack_animation == None:
+                    c.animation_in_progress = False
+
     @staticmethod
     def draw(c):
         character_draw(c)
-        attack_animation_draw(c)
+        if c.attack_animation != None:
+            attack_animation_draw(c)
 
 class Stunned:
     @staticmethod
@@ -235,7 +250,7 @@ class Immune:
 # ==============================================
 
 class Character:
-    def __init__(self, x, y, team, sprite_path):
+    def __init__(self, x, y, team):
         self.x, self.y = x, y
         self.original_x = self.x
         self.original_y = self.y
@@ -243,7 +258,6 @@ class Character:
         self.original_rotate = self.rotate
 
         self.team = team
-        self.image = load_image(sprite_path)
         self.sprite_dir = 1
         self.sprite_size = 240
 
@@ -263,11 +277,26 @@ class Character:
         self.last_attack_time = get_time() # 마지막으로 공격이 수행된 시간
         self.attack_animation_progress = 0 # 공격 애니메이션 진행 상태
         self.animation_speed = 0.3 # frame 변화 간격
+        self.hit_effect_duration = 3
 
         self.can_target = True
 
+    # state_machine : 캐릭터의 기본 행동을 관리
+    # effect        : 캐릭터에 적용된 추가 상태를 관리
     def update(self):
+        # 1. state_machine 업데이트
         self.state_machine.update()
+
+        # 2. effect 업데이트
+        active_effects = []
+        for effect in self.effects:
+            if effect.is_active:
+                effect.update(self)
+                active_effects.append(effect)
+            else:
+                effect.remove(self)
+                print(f'    {effect}: effect expired and removed.')
+        self.effects = active_effects
 
     def handle_event(self, event):
         pass
@@ -285,13 +314,33 @@ class Character:
             if self.armor > 0:
                 self.armor = max(0, self.armor - damage_to_take)
                 damage_to_take = max(0, damage_to_take - self.armor)
-                pass
 
             old_hp = self.current_hp
             if damage_to_take > 0:
+                # HitEffect 찾기 또는 새로 생성
+                hit_effect = next((effect for effect in self.effects if isinstance(effect, HitEffect)), None)
+                if hit_effect:
+                    hit_effect.refresh()  # 기존 HitEffect 갱신
+                else:
+                    hit_effect = HitEffect()
+                    self.add_effect(hit_effect)  # 새 HitEffect 추가
+
                 self.current_hp = max(0, self.current_hp - damage_to_take)
                 event_system.trigger('hp_changed', self, old_hp, self.current_hp)
                 print(f'    damaged: {damage_to_take}, remain_hp: {self.current_hp}')
 
             if self.current_hp <= 0:
                 self.state_machine.add_event(('DEAD', 0))
+
+    def add_effect(self, effect):
+        effect.apply(self)
+        self.effects.append(effect)
+        print(f'    {effect}: effect applied.')
+
+    def remove_effect(self, effect_type):
+        self.effects = [effect for effect in self.effects if not isinstance(effect, effect_type)]
+        for effect in self.effects:
+            if isinstance(effect, effect_type):
+                effect.remove(self)
+                print(f'    {effect}: effect removed.')
+

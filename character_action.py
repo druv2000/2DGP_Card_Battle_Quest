@@ -68,6 +68,7 @@ def attack_target(c):
         c.bullet.x, c.bullet.y = c.x, c.y
         c.bullet.set_target(c.target)
         game_world.add_object(c.bullet, 8)
+
         pass
 
 # =============== animation ===============
@@ -91,8 +92,8 @@ def is_attack_timing(c):
 
 def update_attack_animation(c):
     if c.attack_animation_progress < 1:
-        attack_aniamtion_speed = c.attack_speed / 10
-        c.attack_animation_progress += c.animation_speed * attack_aniamtion_speed  # 애니메이션 속도 조절
+        attack_animation_speed = c.attack_speed / 10
+        c.attack_animation_progress += c.animation_speed * attack_animation_speed  # 애니메이션 속도 조절
 
         # 뒤로 젖히는 동작 (0 ~ 0.5)
         if c.attack_animation_progress < 0.5:
