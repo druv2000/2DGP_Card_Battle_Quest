@@ -305,13 +305,6 @@ class Character:
                 # print(f'    {effect}: effect expired and removed.')
         self.effects = active_effects
 
-        # 데미지 텍스트 업데이트 (10프레임마다 한 번씩)
-        if self.frame_for_damage_number % 10 == 0:
-            for damage_number in self.active_damage_numbers:
-                damage_number.update()
-            self.active_damage_numbers = [dn for dn in self.active_damage_numbers if dn.is_alive()]
-        self.frame_for_damage_number += 1
-
     def handle_event(self, event):
         pass
 
@@ -323,10 +316,6 @@ class Character:
         for effect in self.effects:
             if hasattr(effect, 'draw'):
                 effect.draw(self)
-
-        # 데미지 텍스트 그리기
-        for damage_number in self.active_damage_numbers:
-            damage_number.draw()
 
     # =======================================
 
@@ -354,12 +343,7 @@ class Character:
                 print(f'    damaged: {damage_to_take}, remain_hp: {self.current_hp}')
 
                 # 데미지 넘버 생성
-                damage_number = self.damage_number_pool.get()
-                if damage_number:
-                    damage_number.set(self.x, self.y + 50, damage_to_take)
-                    self.active_damage_numbers.append(damage_number)
-                else:
-                    print("Warning: DamageNumber pool is empty")
+                game_world.add_damage_number(self.x, self.y + 50, damage_to_take)
 
             # 3. 사망 체크
             if self.current_hp <= 0:
