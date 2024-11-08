@@ -2,7 +2,7 @@
 import pygame
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
-from damage_number import DamageNumber
+from damage_number import DamageNumber, DamageNumberPool
 from effects import HitEffect
 from event_system import event_system
 import game_world
@@ -283,6 +283,9 @@ class Character:
         self.can_target = True
 
         self.damage_numbers = []
+        self.damage_number_pool = DamageNumberPool(size = 50)
+        self.active_damage_numbers = []
+        self.frame_for_damage_number = 0
 
 
     # state_machine : 캐릭터의 기본 행동을 관리
@@ -302,10 +305,12 @@ class Character:
                 # print(f'    {effect}: effect expired and removed.')
         self.effects = active_effects
 
-        # 2. 데미지 텍스트 업데이트(점점 떠오르는 효과)
-        for damage_number in self.damage_numbers:
-            damage_number.update()
-        self.damage_numbers = [dn for dn in self.damage_numbers if dn.is_alive()]
+        # 데미지 텍스트 업데이트 (10프레임마다 한 번씩)
+        if self.frame_for_damage_number % 10 == 0:
+            for damage_number in self.active_damage_numbers:
+                damage_number.update()
+            self.active_damage_numbers = [dn for dn in self.active_damage_numbers if dn.is_alive()]
+        self.frame_for_damage_number += 1
 
     def handle_event(self, event):
         pass
@@ -319,14 +324,14 @@ class Character:
             if hasattr(effect, 'draw'):
                 effect.draw(self)
 
-        # 1. 데미지 텍스트 그리기
-        for damage_number in self.damage_numbers:
+        # 데미지 텍스트 그리기
+        for damage_number in self.active_damage_numbers:
             damage_number.draw()
 
     # =======================================
 
     def take_damage(self, amount):
-        if self.state_machine.cur_state != Immune and self.state_machine.cur_state != Dead:
+        if self.state_machine.cur_state not in [Immune, Dead]:
             damage_to_take = amount
 
             # 1. 보호막으로 데미지 경감
@@ -348,8 +353,13 @@ class Character:
                 event_system.trigger('hp_changed', self, old_hp, self.current_hp)
                 print(f'    damaged: {damage_to_take}, remain_hp: {self.current_hp}')
 
-                # 데미지 텍스트 생성
-                self.damage_numbers.append(DamageNumber(self.x, self.y + 50, damage_to_take))
+                # 데미지 넘버 생성
+                damage_number = self.damage_number_pool.get()
+                if damage_number:
+                    damage_number.set(self.x, self.y + 50, damage_to_take)
+                    self.active_damage_numbers.append(damage_number)
+                else:
+                    print("Warning: DamageNumber pool is empty")
 
             # 3. 사망 체크
             if self.current_hp <= 0:
