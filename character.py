@@ -185,6 +185,7 @@ class Stunned:
         pass
     @staticmethod
     def exit(c, e):
+        c.image.opacify(1.0)
         pass
     @staticmethod
     def do(c):
@@ -193,8 +194,6 @@ class Stunned:
     @staticmethod
     def draw(c):
         character_draw(c)
-        # effect_draw(stunned, c.x, c.y)
-
 
 class Dead:
     @staticmethod
@@ -270,6 +269,7 @@ class Character:
                 Idle: {target_found: Move_to_target, stunned: Stunned, dead: Dead},
                 Move_to_target: {target_lost: Idle, can_attack_target: Attack_target, stunned: Stunned, dead: Dead},
                 Attack_target: {cannot_attack_target: Move_to_target, target_lost: Idle, stunned: Stunned, dead: Dead},
+                Stunned: {stunned_end: Idle, dead: Dead},
                 Dead: {}
             }
         )
@@ -295,7 +295,7 @@ class Character:
                 active_effects.append(effect)
             else:
                 effect.remove(self)
-                print(f'    {effect}: effect expired and removed.')
+                # print(f'    {effect}: effect expired and removed.')
         self.effects = active_effects
 
     def handle_event(self, event):
@@ -303,6 +303,9 @@ class Character:
 
     def draw(self):
         self.state_machine.draw()
+        for effect in self.effects:
+            if hasattr(effect, 'draw'):
+                effect.draw(self)
 
     # =======================================
 
@@ -322,7 +325,7 @@ class Character:
                 if hit_effect:
                     hit_effect.refresh()  # 기존 HitEffect 갱신
                 else:
-                    hit_effect = HitEffect()
+                    hit_effect = HitEffect(0.05)
                     self.add_effect(hit_effect)  # 새 HitEffect 추가
 
                 self.current_hp = max(0, self.current_hp - damage_to_take)
@@ -335,12 +338,12 @@ class Character:
     def add_effect(self, effect):
         effect.apply(self)
         self.effects.append(effect)
-        print(f'    {effect}: effect applied.')
+        # print(f'    {effect}: effect applied.')
 
     def remove_effect(self, effect_type):
         self.effects = [effect for effect in self.effects if not isinstance(effect, effect_type)]
         for effect in self.effects:
             if isinstance(effect, effect_type):
                 effect.remove(self)
-                print(f'    {effect}: effect removed.')
+                # print(f'    {effect}: effect removed.')
 

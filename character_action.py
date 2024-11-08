@@ -1,5 +1,6 @@
 import math
 from os import close
+import random
 
 from pico2d import get_time, delay
 
@@ -34,21 +35,25 @@ def set_new_coord(c):
     pass
 
 def move_to_target(c):
-    if c.target != None:
+    if c.target is not None:
         target_x, target_y = c.target.x, c.target.y
         target_distance = math.sqrt((target_x - c.x) ** 2 + (target_y - c.y) ** 2)
-        if target_distance == 0:
-            c.x += 1
 
-        # 타겟 방향으로 방향 설정
-        c.dir_x = (target_x - c.x) / target_distance
-        c.dir_y = (target_y - c.y) / target_distance
+        if target_distance < 0.001:
+            angle = random.uniform(0, 2 * math.pi)
+            distance = random.uniform(1, 5)  # 1에서 5 사이의 랜덤한 거리
+            c.x += distance * math.cos(angle)
+            c.y += distance * math.sin(angle)
+            target_distance = math.sqrt((target_x - c.x) ** 2 + (target_y - c.y) ** 2)
+
+
+        # 0으로 나누는 것을 방지하기 위해 epsilon 값 사용
+        epsilon = 0.000001
+        c.dir_x = (target_x - c.x) / (target_distance + epsilon)
+        c.dir_y = (target_y - c.y) / (target_distance + epsilon)
 
         # 타겟 방향으로 스프라이트 방향 설정
-        if c.dir_x < 0:
-            c.sprite_dir = -1
-        else:
-            c.sprite_dir = 1
+        c.sprite_dir = -1 if c.dir_x < 0 else 1
 
         if target_distance > c.attack_range:
             # 타겟과의 거리가 공격 범위보다 멀다면 타겟 방향으로 이동
@@ -58,7 +63,6 @@ def move_to_target(c):
         else:
             # 타겟과의 거리가 공격범위 안이라면(공격 가능하다면) 공격
             c.state_machine.add_event(('CAN_ATTACK_TARGET', 0))
-            pass
 
 def attack_target(c):
     if c.bullet == None:

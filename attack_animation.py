@@ -5,6 +5,7 @@ from pico2d import load_image
 from pygame.cursors import sizer_y_strings
 
 import game_world
+from effects import StunEffect
 
 
 class Attack_animation:
@@ -61,7 +62,18 @@ class Mage_AttackBullet:
             self.x += self.dir_x * self.move_speed
             self.y += self.dir_y * self.move_speed
         else:
+            # 데미지 적용
             self.target.take_damage(self.attack_damage)
+
+            # # stun 적용
+            # stun_effect = next((effect for effect in self.target.effects if isinstance(effect, StunEffect)), None)
+            # if stun_effect:
+            #     stun_effect.refresh()
+            # else:
+            #     stun_effect = StunEffect(0.5)
+            #     self.target.add_effect(stun_effect)
+
+            # 대상에게 피격 애니메이션
             hit_animation = Mage_AttackHitAnimation(self.target)
             game_world.add_object(hit_animation, 8)
             game_world.remove_object(self)
@@ -147,6 +159,15 @@ class Bowman_AttackBullet:
             self.y += self.dir_y * self.move_speed
         else:
             self.target.take_damage(self.attack_damage)
+
+            # # stun 적용
+            # stun_effect = next((effect for effect in self.target.effects if isinstance(effect, StunEffect)), None)
+            # if stun_effect:
+            #     stun_effect.refresh()
+            # else:
+            #     stun_effect = StunEffect(0.5)
+            #     self.target.add_effect(stun_effect)
+
             hit_animation = Bowman_AttackHitAnimation(self.target)
             game_world.add_object(hit_animation, 8)
             game_world.remove_object(self)

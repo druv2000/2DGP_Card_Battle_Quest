@@ -26,7 +26,7 @@ class Player:
         print(f"Ally spawned at ({x}, {y})")
 
     def spawn_ally_bowman(self, x, y):
-        new_ally = Bowman(x, y, 'ally')
+        new_ally = Bowman(x, y, 'another ')
         game_world.add_object(new_ally, 6)  # 적 추가
         print(f"Ally spawned at ({x}, {y})")
 

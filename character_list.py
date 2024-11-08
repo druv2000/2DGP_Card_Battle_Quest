@@ -70,7 +70,7 @@ class Bowman(Character):
         self.current_hp = 150
         self.move_speed = 1.25
         self.attack_range = 650
-        self.attack_speed = 3.0
+        self.attack_speed = 1.5
         self.attack_damage = 25
 
         self.armor = 0

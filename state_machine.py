@@ -16,6 +16,9 @@ def cannot_attack_target(event):
 def stunned(event):
     return event[0] == 'STUNNED'
 
+def stunned_end(event):
+    return event[0] == 'STUNNED_END'
+
 def dead(event):
     return event[0] == 'DEAD'
 
