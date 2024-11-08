@@ -1,8 +1,6 @@
 from pico2d import *
 
 import game_world
-from character import Character
-from character_list import Knight, Mage
 from player import player
 
 

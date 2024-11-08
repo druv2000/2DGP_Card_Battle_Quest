@@ -1,11 +1,8 @@
 import math
-from os import remove
 
 from pico2d import load_image
-from pygame.cursors import sizer_y_strings
 
 import game_world
-from effects import StunEffect
 
 
 class Attack_animation:

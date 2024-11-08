@@ -1,13 +1,11 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
-import pygame
-from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
+from pico2d import get_time
 
-from damage_number import DamageNumber, DamageNumberPool
 from effects import HitEffect
 from event_system import event_system
 import game_world
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
-    update_walk_animation, is_attack_timing, set_new_coord
+    update_walk_animation, is_attack_timing
 from game_world import change_object_layer
 from state_machine import *
 
@@ -295,6 +293,7 @@ class Character:
             if hasattr(effect, 'draw'):
                 effect.draw(self)
 
+    # @profile
     def take_damage(self, amount):
         if self.state_machine.cur_state not in [Immune, Dead]:
             damage_to_take = amount
@@ -321,7 +320,7 @@ class Character:
                 # 받은 데미지를 데미지 넘버 풀에 추가
                 damage_number = game_world.damage_number_pool.get()
                 if damage_number:
-                    damage_number.set(self.x, self.y + 50, damage_to_take)
+                    damage_number.set(self.x, self.y + 10, damage_to_take)
                 else:
                     print("Warning: DamageNumber pool is empty")
 

@@ -19,6 +19,7 @@ def init():
 def add_object(obj, depth):
     world[depth].append(obj)
 
+# @profile
 def update():
     for layer in world:
         for obj in layer:
@@ -26,6 +27,7 @@ def update():
         # y 좌표에 따라 객체 정렬
         layer.sort(key=lambda obj: -obj.y if hasattr(obj, 'y') else 0, reverse=False)
 
+# @profile
 def render():
     for layer in world:
         for obj in layer:

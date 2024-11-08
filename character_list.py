@@ -100,7 +100,7 @@ class Soldier_elete(Character):
         self.armor = 0
 
         self.attack_animation = Attack_animation('resource/slash2.png',
-                                                74, 74,
+                                                 74, 74,
                                                  70, 20,
                                                  8)
 

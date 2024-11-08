@@ -1,14 +1,10 @@
 import math
-from os import close
 import random
 
-from pico2d import get_time, delay
+from pico2d import get_time
 
-import character
 import game_world
-from attack_animation import Mage_AttackBullet
-from game_world import world, add_object
-from state_machine import *
+from game_world import world
 
 
 def find_closest_target(c):
