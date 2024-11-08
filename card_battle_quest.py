@@ -51,7 +51,6 @@ def render_world():
     game_world.render()
     update_canvas()
 
-
 open_canvas(1600, 900)
 reset_world()
 # game loop

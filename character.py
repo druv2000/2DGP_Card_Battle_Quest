@@ -1,7 +1,8 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
-
+import pygame
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
 
+from damage_number import DamageNumber
 from effects import HitEffect
 from event_system import event_system
 import game_world
@@ -281,6 +282,9 @@ class Character:
 
         self.can_target = True
 
+        self.damage_numbers = []
+
+
     # state_machine : 캐릭터의 기본 행동을 관리
     # effect        : 캐릭터에 적용된 추가 상태를 관리
     def update(self):
@@ -298,14 +302,26 @@ class Character:
                 # print(f'    {effect}: effect expired and removed.')
         self.effects = active_effects
 
+        # 2. 데미지 텍스트 업데이트(점점 떠오르는 효과)
+        for damage_number in self.damage_numbers:
+            damage_number.update()
+        self.damage_numbers = [dn for dn in self.damage_numbers if dn.is_alive()]
+
     def handle_event(self, event):
         pass
 
     def draw(self):
+        # 1. state_machine 그리기
         self.state_machine.draw()
+
+        # 2. 적용된 이펙트 효과 그리기
         for effect in self.effects:
             if hasattr(effect, 'draw'):
                 effect.draw(self)
+
+        # 1. 데미지 텍스트 그리기
+        for damage_number in self.damage_numbers:
+            damage_number.draw()
 
     # =======================================
 
@@ -313,27 +329,33 @@ class Character:
         if self.state_machine.cur_state != Immune and self.state_machine.cur_state != Dead:
             damage_to_take = amount
 
-            # 보호막이 있으면 먼저 체력 대신 피해를 받음
+            # 1. 보호막으로 데미지 경감
             if self.armor > 0:
                 self.armor = max(0, self.armor - damage_to_take)
                 damage_to_take = max(0, damage_to_take - self.armor)
 
+            # 2. 피해 계산
             old_hp = self.current_hp
             if damage_to_take > 0:
-                # HitEffect 찾기 또는 새로 생성
                 hit_effect = next((effect for effect in self.effects if isinstance(effect, HitEffect)), None)
                 if hit_effect:
-                    hit_effect.refresh()  # 기존 HitEffect 갱신
+                    hit_effect.refresh()
                 else:
                     hit_effect = HitEffect(0.05)
-                    self.add_effect(hit_effect)  # 새 HitEffect 추가
+                    self.add_effect(hit_effect)
 
                 self.current_hp = max(0, self.current_hp - damage_to_take)
                 event_system.trigger('hp_changed', self, old_hp, self.current_hp)
                 print(f'    damaged: {damage_to_take}, remain_hp: {self.current_hp}')
 
+                # 데미지 텍스트 생성
+                self.damage_numbers.append(DamageNumber(self.x, self.y + 50, damage_to_take))
+
+            # 3. 사망 체크
             if self.current_hp <= 0:
                 self.state_machine.add_event(('DEAD', 0))
+
+    # ========================================
 
     def add_effect(self, effect):
         effect.apply(self)
