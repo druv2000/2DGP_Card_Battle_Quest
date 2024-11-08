@@ -1,14 +1,15 @@
 from pico2d import *
 
+
 class DamageNumber:
     font = None
+
     def __init__(self):
         self.x, self.y = 0, 0
         self.damage = 0
-
         if DamageNumber.font == None:
-            DamageNumber.font = load_font('ENCR10B.TTF', 32)
-        self.life_time = 0.3
+            DamageNumber.font = load_font('resource/font/fixedsys.ttf', 32)
+        self.life_time = 1.0
         self.start_time = 0
         self.active = False
 
@@ -21,40 +22,55 @@ class DamageNumber:
     def update(self):
         if self.active:
             self.y += 1
+            if not self.is_alive():
+                self.active = False
 
     def draw(self):
         if self.active:
             self.font.draw(self.x - 10, self.y, f'{self.damage}', (255, 0, 0))
 
     def is_alive(self):
-        return self.active and get_time() - self.start_time < self.life_time
+        return get_time() - self.start_time < self.life_time
+
 
 class DamageNumberPool:
     def __init__(self, size=50):
         self.pool = [DamageNumber() for _ in range(size)]
+        self.active_damage_numbers = []
+        self.can_target = False
 
     def get(self):
+        # 먼저 비활성화된 객체를 찾습니다
         for damage_number in self.pool:
             if not damage_number.active:
+                damage_number.active = True
+                self.active_damage_numbers.append(damage_number)
                 return damage_number
-        return None  # 모든 객체가 사용 중일 경우
 
-class DamageNumberManager:
-    _instance = None
+        # 비활성화된 객체가 없다면, 가장 오래된 활성 객체를 재사용합니다
+        if self.active_damage_numbers:
+            oldest_damage_number = min(self.active_damage_numbers, key=lambda dn: dn.start_time)
+            oldest_damage_number.active = False
+            self.active_damage_numbers.remove(oldest_damage_number)
+            oldest_damage_number.active = True
+            self.active_damage_numbers.append(oldest_damage_number)
+            return oldest_damage_number
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(DamageNumberManager, cls).__new__(cls)
-            cls._instance.damage_number_pool = DamageNumberPool(size=50)
-        return cls._instance
+        print(f'    WARNING: damage_pool empty!!')
+        return None  # 모든 객체가 사용 중이고 재사용할 수 없는 경우
 
-    def add_damage_number(self, x, y, damage):
-        damage_number = self.damage_number_pool.get()
-        if damage_number:
-            damage_number.set(x, y, damage)
-            return damage_number
-        else:
-            print("Warning: DamageNumber pool is empty")
-            return None
+    def update(self):
+        for damage_number in self.active_damage_numbers:
+            damage_number.update()
 
-damage_number_manager = DamageNumberManager()
+        # 수명이 다한 damage_number를 active_damage_numbers에서 제거하고 풀로 반환
+        self.active_damage_numbers = [dn for dn in self.active_damage_numbers if dn.is_alive()]
+
+    def draw(self):
+        for damage_number in self.active_damage_numbers:
+            damage_number.draw()
+
+    def return_to_pool(self, damage_number):
+        if damage_number in self.active_damage_numbers:
+            self.active_damage_numbers.remove(damage_number)
+        damage_number.active = False

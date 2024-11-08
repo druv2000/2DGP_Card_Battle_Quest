@@ -256,45 +256,27 @@ class Character:
         self.original_y = self.y
         self.rotate = 0
         self.original_rotate = self.rotate
-
         self.team = team
         self.sprite_dir = 1
         self.sprite_size = 240
-
         self.effects = []
-
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
-        self.state_machine.set_transitions(
-            {
-                Idle: {target_found: Move_to_target, stunned: Stunned, dead: Dead},
-                Move_to_target: {target_lost: Idle, can_attack_target: Attack_target, stunned: Stunned, dead: Dead},
-                Attack_target: {cannot_attack_target: Move_to_target, target_lost: Idle, stunned: Stunned, dead: Dead},
-                Stunned: {stunned_end: Idle, dead: Dead},
-                Dead: {}
-            }
-        )
-
-        self.last_attack_time = get_time() # 마지막으로 공격이 수행된 시간
-        self.attack_animation_progress = 0 # 공격 애니메이션 진행 상태
-        self.animation_speed = 0.3 # frame 변화 간격
+        self.state_machine.set_transitions({
+            Idle: {target_found: Move_to_target, stunned: Stunned, dead: Dead},
+            Move_to_target: {target_lost: Idle, can_attack_target: Attack_target, stunned: Stunned, dead: Dead},
+            Attack_target: {cannot_attack_target: Move_to_target, target_lost: Idle, stunned: Stunned, dead: Dead},
+            Stunned: {stunned_end: Idle, dead: Dead},
+            Dead: {}
+        })
+        self.last_attack_time = get_time()
+        self.attack_animation_progress = 0
+        self.animation_speed = 0.3
         self.hit_effect_duration = 3
-
         self.can_target = True
 
-        self.damage_numbers = []
-        self.damage_number_pool = DamageNumberPool(size = 50)
-        self.active_damage_numbers = []
-        self.frame_for_damage_number = 0
-
-
-    # state_machine : 캐릭터의 기본 행동을 관리
-    # effect        : 캐릭터에 적용된 추가 상태를 관리
     def update(self):
-        # 1. state_machine 업데이트
         self.state_machine.update()
-
-        # 2. effect 업데이트
         active_effects = []
         for effect in self.effects:
             if effect.is_active:
@@ -302,33 +284,27 @@ class Character:
                 active_effects.append(effect)
             else:
                 effect.remove(self)
-                # print(f'    {effect}: effect expired and removed.')
         self.effects = active_effects
 
     def handle_event(self, event):
         pass
 
     def draw(self):
-        # 1. state_machine 그리기
         self.state_machine.draw()
-
-        # 2. 적용된 이펙트 효과 그리기
         for effect in self.effects:
             if hasattr(effect, 'draw'):
                 effect.draw(self)
-
-    # =======================================
 
     def take_damage(self, amount):
         if self.state_machine.cur_state not in [Immune, Dead]:
             damage_to_take = amount
 
-            # 1. 보호막으로 데미지 경감
+            # 1. 방어도에서 우선 피해 경감
             if self.armor > 0:
                 self.armor = max(0, self.armor - damage_to_take)
                 damage_to_take = max(0, damage_to_take - self.armor)
 
-            # 2. 피해 계산
+            # 2. 데미지에 따른 체력 감소 계산
             old_hp = self.current_hp
             if damage_to_take > 0:
                 hit_effect = next((effect for effect in self.effects if isinstance(effect, HitEffect)), None)
@@ -340,26 +316,25 @@ class Character:
 
                 self.current_hp = max(0, self.current_hp - damage_to_take)
                 event_system.trigger('hp_changed', self, old_hp, self.current_hp)
-                print(f'    damaged: {damage_to_take}, remain_hp: {self.current_hp}')
+                print(f' damaged: {damage_to_take}, remain_hp: {self.current_hp}')
 
-                # 데미지 넘버 생성
-                game_world.add_damage_number(self.x, self.y + 50, damage_to_take)
+                # 받은 데미지를 데미지 넘버 풀에 추가
+                damage_number = game_world.damage_number_pool.get()
+                if damage_number:
+                    damage_number.set(self.x, self.y + 50, damage_to_take)
+                else:
+                    print("Warning: DamageNumber pool is empty")
 
-            # 3. 사망 체크
+            # 3. 사망 계산
             if self.current_hp <= 0:
                 self.state_machine.add_event(('DEAD', 0))
-
-    # ========================================
 
     def add_effect(self, effect):
         effect.apply(self)
         self.effects.append(effect)
-        # print(f'    {effect}: effect applied.')
 
     def remove_effect(self, effect_type):
         self.effects = [effect for effect in self.effects if not isinstance(effect, effect_type)]
         for effect in self.effects:
             if isinstance(effect, effect_type):
                 effect.remove(self)
-                # print(f'    {effect}: effect removed.')
-
