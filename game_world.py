@@ -6,14 +6,17 @@
 # ...
 # world[8]: layer 8 - effect
 # world[9]: layer 9 - ui
+from attack_animation import Mage_AttackBullet, Bowman_AttackBullet
 from damage_number import DamageNumberPool
+from object_pool import BulletPool, HitAnimationPool
 
 world = [[] for _ in range(10)]
 damage_number_pool = None
 
 def init():
-    global damage_number_pool
+    global damage_number_pool, mage_bullet_pool, bowman_bullet_pool, hit_animation_pool
     damage_number_pool = DamageNumberPool(size=100)  # 크기는 필요에 따라 조정
+
     add_object(damage_number_pool, 8)  # 이펙트 레이어에 추가
 
 def add_object(obj, depth):

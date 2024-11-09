@@ -98,6 +98,7 @@ class Idle:
         if start_event(e):
             c.sprite_dir = 1
         c.frame = 0
+        print(f'        {c}s total_damage: {c.total_damage}')
         pass
     @staticmethod
     def exit(c, e):
@@ -185,6 +186,7 @@ class Stunned:
     @staticmethod
     def exit(c, e):
         c.image.opacify(1.0)
+        c.original_image.opacify(1.0)
         pass
     @staticmethod
     def do(c):
@@ -258,6 +260,15 @@ class Character:
         self.sprite_dir = 1
         self.sprite_size = 240
         self.effects = []
+
+        self.last_attack_time = get_time()
+        self.attack_animation_progress = 0
+        self.animation_speed = 0.3
+        self.hit_effect_duration = 3
+        self.can_target = True
+
+        self.total_damage = 0
+
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
         self.state_machine.set_transitions({
@@ -267,11 +278,6 @@ class Character:
             Stunned: {stunned_end: Idle, dead: Dead},
             Dead: {}
         })
-        self.last_attack_time = get_time()
-        self.attack_animation_progress = 0
-        self.animation_speed = 0.3
-        self.hit_effect_duration = 3
-        self.can_target = True
 
     def update(self):
         self.state_machine.update()
@@ -315,7 +321,7 @@ class Character:
 
                 self.current_hp = max(0, self.current_hp - damage_to_take)
                 event_system.trigger('hp_changed', self, old_hp, self.current_hp)
-                print(f' damaged: {damage_to_take}, remain_hp: {self.current_hp}')
+                print(f'    damaged: {damage_to_take}, remain_hp: {self.current_hp}')
 
                 # 받은 데미지를 데미지 넘버 풀에 추가
                 damage_number = game_world.damage_number_pool.get()

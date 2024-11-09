@@ -1,6 +1,6 @@
 from pico2d import load_image
 
-from attack_animation import Attack_animation, Mage_AttackBullet, Bowman_AttackBullet
+from attack_animation import Attack_animation, Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
 from character import Character
 
 # ==================== ALLY ==========================================
@@ -54,7 +54,7 @@ class Mage(Character):
                                                  70, 20,
                                                  8)
 
-        self.bullet = Mage_AttackBullet(self.x, self.y, self)
+        self.bullet = Mage_AttackBullet()
 
 
 class Bowman(Character):
@@ -75,13 +75,16 @@ class Bowman(Character):
 
         self.armor = 0
 
-        self.attack_animation = None
+        self.attack_animation = Attack_animation('resource/slash_none.png',
+                                                 88, 88,
+                                                 50, 50,
+                                                 8)
 
-        self.bullet = Bowman_AttackBullet(self.x, self.y, self)
+        self.bullet = Bowman_AttackBullet()
 
 # ================== ENEMY ===================================
 
-class Soldier_elete(Character):
+class Soldier_elite(Character):
     def __init__(self, x, y, team):
         super().__init__(x, y, team)
         self.sprite_size = 240
@@ -90,18 +93,67 @@ class Soldier_elete(Character):
         self.original_image = self.image
         self.hit_image = load_image('resource/Knight_hit_sprite.png')
 
-        self.max_hp = 70
+        self.max_hp = 500
         self.current_hp = 500
-        self.move_speed = 1.2
-        self.attack_range = 100
-        self.attack_speed = 1.2
+        self.move_speed = 2.0
+        self.attack_range = 125
+        self.attack_speed = 0.2
+        self.attack_damage = 10
+
+        self.armor = 0
+
+        self.attack_animation = Attack_animation('resource/slash4.png',
+                                                 99, 99,
+                                                 50, 50,
+                                                 8)
+
+        self.bullet = None
+
+class Soldier(Character):
+    def __init__(self, x, y, team):
+        super().__init__(x, y, team)
+        self.sprite_size = 240
+
+        self.image = load_image('resource/soldier(red)_sprite.png')
+        self.original_image = self.image
+        self.hit_image = load_image('resource/Knight_hit_sprite.png')
+
+        self.max_hp = 125
+        self.current_hp = 125
+        self.move_speed = 1.0
+        self.attack_range = 75
+        self.attack_speed = 1.0
         self.attack_damage = 1
 
         self.armor = 0
 
-        self.attack_animation = Attack_animation('resource/slash2.png',
-                                                 74, 74,
-                                                 70, 20,
+        self.attack_animation = Attack_animation('resource/slash_none.png',
+                                                 88, 88,
+                                                 50, 50,
                                                  8)
 
         self.bullet = None
+
+class Soldier_mage(Character):
+    def __init__(self, x, y, team):
+        super().__init__(x, y, team)
+        self.sprite_size = 240
+
+        self.image = load_image('resource/soldier(mage)_sprite.png')
+        self.original_image = self.image
+        self.hit_image = load_image('resource/Knight_hit_sprite.png')
+
+        self.max_hp = 75
+        self.current_hp = 75
+        self.move_speed = 1.0
+        self.attack_range = 400
+        self.attack_speed = 1.3
+        self.attack_damage = 1
+
+        self.armor = 0
+
+        self.attack_animation = Attack_animation('resource/slash_none.png',
+                                                 88, 88,
+                                                 50, 50,
+                                                 8)
+        self.bullet = Soldier_Mage_AttackBullet()

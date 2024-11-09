@@ -4,6 +4,7 @@ import random
 from pico2d import get_time
 
 import game_world
+from effects import StunEffect
 from game_world import world
 
 
@@ -61,15 +62,27 @@ def move_to_target(c):
             c.state_machine.add_event(('CAN_ATTACK_TARGET', 0))
 
 def attack_target(c):
-    if c.bullet == None:
+    from character_list import Soldier_elite
+
+    if c.bullet is None:
+
         c.target.take_damage(c.attack_damage)
+        c.total_damage += c.attack_damage
+        print(f'        {c}s total_damage: {c.total_damage}')
+
+        if isinstance(c, Soldier_elite):            # stun 적용
+            stun_effect = next((effect for effect in c.target.effects if isinstance(effect, StunEffect)), None)
+            if stun_effect:
+                stun_effect.refresh()
+            else:
+                stun_effect = StunEffect(2.0)
+                c.target.add_effect(stun_effect)
+            pass
         print(f'attack!')
     else:
-        c.bullet.x, c.bullet.y = c.x, c.y
-        c.bullet.set_target(c.target)
-        game_world.add_object(c.bullet, 8)
-
-        pass
+        bullet = c.bullet.__class__()  # 새 bullet 인스턴스 생성
+        bullet.set(c.x, c.y, c, c.target)  # target 설정
+        game_world.add_object(bullet, 8)
 
 # =============== animation ===============
 
@@ -93,7 +106,7 @@ def is_attack_timing(c):
 def update_attack_animation(c):
     if c.attack_animation_progress < 1:
         attack_animation_speed = c.attack_speed / 10
-        c.attack_animation_progress += c.animation_speed * attack_animation_speed  # 애니메이션 속도 조절
+        c.attack_animation_progress += c.animation_speed * 0.2  # 애니메이션 속도 조절
 
         # 뒤로 젖히는 동작 (0 ~ 0.5)
         if c.attack_animation_progress < 0.5:
