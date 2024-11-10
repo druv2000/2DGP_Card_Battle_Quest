@@ -61,17 +61,17 @@ def reset_world():
 
     # test: real
     knight = Knight(200, 450, 'ally')
-    # mage = Mage(100, 550, 'ally')
-    # bowman = Bowman(100, 350, 'ally')
-    # total_damage_ui = TotalDamageUI(knight, mage, bowman)
+    mage = Mage(100, 550, 'ally')
+    bowman = Bowman(100, 350, 'ally')
+    total_damage_ui = TotalDamageUI(knight, mage, bowman)
 
     game_world.add_object(knight, 7)
-    # game_world.add_object(mage, 7)
-    # game_world.add_object(bowman, 7)
-    # game_world.add_object(total_damage_ui, 9)
+    game_world.add_object(mage, 7)
+    game_world.add_object(bowman, 7)
+    game_world.add_object(total_damage_ui, 9)
 
-    # boss = Soldier_boss(1500, 450, 'enemy')
-    # game_world.add_object(boss, 6)
+    boss = Soldier_boss(1500, 450, 'enemy')
+    game_world.add_object(boss, 6)
 
     # soldier_1 = Soldier(1100, 450, 'enemy')
     # soldier_2 = Soldier(1100, 550, 'enemy')

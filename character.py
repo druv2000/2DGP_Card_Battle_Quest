@@ -150,7 +150,7 @@ class Attack_target:
     @staticmethod
     def do(c):
         c.frame = (c.frame + c.animation_speed) % 8
-        if c.target.state_machine.cur_state == Dead:
+        if c.target.state_machine.cur_state == Dead and not c.state_machine.event_que and not c.animation_in_progress:
             c.state_machine.add_event(('TARGET_LOST', 0))
             return
 
@@ -270,7 +270,7 @@ class Character:
         self.state_machine.set_transitions({
             Idle: {target_found: Move_to_target, target_lost: Idle, stunned: Stunned, dead: Dead},
             Move_to_target: {target_lost: Idle, can_attack_target: Attack_target, stunned: Stunned, dead: Dead},
-            Attack_target: {cannot_attack_target: Move_to_target, target_lost: Idle, stunned: Stunned, dead: Dead},
+            Attack_target: {target_lost: Idle, stunned: Stunned, dead: Dead},
             Stunned: {stunned_end: Idle, dead: Dead},
             Dead: {}
         })

@@ -210,6 +210,38 @@ class Soldier_Mage_AttackBullet(Bullet):
         hit_animation = HitAnimation()
         hit_animation.set(self.target, 'resource/soldier_mage_bullet_hit.png', 192, 170, 8)
         return hit_animation
+
+class None_AttackBullet(Bullet):
+    image = None
+
+    def __init__(self):
+        super().__init__()
+        self.image = load_image('resource/none_bullet.png')
+        self.move_speed = 50
+
+    def update(self):
+        if not self.active or self.target is None:
+            return
+
+        target_x, target_y = self.target.x, self.target.y
+        target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
+
+        if target_distance < self.move_speed:
+            self.active = False
+            self.target.take_damage(self.attack_damage)
+            self.shooter.total_damage += self.attack_damage
+
+        else:
+            dir_x = (target_x - self.x) / target_distance
+            dir_y = (target_y - self.y) / target_distance
+            self.x += dir_x * self.move_speed
+            self.y += dir_y * self.move_speed
+        pass
+
+    def set(self, x, y, shooter, target):
+        super().set(x, y, shooter, target)
+        self.attack_damage = shooter.attack_damage
+
 # ==================================================
 # HitAnimation
 
