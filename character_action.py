@@ -63,14 +63,15 @@ def move_to_target(c):
 
 def attack_target(c):
     from character_list import Soldier_elite
+    from game_world import get_character_bullet
 
     if c.bullet is None:
 
         c.target.take_damage(c.attack_damage)
         c.total_damage += c.attack_damage
-        print(f'        {c}s total_damage: {c.total_damage}')
 
-        if isinstance(c, Soldier_elite):            # stun 적용
+        if isinstance(c, Soldier_elite):
+            # stun 적용
             stun_effect = next((effect for effect in c.target.effects if isinstance(effect, StunEffect)), None)
             if stun_effect:
                 stun_effect.refresh()
@@ -80,9 +81,11 @@ def attack_target(c):
             pass
         print(f'attack!')
     else:
-        bullet = c.bullet.__class__()  # 새 bullet 인스턴스 생성
-        bullet.set(c.x, c.y, c, c.target)  # target 설정
-        game_world.add_object(bullet, 8)
+        bullet = get_character_bullet(c)  # 새 bullet 인스턴스 생성
+        if bullet:
+            bullet.set(c.x, c.y, c, c.target)  # target 설정
+        else:
+            print(f'        WARNING: bullet_pool is empty!')
 
 # =============== animation ===============
 

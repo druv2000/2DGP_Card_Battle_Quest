@@ -3,7 +3,8 @@ import random
 from pico2d import *
 
 import game_world
-from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite
+from background import Background
+from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite, Soldier_boss
 from player import player
 from ui import TotalDamageUI
 
@@ -31,6 +32,9 @@ def reset_world():
 
     running = True
 
+    background = Background(800, 450)
+    game_world.add_object(background, 0)
+
     # # test: 100 vs 100 / line_battle
     # for y in range(350, 450):
     #     new_bowman = Bowman(100, y, 'ally')
@@ -55,7 +59,7 @@ def reset_world():
     #     new_bowman_enemy = Bowman(random.randint(0, 1600), random.randint(0, 900), 'enemy')
     #     game_world.add_object(new_bowman_enemy, 6)
 
-    # # test: real
+    # test: real
     knight = Knight(200, 450, 'ally')
     mage = Mage(100, 550, 'ally')
     bowman = Bowman(100, 350, 'ally')
@@ -66,19 +70,21 @@ def reset_world():
     game_world.add_object(bowman, 7)
     game_world.add_object(total_damage_ui, 9)
 
+    boss = Soldier_boss(1500, 450, 'enemy')
+    game_world.add_object(boss, 6)
 
-    soldier_1 = Soldier(1100, 450, 'enemy')
-    soldier_2 = Soldier(1100, 550, 'enemy')
-    soldier_3 = Soldier(1100, 650, 'enemy')
-    soldier_mage_1 = Soldier_mage(1200, 500, 'enemy')
-    soldier_mage_2 = Soldier_mage(1200, 600, 'enemy')
-    soldier_elite = Soldier_elite(1500, 550, 'enemy')
-    game_world.add_object(soldier_1, 6)
-    game_world.add_object(soldier_2, 6)
-    game_world.add_object(soldier_3, 6)
-    game_world.add_object(soldier_mage_1, 6)
-    game_world.add_object(soldier_mage_2, 6)
-    game_world.add_object(soldier_elite, 6)
+    # soldier_1 = Soldier(1100, 450, 'enemy')
+    # soldier_2 = Soldier(1100, 550, 'enemy')
+    # soldier_3 = Soldier(1100, 650, 'enemy')
+    # soldier_mage_1 = Soldier_mage(1200, 500, 'enemy')
+    # soldier_mage_2 = Soldier_mage(1200, 600, 'enemy')
+    # soldier_elite = Soldier_elite(1500, 550, 'enemy')
+    # game_world.add_object(soldier_1, 6)
+    # game_world.add_object(soldier_2, 6)
+    # game_world.add_object(soldier_3, 6)
+    # game_world.add_object(soldier_mage_1, 6)
+    # game_world.add_object(soldier_mage_2, 6)
+    # game_world.add_object(soldier_elite, 6)
 
 
 

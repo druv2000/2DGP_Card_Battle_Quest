@@ -1,4 +1,5 @@
 from attack_animation import HitAnimation
+from damage_number import DamageNumber
 
 
 class ObjectPool:
@@ -60,3 +61,42 @@ class HitAnimationPool(ObjectPool):
         if hit_animation:
             hit_animation.set(target, image_path, size_x, size_y, total_frames)
         return hit_animation
+
+
+class DamageNumberPool:
+    def __init__(self, size=50):
+        self.pool = [DamageNumber() for _ in range(size)]
+        self.active_damage_numbers = []
+        self.can_target = False
+
+    def get(self):
+        for damage_number in self.pool:
+            if not damage_number.active:
+                damage_number.active = True
+                self.active_damage_numbers.append(damage_number)
+                return damage_number
+
+        if self.active_damage_numbers:
+            oldest_damage_number = min(self.active_damage_numbers, key=lambda dn: dn.start_time)
+            self.return_to_pool(oldest_damage_number)
+            oldest_damage_number.active = True
+            self.active_damage_numbers.append(oldest_damage_number)
+            return oldest_damage_number
+
+        print(f'    WARNING: damage_pool empty!!')
+        return None
+
+    def update(self):
+        for damage_number in self.active_damage_numbers[:]:  # 복사본을 순회
+            damage_number.update()
+            if not damage_number.is_alive():
+                self.return_to_pool(damage_number)
+
+    def draw(self):
+        for damage_number in self.active_damage_numbers:
+            damage_number.draw()
+
+    def return_to_pool(self, damage_number):
+        if damage_number in self.active_damage_numbers:
+            self.active_damage_numbers.remove(damage_number)
+        damage_number.active = False

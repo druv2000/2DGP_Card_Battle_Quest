@@ -22,7 +22,7 @@ def character_draw(c):
                 -c.rotate * 3.141592 / 180,  # 회전 각도 (라디안)
                 'h',  # 좌우 반전
                 c.x, c.y,  # 그려질 위치
-                100, 100  # 그려질 크기
+                c.draw_size, c.draw_size  # 그려질 크기
             )
         else:  # 오른쪽을 바라보고 있을 때
             c.image.clip_composite_draw(
@@ -31,7 +31,7 @@ def character_draw(c):
                 -c.rotate * 3.141592 / 180,  # 회전 각도 (라디안)
                 '',  # 반전 없음
                 c.x, c.y,  # 그려질 위치
-                100, 100  # 그려질 크기
+                c.draw_size, c.draw_size  # 그려질 크기
             )
 
 
@@ -98,7 +98,6 @@ class Idle:
         if start_event(e):
             c.sprite_dir = 1
         c.frame = 0
-        print(f'        {c}s total_damage: {c.total_damage}')
         pass
     @staticmethod
     def exit(c, e):
@@ -185,13 +184,10 @@ class Stunned:
         pass
     @staticmethod
     def exit(c, e):
-        c.image.opacify(1.0)
-        c.original_image.opacify(1.0)
         pass
     @staticmethod
     def do(c):
-        c.image.opacify(c.frame / 10)
-        c.frame = (c.frame + c.animation_speed) % 8
+        pass
     @staticmethod
     def draw(c):
         character_draw(c)
@@ -316,7 +312,7 @@ class Character:
                 if hit_effect:
                     hit_effect.refresh()
                 else:
-                    hit_effect = HitEffect(0.05)
+                    hit_effect = HitEffect(0.075)
                     self.add_effect(hit_effect)
 
                 self.current_hp = max(0, self.current_hp - damage_to_take)

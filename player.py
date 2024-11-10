@@ -1,4 +1,5 @@
-from sdl2 import SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT, SDL_KEYDOWN, SDLK_SPACE
+from sdl2 import SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT, SDL_KEYDOWN, SDLK_SPACE, \
+    SDLK_BACKSPACE
 
 import game_world
 from character_list import Mage, Knight, Bowman, Soldier, Soldier_mage, Soldier_elite
@@ -14,6 +15,8 @@ class Player:
             self.spawn_enemy_soldier_mage(self.cursor_x, self.cursor_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
             self.spawn_enemy_soldier_elite(self.cursor_x, self.cursor_y)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_BACKSPACE:
+            self.spawn_ally_bowman(self.cursor_x, self.cursor_y)
 
     # @profile
     def spawn_enemy(self, x, y):
@@ -29,7 +32,7 @@ class Player:
 
     # @profile
     def spawn_ally_bowman(self, x, y):
-        new_ally = Bowman(x, y, 'another ')
+        new_ally = Bowman(x, y, 'ally')
         game_world.add_object(new_ally, 6)  # 적 추가
         print(f"Ally spawned at ({x}, {y})")
 

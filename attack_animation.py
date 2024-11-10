@@ -51,7 +51,6 @@ class Bullet:
 
             self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
-            print(f'        {self.shooter}s total_damage: {self.shooter.total_damage}')
 
             hit_animation = self.create_hit_animation()
             game_world.add_object(hit_animation, 8)
@@ -83,7 +82,7 @@ class Mage_AttackBullet(Bullet):
         super().__init__()
         if Mage_AttackBullet.image is None:
             Mage_AttackBullet.image = load_image('resource/mage_bullet.png')
-        self.move_speed = 10
+        self.move_speed = 15
 
     def update(self):
         if not self.active or self.target is None:
@@ -94,6 +93,7 @@ class Mage_AttackBullet(Bullet):
 
         if target_distance < self.move_speed:
             self.active = False
+
             # stun 적용
             # stun_effect = next((effect for effect in self.target.effects if isinstance(effect, StunEffect)), None)
             # if stun_effect:
@@ -160,7 +160,7 @@ class Soldier_Mage_AttackBullet(Bullet):
         super().__init__()
         if Soldier_Mage_AttackBullet.image is None:
             Soldier_Mage_AttackBullet.image = load_image('resource/soldier_mage_bullet.png')
-        self.move_speed = 10
+        self.move_speed = 15
 
     def update(self):
         if not self.active or self.target is None:
