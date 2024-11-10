@@ -73,7 +73,7 @@ class Bowman(Character):
         self.current_hp = 150
         self.move_speed = 1.5
         self.attack_range = 650
-        self.attack_speed = 1.5
+        self.attack_speed = 3.0
         self.attack_damage = 10
 
         self.armor = 0
@@ -99,7 +99,7 @@ class Soldier_elite(Character):
 
         self.max_hp = 250
         self.current_hp = 250
-        self.move_speed = 2.5
+        self.move_speed = 2.0
         self.attack_range = 125
         self.attack_speed = 0.2
         self.attack_damage = 10
@@ -124,7 +124,7 @@ class Soldier(Character):
         self.hit_image = load_image('resource/soldier_hit_sprite.png')
 
         self.max_hp = 50
-        self.current_hp = 50
+        self.current_hp = 12
         self.move_speed = 1.0
         self.attack_range = 75
         self.attack_speed = 1.0

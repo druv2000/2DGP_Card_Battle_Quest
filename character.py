@@ -125,6 +125,7 @@ class Move_to_target:
         c.frame = (c.frame + c.animation_speed) % 8
         if c.target.state_machine.cur_state == Dead:
             c.state_machine.add_event(('TARGET_LOST', 0))
+            return
 
         if find_closest_target(c) != None:
             c.target = find_closest_target(c)
@@ -142,10 +143,6 @@ class Attack_target:
     @staticmethod
     def enter(c, e):
         c.frame = 0
-        c.attack_frame = 0
-        c.is_attack_performed = False
-        c.animation_in_progress = False
-        c.damage_applied = False
     @staticmethod
     def exit(c, e):
         c.rotate = c.original_rotate
@@ -155,6 +152,7 @@ class Attack_target:
         c.frame = (c.frame + c.animation_speed) % 8
         if c.target.state_machine.cur_state == Dead:
             c.state_machine.add_event(('TARGET_LOST', 0))
+            return
 
         if is_attack_timing(c) and not c.animation_in_progress:
             c.attack_animation_progress = 0
@@ -168,8 +166,6 @@ class Attack_target:
             if c.attack_animation_progress >= 0.2 and not c.damage_applied:
                 attack_target(c)
                 c.damage_applied = True
-                if c.attack_animation == None:
-                    c.animation_in_progress = False
 
     @staticmethod
     def draw(c):
@@ -265,10 +261,14 @@ class Character:
 
         self.total_damage = 0
 
+        self.is_attack_performed = False
+        self.animation_in_progress = False
+        self.damage_applied = False
+
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
         self.state_machine.set_transitions({
-            Idle: {target_found: Move_to_target, stunned: Stunned, dead: Dead},
+            Idle: {target_found: Move_to_target, target_lost: Idle, stunned: Stunned, dead: Dead},
             Move_to_target: {target_lost: Idle, can_attack_target: Attack_target, stunned: Stunned, dead: Dead},
             Attack_target: {cannot_attack_target: Move_to_target, target_lost: Idle, stunned: Stunned, dead: Dead},
             Stunned: {stunned_end: Idle, dead: Dead},

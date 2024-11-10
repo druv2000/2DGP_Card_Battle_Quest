@@ -108,8 +108,7 @@ def is_attack_timing(c):
 
 def update_attack_animation(c):
     if c.attack_animation_progress < 1:
-        attack_animation_speed = c.attack_speed / 10
-        c.attack_animation_progress += c.animation_speed * 0.2  # 애니메이션 속도 조절
+        c.attack_animation_progress += c.animation_speed * 0.1  # 애니메이션 속도 조절
 
         # 뒤로 젖히는 동작 (0 ~ 0.5)
         if c.attack_animation_progress < 0.5:

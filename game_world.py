@@ -16,6 +16,7 @@ bowman_bullet_pool = None
 soldier_mage_bullet_pool = None
 hit_animation_pool = None
 
+
 def init():
     global damage_number_pool
     global mage_bullet_pool, bowman_bullet_pool, soldier_mage_bullet_pool
@@ -25,7 +26,7 @@ def init():
     mage_bullet_pool = BulletPool(Mage_AttackBullet, size = 50)
     bowman_bullet_pool = BulletPool(Bowman_AttackBullet, size = 50)
     soldier_mage_bullet_pool = BulletPool(Soldier_Mage_AttackBullet, size = 50)
-    hit_animation_pool = HitAnimationPool(size = 50)
+    hit_animation_pool = HitAnimationPool(size = 150)
 
     add_object(damage_number_pool, 8)  # 이펙트 레이어에 추가
     add_object(mage_bullet_pool, 8)  # 이펙트 레이어에 추가
@@ -44,6 +45,7 @@ def get_character_bullet(c):
     elif isinstance(c, Soldier_mage):
         return soldier_mage_bullet_pool.get(c.x, c.y, c, c.target)
 
+
 def add_object(obj, depth):
     world[depth].append(obj)
 
@@ -51,7 +53,6 @@ def add_object(obj, depth):
 def update():
     for layer in world:
         for obj in layer:
-            print(f'{obj}')
             obj.update()
         # y 좌표에 따라 객체 정렬
         layer.sort(key=lambda obj: -obj.y if hasattr(obj, 'y') else 0, reverse=False)

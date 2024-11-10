@@ -43,7 +43,7 @@ class StateMachine:
         # 현재 상태를 시작 상태로 변경
         self.cur_state = start_state
         self.cur_state.enter(self.obj, ('START', 0))
-        print(f' ENTER into {self.cur_state}')
+        print(f'    {self.obj}ENTER into {self.cur_state}')
         pass
 
     def draw(self):
@@ -56,7 +56,7 @@ class StateMachine:
 
     def add_event(self, event):
         self.event_que.append(event) # 상태 머신용 이벤트 추가
-        # print(f'    DEBUG: - new event {event} is added.')
+        print(f'    DEBUG: - new event {event} is added. in {self.obj}')
         pass
 
     def handle_event(self, event):

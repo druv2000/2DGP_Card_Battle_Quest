@@ -106,9 +106,8 @@ class Mage_AttackBullet(Bullet):
             self.shooter.total_damage += self.attack_damage
             print(f'        {self.shooter}s total_damage: {self.shooter.total_damage}')
 
-            hit_animation = self.create_hit_animation()
-            game_world.add_object(hit_animation, 8)
-            game_world.remove_object(self)
+            game_world.hit_animation_pool.get(self.target, 'resource/mage_bullet_hit.png', 192, 170, 8)
+
         else:
             dir_x = (target_x - self.x) / target_distance
             dir_y = (target_y - self.y) / target_distance
@@ -136,10 +135,29 @@ class Bowman_AttackBullet(Bullet):
         self.attack_damage = shooter.attack_damage
 
     def update(self):
-        super().update()
-        if self.target:
-            self.dir_x = (self.target.x - self.x) / math.sqrt((self.target.x - self.x)**2 + (self.target.y - self.y)**2)
-            self.dir_y = (self.target.y - self.y) / math.sqrt((self.target.x - self.x)**2 + (self.target.y - self.y)**2)
+        if not self.active or self.target is None:
+            return
+
+        target_x, target_y = self.target.x, self.target.y
+        target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
+
+        if target_distance < self.move_speed:
+            self.active = False
+
+            self.target.take_damage(self.attack_damage)
+            self.shooter.total_damage += self.attack_damage
+
+            game_world.hit_animation_pool.get(self.target, 'resource/bowman_bullet_hit.png', 128, 128, 8)
+        else:
+            self.dir_x = (self.target.x - self.x) / math.sqrt(
+                (self.target.x - self.x) ** 2 + (self.target.y - self.y) ** 2)
+            self.dir_y = (self.target.y - self.y) / math.sqrt(
+                (self.target.x - self.x) ** 2 + (self.target.y - self.y) ** 2)
+
+            dir_x = (target_x - self.x) / target_distance
+            dir_y = (target_y - self.y) / target_distance
+            self.x += dir_x * self.move_speed
+            self.y += dir_y * self.move_speed
 
     def draw(self):
         if self.active:
@@ -176,9 +194,7 @@ class Soldier_Mage_AttackBullet(Bullet):
             self.shooter.total_damage += self.attack_damage
             print(f'        {self.shooter}s total_damage: {self.shooter.total_damage}')
 
-            hit_animation = self.create_hit_animation()
-            game_world.add_object(hit_animation, 8)
-            game_world.remove_object(self)
+            game_world.hit_animation_pool.get(self.target, 'resource/soldier_mage_bullet_hit.png', 192, 170, 8)
         else:
             dir_x = (target_x - self.x) / target_distance
             dir_y = (target_y - self.y) / target_distance
@@ -205,7 +221,7 @@ class HitAnimation:
         self.size_x = 0
         self.size_y = 0
         self.frame = 0
-        self.animation_speed = 0.3
+        self.animation_speed = 0.6
         self.total_frames = 0
         self.can_target = False
         self.active = False
@@ -223,11 +239,11 @@ class HitAnimation:
 
     def update(self):
         if self.frame >= self.total_frames:
-            game_world.remove_object(self)
+            self.active = False
         self.frame = (self.frame + self.animation_speed)
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * self.size_x, 0, self.size_x, self.size_y, self.x, self.y, 150, 150)
 
     def is_alive(self):
-        return self.frame < self.total_frames
+        return self.active
