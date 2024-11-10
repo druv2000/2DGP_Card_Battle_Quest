@@ -124,7 +124,7 @@ class Soldier(Character):
         self.hit_image = load_image('resource/soldier_hit_sprite.png')
 
         self.max_hp = 50
-        self.current_hp = 12
+        self.current_hp = 50
         self.move_speed = 1.0
         self.attack_range = 75
         self.attack_speed = 1.0
