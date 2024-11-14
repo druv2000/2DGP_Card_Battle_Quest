@@ -88,8 +88,6 @@ def check_animation_completion(c):
         c.is_attack_performed = True
         c.attack_frame = c.attack_frame % c.attack_animation.total_frame
 
-
-
 # ============================================================================================
 
 class Idle:
