@@ -1,6 +1,6 @@
 from pico2d import load_image
 
-from attack_animation import Attack_animation, Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
+from attack_animation import AttackAnimation, Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
 from character import Character
 
 # ==================== ALLY ==========================================
@@ -15,20 +15,20 @@ class Knight(Character):
         self.original_image = self.image
         self.hit_image = load_image('resource/Knight_hit_sprite.png')
 
-        self.max_hp = 300
-        self.current_hp = 300
-        self.move_speed = 2.5
-        self.attack_range = 100
-        self.attack_speed = 1.3
-        self.attack_damage = 12
-
+        self.max_hp = 300           # max_hp
+        self.current_hp = 300       # current_hp
+        self.move_speed = 200       # move pixel per second
+        self.attack_range = 100     # pixel
+        self.attack_speed = 1.3     # attack per second
+        self.attack_damage = 12     # damage per attack
         self.armor = 0
 
-        self.attack_animation = Attack_animation('resource/slash1.png',
-                                                 74, 74,
-                                                 70, 70,
-                                                 8)
-
+        self.has_attack_animation = True
+        self.attack_image_path = 'resource/slash1.png'
+        self.attack_size_x, self.attack_size_y = 74, 74
+        self.attack_offset_x, self.attack_offset_y = 70, 70
+        self.attack_scale_x, self.attack_scale_y = 250, 250
+        self.attack_total_frame = 8
         self.bullet = None
 
 
@@ -44,18 +44,14 @@ class Mage(Character):
 
         self.max_hp = 200
         self.current_hp = 200
-        self.move_speed = 1.75
+        self.move_speed = 130
         self.attack_range = 400
         self.attack_speed = 1.0
         self.attack_damage = 8
 
         self.armor = 0
 
-        self.attack_animation = Attack_animation('resource/slash2.png',
-                                                 128, 128,
-                                                 70, 20,
-                                                 8)
-
+        self.has_attack_animation = False
         self.bullet = Mage_AttackBullet()
 
 
@@ -71,18 +67,14 @@ class Bowman(Character):
 
         self.max_hp = 150
         self.current_hp = 150
-        self.move_speed = 1.5
+        self.move_speed = 120
         self.attack_range = 650
         self.attack_speed = 1.5
         self.attack_damage = 10
 
         self.armor = 0
 
-        self.attack_animation = Attack_animation('resource/slash_none.png',
-                                                 88, 88,
-                                                 50, 50,
-                                                 8)
-
+        self.has_attack_animation = False
         self.bullet = Bowman_AttackBullet()
 
 # ================== ENEMY ===================================
@@ -99,18 +91,19 @@ class Soldier_elite(Character):
 
         self.max_hp = 250
         self.current_hp = 250
-        self.move_speed = 2.0
+        self.move_speed =200
         self.attack_range = 125
         self.attack_speed = 0.2
         self.attack_damage = 10
 
         self.armor = 0
 
-        self.attack_animation = Attack_animation('resource/slash4.png',
-                                                 99, 99,
-                                                 50, 50,
-                                                 8)
-
+        self.has_attack_animation = True
+        self.attack_image_path = 'resource/slash4.png'
+        self.attack_size_x, self.attack_size_y = 99, 99
+        self.attack_offset_x, self.attack_offset_y = 50, 50
+        self.attack_scale_x, self.attack_scale_y = 250, 250
+        self.attack_total_frame = 8
         self.bullet = None
 
 class Soldier(Character):
@@ -125,18 +118,14 @@ class Soldier(Character):
 
         self.max_hp = 50
         self.current_hp = 50
-        self.move_speed = 1.0
+        self.move_speed = 115
         self.attack_range = 75
         self.attack_speed = 1.0
         self.attack_damage = 1
 
         self.armor = 0
 
-        self.attack_animation = Attack_animation('resource/slash_none.png',
-                                                 88, 88,
-                                                 50, 50,
-                                                 8)
-
+        self.has_attack_animation = False
         self.bullet = None
 
 class Soldier_mage(Character):
@@ -150,18 +139,15 @@ class Soldier_mage(Character):
         self.hit_image = load_image('resource/soldier(mage)_hit_sprite.png')
 
         self.max_hp = 30
-        self.current_hp = 30
-        self.move_speed = 1.0
+        self.current_hp = 9
+        self.move_speed = 100
         self.attack_range = 400
         self.attack_speed = 1.3
         self.attack_damage = 1
 
         self.armor = 0
 
-        self.attack_animation = Attack_animation('resource/slash_none.png',
-                                                 88, 88,
-                                                 50, 50,
-                                                 8)
+        self.has_attack_animation = False
         self.bullet = Soldier_Mage_AttackBullet()
 
 class Soldier_boss(Character):
@@ -183,8 +169,10 @@ class Soldier_boss(Character):
 
         self.armor = 0
 
-        self.attack_animation = Attack_animation('resource/slash4.png',
-                                                 99, 99,
-                                                 50, 50,
-                                                 8)
+        self.has_attack_animation = True
+        self.attack_image_path = 'resource/slash4.png'
+        self.attack_size_x, self.attack_size_y = 99, 99
+        self.attack_offset_x, self.attack_offset_y = 50, 50
+        self.attack_scale_x, self.attack_scale_y = 250, 250
+        self.attack_total_frame = 8
         self.bullet = None

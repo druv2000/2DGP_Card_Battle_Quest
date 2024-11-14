@@ -7,7 +7,7 @@
 # world[8]: layer 8 - effect
 # world[9]: layer 9 - ui
 from attack_animation import Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet, None_AttackBullet
-from object_pool import BulletPool, HitAnimationPool, DamageNumberPool
+from object_pool import BulletPool, HitAnimationPool, DamageNumberPool, AttackAnimationPool
 
 world = [[] for _ in range(10)]
 damage_number_pool = None
@@ -16,12 +16,14 @@ bowman_bullet_pool = None
 soldier_mage_bullet_pool = None
 none_bullet_pool = None
 hit_animation_pool = None
+attack_animation_pool = None
 
 
 def init():
     global damage_number_pool
     global mage_bullet_pool, bowman_bullet_pool, soldier_mage_bullet_pool, none_bullet_pool
     global hit_animation_pool
+    global attack_animation_pool
 
     damage_number_pool = DamageNumberPool(size=100)  # 크기는 필요에 따라 조정
     mage_bullet_pool = BulletPool(Mage_AttackBullet, size = 50)
@@ -29,6 +31,7 @@ def init():
     soldier_mage_bullet_pool = BulletPool(Soldier_Mage_AttackBullet, size = 50)
     none_bullet_pool = BulletPool(None_AttackBullet, size = 100)
     hit_animation_pool = HitAnimationPool(size = 150)
+    attack_animation_pool = AttackAnimationPool(size = 150)
 
     add_object(damage_number_pool, 8)  # 이펙트 레이어에 추가
     add_object(mage_bullet_pool, 8)
@@ -36,6 +39,7 @@ def init():
     add_object(soldier_mage_bullet_pool, 8)
     add_object(none_bullet_pool, 8)
     add_object(hit_animation_pool, 8)
+    add_object(attack_animation_pool, 8)
 
 def get_character_bullet(c):
     from character_list import Mage, Bowman, Soldier_mage

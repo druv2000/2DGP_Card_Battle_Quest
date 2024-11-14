@@ -6,6 +6,10 @@ from character_list import Mage, Knight, Bowman, Soldier, Soldier_mage, Soldier_
 
 
 class Player:
+    def __init__(self):
+        self.cursor_x = 800
+        self.cursor_y = 450
+
     def handle_event(self, event):
         if event.type == SDL_MOUSEMOTION:
             self.cursor_x, self.cursor_y = event.x, 900 - event.y  # y 좌표 변환 (화면 아래가 0)

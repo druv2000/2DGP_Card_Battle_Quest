@@ -1,15 +1,21 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
 from pico2d import get_time
 
+import game_framework
 from effects import HitEffect
 from event_system import event_system
 import game_world
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
     update_walk_animation, is_attack_timing
-from game_world import change_object_layer
+from game_world import change_object_layer, add_object
 from state_machine import *
 
 import math
+
+# idle animation speed
+TIME_PER_ACTION = 0.3
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAME_PER_ACTION = 8
 
 # ============================================================================================
 
@@ -19,7 +25,7 @@ def character_draw(c):
             c.image.clip_composite_draw(
                 int(c.frame) * c.sprite_size, 0,  # 소스의 좌표
                 c.sprite_size, c.sprite_size,  # 소스의 크기
-                -c.rotate * 3.141592 / 180,  # 회전 각도 (라디안)
+                -c.rotation * 3.141592 / 180,  # 회전 각도 (라디안)
                 'h',  # 좌우 반전
                 c.x, c.y,  # 그려질 위치
                 c.draw_size, c.draw_size  # 그려질 크기
@@ -28,65 +34,13 @@ def character_draw(c):
             c.image.clip_composite_draw(
                 int(c.frame) * c.sprite_size, 0,  # 소스의 좌표
                 c.sprite_size, c.sprite_size,  # 소스의 크기
-                -c.rotate * 3.141592 / 180,  # 회전 각도 (라디안)
+                -c.rotation * 3.141592 / 180,  # 회전 각도 (라디안)
                 '',  # 반전 없음
                 c.x, c.y,  # 그려질 위치
                 c.draw_size, c.draw_size  # 그려질 크기
             )
 
 
-def attack_animation_draw(c):
-    if c.attack_animation is None:
-        return
-
-    if should_start_or_continue_animation(c):
-        initialize_animation(c)
-        update_animation_position(c)
-        calculate_rotation_and_flip(c)
-        draw_attack_sprite(c)
-        update_animation_frame(c)
-        check_animation_completion(c)
-
-def should_start_or_continue_animation(c):
-    if not hasattr(c, 'animation_in_progress'):
-        c.animation_in_progress = False
-    return (c.attack_animation_progress < 1 and not c.is_attack_performed) or c.animation_in_progress
-
-def initialize_animation(c):
-    if not c.animation_in_progress:
-        c.animation_in_progress = True
-        c.attack_frame = 0
-
-def update_animation_position(c):
-    c.attack_animation.x = c.x + c.dir_x * c.attack_animation.offset_x
-    c.attack_animation.y = c.y + c.dir_y * c.attack_animation.offset_y
-
-def calculate_rotation_and_flip(c):
-    rotation_angle = math.atan2(c.dir_y, c.dir_x)
-    if c.dir_x < 0:
-        rotation_angle += math.pi
-    flip = 'h' if c.dir_x < 0 else ''
-    return rotation_angle, flip
-
-def draw_attack_sprite(c):
-    rotation_angle, flip = calculate_rotation_and_flip(c)
-    c.attack_animation.image.clip_composite_draw(
-        int(c.attack_frame) * c.attack_animation.size_x, 0,
-        c.attack_animation.size_x, c.attack_animation.size_y,
-        rotation_angle,
-        flip,
-        c.attack_animation.x, c.attack_animation.y,
-        250, 250
-    )
-
-def update_animation_frame(c):
-    c.attack_frame = (c.attack_frame + 0.4)
-
-def check_animation_completion(c):
-    if c.attack_frame >= c.attack_animation.total_frame - 1:
-        c.animation_in_progress = False
-        c.is_attack_performed = True
-        c.attack_frame = c.attack_frame % c.attack_animation.total_frame
 
 # ============================================================================================
 
@@ -105,7 +59,7 @@ class Idle:
         if find_closest_target(c) != None:
             c.target = find_closest_target(c)
             c.state_machine.add_event(('TARGET_FOUND', 0))
-        c.frame = (c.frame + c.animation_speed) % 8
+        c.frame = (c.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
     @staticmethod
     def draw(c):
         character_draw(c)
@@ -120,7 +74,7 @@ class Move_to_target:
         pass
     @staticmethod
     def do(c):
-        c.frame = (c.frame + c.animation_speed) % 8
+        c.frame = (c.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         if c.target.state_machine.cur_state == Dead:
             c.state_machine.add_event(('TARGET_LOST', 0))
             return
@@ -143,33 +97,31 @@ class Attack_target:
         c.frame = 0
     @staticmethod
     def exit(c, e):
-        c.rotate = c.original_rotate
+        c.attack_animation_progress = 0
+        c.rotation = c.original_rotation
         c.damage_applied = False
     @staticmethod
     def do(c):
-        c.frame = (c.frame + c.animation_speed) % 8
+        c.frame = (c.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         if c.target.state_machine.cur_state == Dead and not c.state_machine.event_que and not c.animation_in_progress:
             c.state_machine.add_event(('TARGET_LOST', 0))
             return
-
-        if is_attack_timing(c) and not c.animation_in_progress:
+        update_attack_animation(c)
+        if is_attack_timing(c):
+            if c.has_attack_animation:
+                game_world.attack_animation_pool.get(
+                    c, c.attack_image_path,
+                    c.attack_size_x, c.attack_size_y,
+                    c.attack_offset_x, c.attack_offset_y,
+                    c.attack_scale_x, c.attack_scale_y,
+                    c.attack_total_frame
+                )
             c.attack_animation_progress = 0
-            c.animation_in_progress = True
-            c.damage_applied = False
-
-        if c.animation_in_progress:
-            update_attack_animation(c)
-
-            # 애니메이션의 특정 시점(예: 50% 진행)에 데미지 적용
-            if c.attack_animation_progress >= 0.2 and not c.damage_applied:
-                attack_target(c)
-                c.damage_applied = True
+            attack_target(c) # 데미지 처리
 
     @staticmethod
     def draw(c):
         character_draw(c)
-        if c.attack_animation != None:
-            attack_animation_draw(c)
 
 class Stunned:
     @staticmethod
@@ -181,6 +133,7 @@ class Stunned:
         pass
     @staticmethod
     def do(c):
+        c.frame = (c.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         pass
     @staticmethod
     def draw(c):
@@ -190,7 +143,7 @@ class Dead:
     @staticmethod
     def enter(c, e):
         c.frame = 0
-        c.rotate = 0
+        c.rotation = 0
         c.opacify = 0.5
         c.target_rotation = -90 if c.sprite_dir == 1 else 90
 
@@ -201,38 +154,23 @@ class Dead:
         pass
     @staticmethod
     def do(c):
-        if abs(c.rotate - c.target_rotation) > 10:
+        if abs(c.rotation - c.target_rotation) > 10:
             if c.sprite_dir == 1:
-                c.rotate -= 5
+                c.rotation -= 5
                 c.y -= 3
                 c.x -= 3
             else:
-                c.rotate += 5
+                c.rotation += 5
                 c.y -= 3
                 c.x += 3
         else:
-            c.rotate = c.target_rotation
+            c.rotation = c.target_rotation
 
         if c.opacify <= 0:
             game_world.remove_object(c)
         c.opacify -= 0.001
         c.image.opacify(c.opacify)
 
-    @staticmethod
-    def draw(c):
-        character_draw(c)
-
-class Immune:
-    @staticmethod
-    def enter(c, e):
-        c.frame = 0
-        pass
-    @staticmethod
-    def exit(c, e):
-        pass
-    @staticmethod
-    def do(c):
-        c.frame = (c.frame + c.animation_speed) % 8
     @staticmethod
     def draw(c):
         character_draw(c)
@@ -244,8 +182,8 @@ class Character:
         self.x, self.y = x, y
         self.original_x = self.x
         self.original_y = self.y
-        self.rotate = 0
-        self.original_rotate = self.rotate
+        self.rotation = 0
+        self.original_rotation = self.rotation
         self.team = team
         self.sprite_dir = 1
         self.sprite_size = 240
@@ -253,7 +191,7 @@ class Character:
 
         self.last_attack_time = get_time()
         self.attack_animation_progress = 0
-        self.animation_speed = 0.3
+        self.animation_speed = 0.0
         self.hit_effect_duration = 3
         self.can_target = True
 
@@ -295,7 +233,7 @@ class Character:
 
     # @profile
     def take_damage(self, amount):
-        if self.state_machine.cur_state not in [Immune, Dead]:
+        if self.state_machine.cur_state not in [Dead]:
             damage_to_take = amount
 
             # 1. 방어도에서 우선 피해 경감

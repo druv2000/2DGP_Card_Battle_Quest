@@ -30,8 +30,8 @@ def init():
     game_world.add_object(bowman, 7)
     game_world.add_object(total_damage_ui, 9)
 
-    # boss = Soldier_boss(1500, 450, 'enemy')
-    # game_world.add_object(boss, 6)
+    boss = Soldier_boss(1500, 900, 'enemy')
+    game_world.add_object(boss, 6)
 
 def finish():
     game_world.clear()

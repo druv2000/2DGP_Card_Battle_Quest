@@ -1,21 +1,66 @@
 import math
 
 from pico2d import load_image
+from pygame.transform import scale
 
 import game_world
 from effects import StunEffect
 
 
-class Attack_animation:
-    def __init__(self, sprite_path, size_x, size_y, offset_x, offset_y, total_frame):
+class AttackAnimation:
+    def __init__(self):
         self.x = 0
         self.y = 0
-        self.image = load_image(sprite_path)
+        self.image = None
+        self.size_x = 0
+        self.size_y = 0
+        self.offset_x = 0
+        self.offset_y = 0
+        self.frame = 0
+        self.total_frame = 0
+        self.animation_speed = 0.4
+        self.active = False
+        self.can_target = False
+
+    def set(self, c, image_path, size_x, size_y, offset_x, offset_y, scale_x, scale_y, total_frames):
+        self.x = c.x + c.dir_x * offset_x
+        self.y = c.y + c.dir_y * offset_y
+        self.image = load_image(image_path)
         self.size_x = size_x
         self.size_y = size_y
         self.offset_x = offset_x
         self.offset_y = offset_y
-        self.total_frame = total_frame
+        self.scale_x = scale_x
+        self.scale_y = scale_y
+        self.frame = 0
+        self.total_frames = total_frames
+        self.active = True
+        self.can_target = False
+
+        self.rotation = math.atan2(c.dir_y, c.dir_x)
+        if c.dir_x < 0:
+            self.rotation += math.pi
+        self.flip = 'h' if c.dir_x < 0 else ''
+
+    def update(self):
+        if self.frame >= self.total_frames:
+            self.active = False
+        self.frame = (self.frame + self.animation_speed)
+
+    def draw(self):
+        print(f'    DEBUG: slash image draw')
+        self.image.clip_composite_draw(
+            int(self.frame) * self.size_x, 0,
+            self.size_x, self.size_y,
+            self.rotation, self.flip,
+            self.x, self.y,
+            self.scale_x, self.scale_y
+        )
+
+    def is_alive(self):
+        return self.active
+
+
 
 # =========================================
 # Bullet

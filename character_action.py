@@ -1,12 +1,20 @@
 import math
 import random
+import time
 
 from pico2d import get_time
 
+import game_framework
 import game_world
 from effects import StunEffect
 from game_world import world
 
+# attack animation speed
+TIME_PER_ATTACK_ANIMATION = 0.3
+ATTACK_ANIMATION_PER_TIME = 1.0 / TIME_PER_ATTACK_ANIMATION
+FRAME_PER_ATTACK = 8
+
+# =================================================================
 
 def find_closest_target(c):
     closest_enemy = None
@@ -28,7 +36,7 @@ def set_new_coord(c):
     c.original_x = c.x
     c.original_y = c.y
 
-    c.original_rotate = c.rotate
+    c.original_rotation = c.rotation
     pass
 
 def move_to_target(c):
@@ -36,6 +44,7 @@ def move_to_target(c):
         target_x, target_y = c.target.x, c.target.y
         target_distance = math.sqrt((target_x - c.x) ** 2 + (target_y - c.y) ** 2)
 
+        # 0으로 나누는걸 방지하기 위해 너무 가까우면 서로 밀어냄
         if target_distance < 0.001:
             angle = random.uniform(0, 2 * math.pi)
             distance = random.uniform(1, 5)  # 1에서 5 사이의 랜덤한 거리
@@ -54,8 +63,8 @@ def move_to_target(c):
 
         if target_distance > c.attack_range:
             # 타겟과의 거리가 공격 범위보다 멀다면 타겟 방향으로 이동
-            c.x += c.dir_x * c.move_speed
-            c.y += c.dir_y * c.move_speed
+            c.x += c.dir_x * c.move_speed * game_framework.frame_time
+            c.y += c.dir_y * c.move_speed * game_framework.frame_time
             set_new_coord(c)
         else:
             # 타겟과의 거리가 공격범위 안이라면(공격 가능하다면) 공격
@@ -84,44 +93,42 @@ def attack_target(c):
 # =============== animation ===============
 
 def update_walk_animation(c):
-    # 통통 튀는 효과
-    bounce_frequency = 2  # 튀는 주기
-    bounce_height = math.sin(c.frame * math.pi / 4 * bounce_frequency) * 2  # 튀는 높이
-    c.y += bounce_height
+    c.y += math.sin(math.radians(c.frame * 45)) * 2
 
 def is_attack_timing(c):
-    current_time = get_time()
+    current_time = time.time()
     time_since_last_attack = current_time - c.last_attack_time
     if time_since_last_attack >= (1 / c.attack_speed):
         c.last_attack_time = current_time
         c.is_attack_performed = False
         c.attack_frame = 0
+        return True
+    return False
 
-        return True  # 공격을 수행할 준비가 됨
-    return False  # 공격을 수행할 준비가 아님
 
 def update_attack_animation(c):
-    if c.attack_animation_progress < 1:
-        c.attack_animation_progress += c.animation_speed * 0.2  # 애니메이션 속도 조절
+    total_animation_time = 0.3 * (1 / c.attack_speed)
+    progress_increment = game_framework.frame_time / total_animation_time
+    max_rotation = 30 if c.sprite_dir == 1 else -30
+    rush_distance = 20 if c.sprite_dir == 1 else -20
 
-        # 뒤로 젖히는 동작 (0 ~ 0.5)
-        if c.attack_animation_progress < 0.5:
-            if c.sprite_dir == 1:
-                progress = (c.attack_animation_progress - 0.5) * 2
-                c.x = c.original_x + 10 - progress * 20  # 앞으로 빠르게 이동
-                c.y = c.original_y - 5 + progress * 5  # 원래 위치로
-                c.rotate = c.original_rotate + 15 - progress * 15  # 원래 각도로
-            elif c.sprite_dir == -1:
-                progress = (c.attack_animation_progress - 0.5) * 2
-                c.x = c.original_x - 10 + progress * 20  # 앞으로 빠르게 이동
-                c.y = c.original_y + 5 - progress * 5  # 원래 위치로
-                c.rotate = c.original_rotate - 15 + progress * 15  # 원래 각도로
-            else:
-                print(f'    ERROR: sprite_dir is not 1 or -1')
-
-        # 앞으로 뻗는 동작 (0.5 ~ 1)
+    # 공격 애니메이션 업데이트
+    if not c.is_attack_performed:
+        if c.attack_animation_progress == 0.0:
+            c.animation_in_progress = True
+            c.rotation = max_rotation
+            c.x += rush_distance
         else:
-            c.x = c.original_x
-            c.y = c.original_y
-            c.rotate = c.original_rotate
-            pass
+            c.rotation -= max_rotation * (progress_increment / 1.0)
+            c.x -= rush_distance * (progress_increment / 1.0)
+
+    # 애니메이션 진행 상황 계산
+    c.attack_animation_progress += progress_increment
+
+    # 애니메이션 완료 시 초기화
+    if c.attack_animation_progress >= 1:
+        c.rotation = c.original_rotation
+        c.x = c.original_x
+        c.attack_animation_progress = 0
+        c.is_attack_performed = True
+        c.animation_in_progress = False

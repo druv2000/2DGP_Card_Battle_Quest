@@ -1,4 +1,4 @@
-from attack_animation import HitAnimation
+from attack_animation import HitAnimation, AttackAnimation
 from damage_number import DamageNumber
 
 
@@ -55,6 +55,16 @@ class HitAnimationPool(ObjectPool):
         if hit_animation:
             hit_animation.set(target, image_path, size_x, size_y, total_frames)
         return hit_animation
+
+class AttackAnimationPool(ObjectPool):
+    def __init__(self, size=150):
+        super().__init__(AttackAnimation, size)
+
+    def get(self, c, image_path, size_x, size_y, offset_x, offset_y, scale_x, scale_y, total_frames):
+        attack_animation = super().get()
+        if attack_animation:
+            attack_animation.set(c, image_path, size_x, size_y, offset_x, offset_y, scale_x, scale_y, total_frames)
+        return attack_animation
 
 
 class DamageNumberPool(ObjectPool):
