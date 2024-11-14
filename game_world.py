@@ -50,6 +50,7 @@ def get_character_bullet(c):
     else:
         return none_bullet_pool.get(c.x, c.y, c, c.target)
 
+#======================================================================
 
 def add_object(obj, depth):
     world[depth].append(obj)
@@ -83,3 +84,7 @@ def change_object_layer(obj, layer_to):
             print(f'Object {obj} moved to layer {layer_to}')
             return
     print(f'CRITICAL: 객체 {obj}를 찾을 수 없습니다.')
+
+def clear():
+    for layer in world:
+        layer.clear()
