@@ -34,12 +34,12 @@ def init():
     attack_animation_pool = AttackAnimationPool(size = 150)
 
     add_object(damage_number_pool, 8)  # 이펙트 레이어에 추가
-    add_object(mage_bullet_pool, 8)
-    add_object(bowman_bullet_pool, 8)
-    add_object(soldier_mage_bullet_pool, 8)
-    add_object(none_bullet_pool, 8)
-    add_object(hit_animation_pool, 8)
-    add_object(attack_animation_pool, 8)
+    add_object(mage_bullet_pool, 7)
+    add_object(bowman_bullet_pool, 7)
+    add_object(soldier_mage_bullet_pool, 7)
+    add_object(none_bullet_pool, 7)
+    add_object(hit_animation_pool, 7)
+    add_object(attack_animation_pool, 5)
 
 def get_character_bullet(c):
     from character_list import Mage, Bowman, Soldier_mage

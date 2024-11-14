@@ -92,8 +92,11 @@ def attack_target(c):
 
 # =============== animation ===============
 
+WALK_ANIMATION_FREQUENCY = 45  # 걷기 애니메이션의 주파수 조절
+WALK_ANIMATION_AMPLITUDE = 2   # 걷기 애니메이션의 진폭 조절
+
 def update_walk_animation(c):
-    c.y += math.sin(math.radians(c.frame * 45)) * 2
+    c.y += math.sin(math.radians(c.frame * WALK_ANIMATION_FREQUENCY)) * WALK_ANIMATION_AMPLITUDE
 
 def is_attack_timing(c):
     current_time = time.time()

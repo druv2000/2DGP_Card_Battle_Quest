@@ -25,32 +25,29 @@ class Player:
     # @profile
     def spawn_enemy(self, x, y):
         new_enemy = Knight(x, y, 'enemy')
-        game_world.add_object(new_enemy, 6)  # 적 추가
-        print(f"Enemy spawned at ({x}, {y})")
+        game_world.add_object(new_enemy, 3)  # 적 추가
 
     # @profile
     def spawn_ally(self, x, y):
         new_ally = Mage(x, y, 'ally')
-        game_world.add_object(new_ally, 6)  # 적 추가
-        print(f"Ally spawned at ({x}, {y})")
+        game_world.add_object(new_ally, 4)  # 적 추가
 
     # @profile
     def spawn_ally_bowman(self, x, y):
         new_ally = Bowman(x, y, 'ally')
-        game_world.add_object(new_ally, 6)  # 적 추가
-        print(f"Ally spawned at ({x}, {y})")
+        game_world.add_object(new_ally, 4)  # 적 추가
 
     def spawn_enemy_soldier(self,x, y):
         new_enemy = Soldier(x, y, 'enemy')
-        game_world.add_object(new_enemy, 6)  # 적 추가
+        game_world.add_object(new_enemy, 3)  # 적 추가
 
     def spawn_enemy_soldier_mage(self, x, y):
         new_enemy = Soldier_mage(x, y, 'enemy')
-        game_world.add_object(new_enemy, 6)  # 적 추가
+        game_world.add_object(new_enemy, 3)  # 적 추가
 
     def spawn_enemy_soldier_elite(self, x, y):
         new_enemy = Soldier_elite(x, y, 'enemy')
-        game_world.add_object(new_enemy, 6)  # 적 추가
+        game_world.add_object(new_enemy, 3)  # 적 추가
 
 
 player = Player()

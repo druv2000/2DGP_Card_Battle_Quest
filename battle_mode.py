@@ -25,13 +25,13 @@ def init():
     bowman = Bowman(100, 350, 'ally')
     total_damage_ui = TotalDamageUI(knight, mage, bowman)
 
-    game_world.add_object(knight, 7)
-    game_world.add_object(mage, 7)
-    game_world.add_object(bowman, 7)
-    game_world.add_object(total_damage_ui, 9)
+    game_world.add_object(knight, 4)
+    game_world.add_object(mage, 4)
+    game_world.add_object(bowman, 4)
+    game_world.add_object(total_damage_ui, 4)
 
     boss = Soldier_boss(1500, 900, 'enemy')
-    game_world.add_object(boss, 6)
+    game_world.add_object(boss, 3)
 
 def finish():
     game_world.clear()

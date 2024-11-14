@@ -6,6 +6,9 @@ from pygame.transform import scale
 import game_world
 from effects import StunEffect
 
+TIME_PER_ACTION = 0.3
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAME_PER_ACTION = 8
 
 class AttackAnimation:
     def __init__(self):
