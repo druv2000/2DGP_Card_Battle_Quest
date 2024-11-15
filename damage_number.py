@@ -1,5 +1,6 @@
-from pico2d import *
+# damage_number.py
 
+from pico2d import *
 
 class DamageNumber:
     font = None

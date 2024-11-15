@@ -1,8 +1,10 @@
+# attack_animation.py
 import math
 
 from pico2d import load_image, draw_rectangle
 from pygame.transform import scale
 
+from event_system import event_system
 import game_framework
 import game_world
 import object_pool
@@ -83,6 +85,7 @@ class Bullet:
         self.move_speed = 0         # bullet move speed - pixel/s
         self.attack_damage = 0      # damage
         self.can_target = False
+        event_system.add_listener('character_hit', self.on_character_hit)
 
     def set(self, x, y, shooter, target):
         self.x = x
@@ -119,12 +122,6 @@ class Bullet:
             self.image.draw(self.x, self.y, 50, 50)
             draw_rectangle(*self.get_bb())
 
-    def create_hit_animation(self):
-        # 기본 히트 애니메이션 생성 (서브클래스에서 오버라이드 가능)
-        hit_animation = HitAnimation()
-        hit_animation.set(self.target, 'resource/mage_bullet_hit.png', 192, 170, 8)
-        return hit_animation
-
     def is_alive(self):
         return self.is_active
 
@@ -134,13 +131,14 @@ class Bullet:
 
     def handle_collision(self, group, other):
         if group.startswith('bullet:') and other == self.target:
-            print(f'    DEBUG: collision checked')
+            event_system.trigger('character_hit', other, self)
+
+    def on_character_hit(self, character, bullet):
+        if bullet == self and character == self.target:
             self.is_active = False
-            self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
-            object_pool.hit_animation_pool.get(self.target, 'resource/mage_bullet_hit.png', 192, 170, 8)
+            object_pool.hit_animation_pool.get(character, 'resource/mage_bullet_hit.png', 192, 170, 8)
             object_pool.collision_group_pool.release(self.collision_group)
-        pass
 
 class Mage_AttackBullet(Bullet):
     image = None

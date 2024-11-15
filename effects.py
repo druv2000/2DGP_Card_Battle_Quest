@@ -1,3 +1,5 @@
+# effects.py
+
 from pico2d import load_image, get_time
 
 def draw_effect(c, effect):

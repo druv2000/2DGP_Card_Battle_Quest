@@ -1,7 +1,9 @@
+# battle_mode.py
 import random
 
 from pico2d import *
 
+from event_system import event_system
 import game_framework
 import game_world
 import object_pool
@@ -15,7 +17,11 @@ def init():
     global running
     global knight
 
-    object_pool.init()
+    object_pool.init_object_pool()
+    event_system.add_listener('character_hit', on_character_hit)
+
+
+
     running = True
     # # background 생성
     # background = Background(800, 450)
@@ -60,6 +66,10 @@ def init():
     #
     #     new_bowman_enemy = Bowman(random.randint(0, 1600), random.randint(0, 900), 'enemy')
     #     game_world.add_object(new_bowman_enemy, 6)
+
+def on_character_hit(character, bullet):
+    print(f"Character {character} hit by bullet {bullet}")
+    # 여기에 추가적인 전역 히트 효과를 구현할 수 있습니다 (예: 글로벌 사운드 효과)
 
 def finish():
     game_world.clear()

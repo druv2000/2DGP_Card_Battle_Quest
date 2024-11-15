@@ -1,3 +1,5 @@
+# character_list.py
+
 from pico2d import load_image
 
 from attack_animation import AttackAnimation, Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet

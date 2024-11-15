@@ -1,3 +1,6 @@
+# character.py
+import time
+
 # 이것은 각 상태들을 객체로 구현한 것임.
 from pico2d import get_time
 
@@ -70,13 +73,20 @@ class Move_to_target:
     @staticmethod
     def do(c):
         c.frame = (c.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
-        if c.target.state_machine.cur_state == Dead:
+
+        current_time = time.time()
+
+        if c.target is None or c.target.state_machine.cur_state == Dead:
             c.state_machine.add_event(('TARGET_LOST', 0))
             return
 
-        if find_closest_target(c) != None:
-            c.target = find_closest_target(c)
-            c.state_machine.add_event(('TARGET_FOUND', 0))
+        # 일정 시간마다 가장 가까운 타겟 검색
+        if current_time - c.last_target_search_time >= c.target_search_cooldown:
+            c.last_target_search_time = current_time
+            new_target = find_closest_target(c)
+            if new_target != c.target:
+                c.target = new_target
+                c.state_machine.add_event(('TARGET_FOUND', 0))
 
         update_walk_animation(c)
         move_to_target(c)
@@ -192,11 +202,16 @@ class Character:
         self.hit_effect_duration = 3
         self.can_target = True
 
+        self.target_search_cooldown = 0.5  # 0.5초마다 타겟 검색
+        self.last_target_search_time = 0
+
         self.total_damage = 0
 
         self.is_attack_performed = False
         self.animation_in_progress = False
         self.damage_applied = False
+
+        event_system.add_listener('character_hit', self.on_hit)
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
@@ -235,7 +250,12 @@ class Character:
         pass
 
     def handle_collision(self, group, other):
-        pass
+        if group.startswith('bullet:') and isinstance(other, Bullet):
+            event_system.trigger('character_hit', self, other)
+
+    def on_hit(self, character, bullet):
+        if character == self:  # 자신이 맞았을 때만 처리
+            self.take_damage(bullet.attack_damage)
 
 ###########################################################################
 

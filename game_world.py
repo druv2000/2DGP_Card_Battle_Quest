@@ -1,3 +1,5 @@
+# game_world.py
+
 # world[0]: layer 0 - background
 # world[1]: layer 1 - team_color
 # world[2]: layer 2 -

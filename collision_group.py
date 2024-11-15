@@ -1,3 +1,5 @@
+# collision_group.py
+
 class CollisionGroup:
     def __init__(self):
         self.id = 0

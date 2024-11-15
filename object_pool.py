@@ -1,3 +1,5 @@
+# object_pool.py
+
 from attack_animation import *
 from collision_group import CollisionGroup
 from damage_number import DamageNumber
@@ -127,7 +129,7 @@ hit_animation_pool = None
 attack_animation_pool = None
 collision_group_pool = None
 
-def init():
+def init_object_pool():
     global damage_number_pool
     global mage_bullet_pool, bowman_bullet_pool, soldier_mage_bullet_pool, none_bullet_pool
     global hit_animation_pool
@@ -142,7 +144,7 @@ def init():
     none_bullet_pool = BulletPool(None_AttackBullet, size = 1000)
     hit_animation_pool = HitAnimationPool(size = 1500)
     attack_animation_pool = AttackAnimationPool(size = 1500)
-    collision_group_pool = CollisionGroupPool(size=1000)
+    collision_group_pool = CollisionGroupPool(size=1500)
 
     add_object(damage_number_pool, 8)  # 이펙트 레이어에 추가
     add_object(mage_bullet_pool, 7)

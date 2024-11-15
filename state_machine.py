@@ -1,3 +1,5 @@
+# state_machine.py
+
 def start_event(event):
     return event[0] == 'START_EVENT'
 
