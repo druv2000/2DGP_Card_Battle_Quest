@@ -33,6 +33,32 @@ def init():
     boss = Soldier_boss(1500, 900, 'enemy')
     game_world.add_object(boss, 3)
 
+#####################################################################
+
+    # # test: 100 vs 100 / line_battle
+    # for y in range(350, 450):
+    #     new_bowman = Bowman(100, y, 'ally')
+    #     game_world.add_object(new_bowman, 6)
+    #
+    #     new_knight = Knight(1500, y, 'enemy')
+    #     game_world.add_object(new_knight, 6)
+
+    # # test: 100 vs 100 / random_pos_battle
+    # for y in range(100):
+    #     new_bowman = Bowman(random.randint(0, 1600), random.randint(0, 900), 'ally')
+    #     game_world.add_object(new_bowman, 6)
+    #
+    #     new_knight = Knight(random.randint(0, 1600), random.randint(0, 900), 'enemy')
+    #     game_world.add_object(new_knight, 6)
+
+    # # test: 100 vs 100 / random_pos_battle / only bowman
+    # for y in range(100):
+    #     new_bowman_ally = Bowman(random.randint(0, 1600), random.randint(0, 900), 'ally')
+    #     game_world.add_object(new_bowman_ally, 6)
+    #
+    #     new_bowman_enemy = Bowman(random.randint(0, 1600), random.randint(0, 900), 'enemy')
+    #     game_world.add_object(new_bowman_enemy, 6)
+
 def finish():
     game_world.clear()
     pass

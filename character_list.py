@@ -19,7 +19,7 @@ class Knight(Character):
         self.current_hp = 300       # current_hp
         self.move_speed = 200       # move pixel per second
         self.attack_range = 100     # pixel
-        self.attack_speed = 1.3   # attack per second
+        self.attack_speed = 1.3     # attack per second
         self.attack_damage = 12     # damage per attack
         self.armor = 0
 
