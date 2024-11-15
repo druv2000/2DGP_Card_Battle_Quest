@@ -1,4 +1,5 @@
 # game_world.py
+from uniform_grid import UniformGrid
 
 # world[0]: layer 0 - background
 # world[1]: layer 1 - team_color
@@ -11,11 +12,14 @@
 
 world = [[] for _ in range(10)]
 collision_pairs = {}
+grid = UniformGrid(1600, 900, 100)  # 1600x900 게임 화면, 100x100 셀 크기
 
 #======================================================================
 
 def add_object(obj, depth):
     world[depth].append(obj)
+    grid.add_object(obj)
+
 
 def add_objects(ol, depth = 0): #list 추가하기
     world[depth] += ol
@@ -34,6 +38,7 @@ def update():
     for layer in world:
         for obj in layer:
             obj.update()
+            grid.update_object(obj)
         # y 좌표에 따라 동일 레이어 내 객체 정렬
         layer.sort(key=lambda obj: -obj.y if hasattr(obj, 'y') else 0, reverse=False)
 
@@ -43,12 +48,12 @@ def render():
         for obj in layer:
             obj.draw()
 
-def remove_object(obj):
+def remove_object(o):
     for layer in world:
-        if obj in layer:
-            layer.remove(obj)
-            return
-    print(f'CRITICAL: 존재하지 않는 객체{obj}를 지우려 합니다.')
+        if o in layer:
+            layer.remove(o)
+            break
+    grid.remove_object(o)
 
 
 def remove_collision_object(o, group=None):
@@ -105,11 +110,19 @@ def collide(group, a, b):
 
     return True
 
+
 def handle_collisions():
     for group, pairs in collision_pairs.items():
         for a in pairs[0]:
-            for b in pairs[1]:
-                if collide(group, a, b):
-                    print(f'{group} collide')
-                    a.handle_collision(group, b)
-                    b.handle_collision(group, a)
+            if not a.is_active:
+                continue
+
+            # UniformGrid를 사용하여 근처의 객체만 가져옵니다.
+            nearby_objects = grid.get_nearby_objects(a.x, a.y, a.collision_radius)
+
+            for b in nearby_objects:
+                if b in pairs[1] and b.is_active and a != b:
+                    if collide(group, a, b):
+                        print(f'{group} collide')
+                        a.handle_collision(group, b)
+                        b.handle_collision(group, a)

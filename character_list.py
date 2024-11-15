@@ -12,6 +12,7 @@ class Knight(Character):
         super().__init__(x, y, team)
         self.sprite_size = 240
         self.draw_size = 100
+        self.collision_radius = self.draw_size * (3 / 4)
 
         self.image = load_image('resource/Knight_sprite.png')
         self.original_image = self.image
@@ -46,6 +47,7 @@ class Mage(Character):
         super().__init__(x, y, team)
         self.sprite_size = 240
         self.draw_size = 100
+        self.collision_radius = self.draw_size * (3 / 4)
 
         self.image = load_image('resource/Mage_sprite.png')
         self.original_image = self.image
@@ -74,6 +76,7 @@ class Bowman(Character):
         super().__init__(x, y, team)
         self.sprite_size = 240
         self.draw_size = 100
+        self.collision_radius = self.draw_size * (3 / 4)
 
         self.image = load_image('resource/bowman_sprite.png')
         self.original_image = self.image
@@ -103,6 +106,7 @@ class Soldier_elite(Character):
         super().__init__(x, y, team)
         self.sprite_size = 240
         self.draw_size = 120
+        self.collision_radius = self.draw_size * (3 / 4)
 
         self.image = load_image('resource/elite_soldier_sprite.png')
         self.original_image = self.image
@@ -134,6 +138,7 @@ class Soldier(Character):
         super().__init__(x, y, team)
         self.sprite_size = 240
         self.draw_size = 100
+        self.collision_radius = self.draw_size * (3 / 4)
 
         self.image = load_image('resource/soldier(red)_sprite.png')
         self.original_image = self.image
@@ -160,6 +165,7 @@ class Soldier_mage(Character):
         super().__init__(x, y, team)
         self.sprite_size = 240
         self.draw_size = 100
+        self.collision_radius = self.draw_size * (3 / 4)
 
         self.image = load_image('resource/soldier(mage)_sprite.png')
         self.original_image = self.image
@@ -186,6 +192,7 @@ class Soldier_boss(Character):
         super().__init__(x, y, team)
         self.sprite_size = 240
         self.draw_size = 200
+        self.collision_radius = self.draw_size * (3 / 4)
 
         self.image = load_image('resource/boss_sprite.png')
         self.original_image = self.image

@@ -65,7 +65,6 @@ class AttackAnimation:
             self.scale_x, self.scale_y
         )
 
-
     def is_alive(self):
         return self.is_active
 
@@ -85,6 +84,8 @@ class Bullet:
         self.move_speed = 0         # bullet move speed - pixel/s
         self.attack_damage = 0      # damage
         self.can_target = False
+        self.collision_radius = 30
+
         event_system.add_listener('character_hit', self.on_character_hit)
 
     def set(self, x, y, shooter, target):
@@ -171,15 +172,12 @@ class Bowman_AttackBullet(Bullet):
         size = 5
         return self.x - size, self.y - size, self.x + size, self.y + size
 
-    def handle_collision(self, group, other):
-        if group.startswith('bullet:') and other == self.target:
-            print(f'    DEBUG: collision checked')
+    def on_character_hit(self, character, bullet):
+        if bullet == self and character == self.target:
             self.is_active = False
-            self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
-            object_pool.hit_animation_pool.get(self.target, 'resource/bowman_bullet_hit.png', 128, 128, 8)
+            object_pool.hit_animation_pool.get(character, 'resource/bowman_bullet_hit.png', 128, 128, 8)
             object_pool.collision_group_pool.release(self.collision_group)
-        pass
 
 class Soldier_Mage_AttackBullet(Bullet):
     image = None
@@ -190,15 +188,12 @@ class Soldier_Mage_AttackBullet(Bullet):
             Soldier_Mage_AttackBullet.image = load_image('resource/soldier_mage_bullet.png')
         self.move_speed = 750
 
-    def handle_collision(self, group, other):
-        if group.startswith('bullet:') and other == self.target:
-            print(f'    DEBUG: collision checked')
+    def on_character_hit(self, character, bullet):
+        if bullet == self and character == self.target:
             self.is_active = False
-            self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
-            object_pool.hit_animation_pool.get(self.target, 'resource/soldier_mage_bullet_hit.png', 192, 170, 8)
+            object_pool.hit_animation_pool.get(character, 'resource/soldier_mage_bullet_hit.png', 192, 170, 8)
             object_pool.collision_group_pool.release(self.collision_group)
-        pass
 
 class None_AttackBullet(Bullet):
     image = None
@@ -215,6 +210,22 @@ class None_AttackBullet(Bullet):
         self.is_active = False
         self.target.take_damage(self.attack_damage)
         self.shooter.total_damage += self.attack_damage
+
+    def draw(self):
+        pass
+
+    def is_alive(self):
+        return self.is_active
+
+    def get_bb(self):
+        size = 10
+        return self.x - size, self.y - size, self.x + size, self.y + size
+
+    def handle_collision(self, group, other):
+        pass
+
+    def on_character_hit(self, character, bullet):
+        pass
 
 # ==================================================
 # HitAnimation
