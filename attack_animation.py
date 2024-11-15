@@ -26,7 +26,7 @@ class AttackAnimation:
         self.frame = 0
         self.total_frame = 0
         self.animation_speed = 0.4
-        self.active = False
+        self.is_active = False
         self.can_target = False
 
     def set(self, c, image_path, size_x, size_y, offset_x, offset_y, scale_x, scale_y, total_frames):
@@ -41,7 +41,7 @@ class AttackAnimation:
         self.scale_y = scale_y
         self.frame = 0
         self.total_frames = total_frames
-        self.active = True
+        self.is_active = True
         self.can_target = False
 
         self.rotation = math.atan2(c.dir_y, c.dir_x)
@@ -51,7 +51,7 @@ class AttackAnimation:
 
     def update(self):
         if self.frame >= self.total_frames:
-            self.active = False
+            self.is_active = False
         self.frame = (self.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
 
     def draw(self):
@@ -65,7 +65,7 @@ class AttackAnimation:
 
 
     def is_alive(self):
-        return self.active
+        return self.is_active
 
 
 
@@ -79,22 +79,21 @@ class Bullet:
         self.y = 0                  # bullet position_y
         self.shooter = None         # bullet shooter
         self.target = None          # bullet target to fly
-        self.active = False         # is active?
+        self.is_active = False         # is active?
         self.move_speed = 0         # bullet move speed - pixel/s
         self.attack_damage = 0      # damage
         self.can_target = False
 
     def set(self, x, y, shooter, target):
-
         self.x = x
         self.y = y
         self.shooter = shooter
         self.target = target
-        self.active = True
+        self.is_active = True
         self.attack_damage = shooter.attack_damage
 
     def update(self):
-        if not self.active or self.target is None:
+        if not self.is_active or self.target is None:
             return
 
         target_x, target_y = self.target.x, self.target.y
@@ -106,7 +105,7 @@ class Bullet:
         self.y += dir_y * self.move_speed * game_framework.frame_time
 
     def draw(self):
-        if self.active:
+        if self.is_active:
             self.image.draw(self.x, self.y, 50, 50)
             draw_rectangle(*self.get_bb())
 
@@ -117,7 +116,7 @@ class Bullet:
         return hit_animation
 
     def is_alive(self):
-        return self.active
+        return self.is_active
 
     def get_bb(self):
         size = 10
@@ -125,13 +124,10 @@ class Bullet:
 
     def handle_collision(self, group, other):
         if group == 'bullet:character':
-            self.active = False
+            self.is_active = False
             # self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
-
-            hit_animation = self.create_hit_animation()
-            game_world.add_object(hit_animation, 8)
-            game_world.remove_object(self)
+            object_pool.hit_animation_pool.get(self.target, 'resource/mage_bullet_hit.png', 192, 170, 8)
         pass
 
 class Mage_AttackBullet(Bullet):
@@ -144,14 +140,14 @@ class Mage_AttackBullet(Bullet):
         self.move_speed = 750
 
     def update(self):
-        if not self.active or self.target is None:
+        if not self.is_active or self.target is None:
             return
 
         target_x, target_y = self.target.x, self.target.y
         target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
 
         if target_distance < 50:
-            self.active = False
+            self.is_active = False
             self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
             object_pool.hit_animation_pool.get(self.target, 'resource/mage_bullet_hit.png', 192, 170, 8)
@@ -162,10 +158,6 @@ class Mage_AttackBullet(Bullet):
             self.x += dir_x * self.move_speed * game_framework.frame_time
             self.y += dir_y * self.move_speed * game_framework.frame_time
         pass
-
-    def set(self, x, y, shooter, target):
-        super().set(x, y, shooter, target)
-        self.attack_damage = shooter.attack_damage
 
 class Bowman_AttackBullet(Bullet):
     image = None
@@ -180,17 +172,16 @@ class Bowman_AttackBullet(Bullet):
 
     def set(self, x, y, shooter, target):
         super().set(x, y, shooter, target)
-        self.attack_damage = shooter.attack_damage
 
     def update(self):
-        if not self.active or self.target is None:
+        if not self.is_active or self.target is None:
             return
 
         target_x, target_y = self.target.x, self.target.y
         target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
 
         if target_distance < 50:
-            self.active = False
+            self.is_active = False
             self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
             object_pool.hit_animation_pool.get(self.target, 'resource/bowman_bullet_hit.png', 128, 128, 8)
@@ -207,7 +198,7 @@ class Bowman_AttackBullet(Bullet):
             self.rotation = math.atan2(self.dir_y, self.dir_x)
 
     def draw(self):
-        if self.active:
+        if self.is_active:
             Bowman_AttackBullet.image.composite_draw(
                 self.rotation, '', self.x, self.y, 70, 70
             )
@@ -235,14 +226,14 @@ class Soldier_Mage_AttackBullet(Bullet):
         self.move_speed = 750
 
     def update(self):
-        if not self.active or self.target is None:
+        if not self.is_active or self.target is None:
             return
 
         target_x, target_y = self.target.x, self.target.y
         target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
 
         if target_distance < 50:
-            self.active = False
+            self.is_active = False
             self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
             object_pool.hit_animation_pool.get(self.target, 'resource/soldier_mage_bullet_hit.png', 192, 170, 8)
@@ -253,15 +244,6 @@ class Soldier_Mage_AttackBullet(Bullet):
             self.y += dir_y * self.move_speed * game_framework.frame_time
         pass
 
-    def set(self, x, y, shooter, target):
-        super().set(x, y, shooter, target)
-        self.attack_damage = shooter.attack_damage
-
-    def create_hit_animation(self):
-        hit_animation = HitAnimation()
-        hit_animation.set(self.target, 'resource/soldier_mage_bullet_hit.png', 192, 170, 8)
-        return hit_animation
-
 class None_AttackBullet(Bullet):
     image = None
 
@@ -271,14 +253,14 @@ class None_AttackBullet(Bullet):
         self.move_speed = 300
 
     def update(self):
-        if not self.active or self.target is None:
+        if not self.is_active or self.target is None:
             return
 
         target_x, target_y = self.target.x, self.target.y
         target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
 
         if target_distance < self.move_speed:
-            self.active = False
+            self.is_active = False
             self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
 
@@ -288,10 +270,6 @@ class None_AttackBullet(Bullet):
             self.x += dir_x * self.move_speed
             self.y += dir_y * self.move_speed
         pass
-
-    def set(self, x, y, shooter, target):
-        super().set(x, y, shooter, target)
-        self.attack_damage = shooter.attack_damage
 
 # ==================================================
 # HitAnimation
@@ -307,7 +285,7 @@ class HitAnimation:
         self.animation_speed = 0.6
         self.total_frames = 0
         self.can_target = False
-        self.active = False
+        self.is_active = False
 
     def set(self, target, image_path, size_x, size_y, total_frames):
         self.x = target.x
@@ -317,16 +295,16 @@ class HitAnimation:
         self.size_y = size_y
         self.frame = 0
         self.total_frames = total_frames
-        self.active = True
+        self.is_active = True
 
 
     def update(self):
         if self.frame >= self.total_frames:
-            self.active = False
+            self.is_active = False
         self.frame = (self.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * self.size_x, 0, self.size_x, self.size_y, self.x, self.y, 150, 150)
 
     def is_alive(self):
-        return self.active
+        return self.is_active

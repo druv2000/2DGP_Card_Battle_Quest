@@ -11,16 +11,16 @@ class ObjectPool:
 
     def get(self):
         for obj in self.pool:
-            if not obj.active:
-                obj.active = True
+            if not obj.is_active:
+                obj.is_active = True
                 self.active_objects.append(obj)
                 return obj
 
         if self.active_objects:
             oldest_obj = self.active_objects[0]
-            oldest_obj.active = False
+            oldest_obj.is_active = False
             self.active_objects.remove(oldest_obj)
-            oldest_obj.active = True
+            oldest_obj.is_active = True
             self.active_objects.append(oldest_obj)
             return oldest_obj
 
@@ -83,7 +83,7 @@ class DamageNumberPool(ObjectPool):
             damage_number.update()
             if not damage_number.is_alive():
                 self.active_objects.remove(damage_number)
-                damage_number.active = False
+                damage_number.is_active = False
 
     def draw(self):
         for damage_number in self.active_objects:

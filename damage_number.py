@@ -12,27 +12,27 @@ class DamageNumber:
             DamageNumber.font = load_font('resource/font/fixedsys.ttf', 32)
         self.life_time = 0.3
         self.start_time = 0
-        self.active = False
+        self.is_active = False
         self.frame_count = 0
 
     def set(self, x, y, damage):
         self.x, self.y = x, y
         self.damage = damage
         self.start_time = get_time()
-        self.active = True
+        self.is_active = True
         self.frame_count = 0
 
     def update(self):
-        if self.active:
+        if self.is_active:
             self.frame_count += 5
             if self.frame_count >= self.UPDATE_INTERVAL:
                 self.y += 1
                 self.frame_count = 0  # 프레임 카운터 리셋
             if not self.is_alive():
-                self.active = False
+                self.is_active = False
 
     def draw(self):
-        if self.active:
+        if self.is_active:
             self.font.draw(self.x - 10, self.y, f'{self.damage}', (255, 0, 0))
 
     def is_alive(self):

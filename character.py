@@ -137,6 +137,7 @@ class Stunned:
 class Dead:
     @staticmethod
     def enter(c, e):
+        c.is_active = False
         c.frame = 0
         c.rotation = 0
         c.opacify = 0.5
@@ -174,6 +175,7 @@ class Dead:
 
 class Character:
     def __init__(self, x, y, team):
+        self.is_active = True
         self.x, self.y = x, y
         self.original_x = self.x
         self.original_y = self.y

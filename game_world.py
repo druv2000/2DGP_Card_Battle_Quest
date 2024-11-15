@@ -70,6 +70,9 @@ def clear():
         layer.clear()
 
 def collide(a, b):
+    if not a.is_active or not b.is_active:
+        return False
+
     left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
 
