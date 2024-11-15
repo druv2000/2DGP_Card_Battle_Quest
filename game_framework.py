@@ -2,6 +2,8 @@ import time
 
 from pico2d import delay
 
+import object_pool
+
 running = None
 stack = None
 

@@ -31,6 +31,13 @@ class Knight(Character):
         self.attack_total_frame = 8
         self.bullet = None
 
+    def get_bb(self):
+        size = self.draw_size
+        if self.sprite_dir == 1:
+            return self.x - size/5, self.y - size/2, self.x + size/3, self.y + size/5
+        else:
+            return self.x - size/3, self.y - size/2, self.x + size/5, self.y + size/5
+        pass
 
 class Mage(Character):
     def __init__(self, x, y, team):
@@ -54,6 +61,11 @@ class Mage(Character):
         self.has_attack_animation = False
         self.bullet = Mage_AttackBullet()
 
+    def get_bb(self):
+        size = self.draw_size
+        return self.x - size/4, self.y - size/2, self.x + size/4, self.y + size/5
+        pass
+
 
 class Bowman(Character):
     def __init__(self, x, y, team):
@@ -76,6 +88,11 @@ class Bowman(Character):
 
         self.has_attack_animation = False
         self.bullet = Bowman_AttackBullet()
+
+    def get_bb(self):
+        size = self.draw_size
+        return self.x - size/4, self.y - size/2, self.x + size/4, self.y + size/5
+        pass
 
 # ================== ENEMY ===================================
 
@@ -106,6 +123,10 @@ class Soldier_elite(Character):
         self.attack_total_frame = 8
         self.bullet = None
 
+    def get_bb(self):
+        size = self.draw_size
+        return self.x - size / 4, self.y - size / 2, self.x + size / 4, self.y + size / 5
+
 class Soldier(Character):
     def __init__(self, x, y, team):
         super().__init__(x, y, team)
@@ -128,6 +149,10 @@ class Soldier(Character):
         self.has_attack_animation = False
         self.bullet = None
 
+    def get_bb(self):
+        size = self.draw_size
+        return self.x - size / 4, self.y - size / 2, self.x + size / 4, self.y + size / 10
+
 class Soldier_mage(Character):
     def __init__(self, x, y, team):
         super().__init__(x, y, team)
@@ -149,6 +174,10 @@ class Soldier_mage(Character):
 
         self.has_attack_animation = False
         self.bullet = Soldier_Mage_AttackBullet()
+
+    def get_bb(self):
+        size = self.draw_size
+        return self.x - size / 4, self.y - size / 2, self.x + size / 4, self.y + size / 4
 
 class Soldier_boss(Character):
     def __init__(self, x, y, team):
@@ -176,3 +205,7 @@ class Soldier_boss(Character):
         self.attack_scale_x, self.attack_scale_y = 250, 250
         self.attack_total_frame = 8
         self.bullet = None
+
+    def get_bb(self):
+        size = self.draw_size
+        return self.x - size / 4, self.y - size / 2, self.x + size / 4, self.y + size / 3

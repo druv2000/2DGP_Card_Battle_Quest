@@ -4,6 +4,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+import object_pool
 from background import Background
 from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite, Soldier_boss
 from player import player
@@ -14,6 +15,7 @@ def init():
     global running
     global knight
 
+    object_pool.init()
     running = True
     # # background 생성
     # background = Background(800, 450)
@@ -30,7 +32,7 @@ def init():
     game_world.add_object(bowman, 4)
     game_world.add_object(total_damage_ui, 4)
 
-    boss = Soldier_boss(1500, 900, 'enemy')
+    boss = Soldier_boss(1500, 450, 'enemy')
     game_world.add_object(boss, 3)
 
 #####################################################################
@@ -71,6 +73,7 @@ def resume():
 
 def update():
     game_world.update()
+    game_world.handle_collisions()
     delay(0.01)
 
 def draw():

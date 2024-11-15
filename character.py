@@ -1,16 +1,13 @@
 # 이것은 각 상태들을 객체로 구현한 것임.
 from pico2d import get_time
 
-import game_framework
 from effects import HitEffect
 from event_system import event_system
-import game_world
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
     update_walk_animation, is_attack_timing
-from game_world import change_object_layer, add_object
+from game_world import change_object_layer
+from object_pool import *
 from state_machine import *
-
-import math
 
 # idle animation speed
 TIME_PER_ACTION = 0.3
@@ -39,8 +36,6 @@ def character_draw(c):
                 c.x, c.y,  # 그려질 위치
                 c.draw_size, c.draw_size  # 그려질 크기
             )
-
-
 
 # ============================================================================================
 
@@ -109,7 +104,7 @@ class Attack_target:
         update_attack_animation(c)
         if is_attack_timing(c):
             if c.has_attack_animation:
-                game_world.attack_animation_pool.get(
+                object_pool.attack_animation_pool.get(
                     c, c.attack_image_path,
                     c.attack_size_x, c.attack_size_y,
                     c.attack_offset_x, c.attack_offset_y,
@@ -230,6 +225,17 @@ class Character:
         for effect in self.effects:
             if hasattr(effect, 'draw'):
                 effect.draw(self)
+        draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        size = self.draw_size / 2
+        return self.x - size, self.y - size, self.x + size, self.y + size
+        pass
+
+    def handle_collision(self, group, other):
+        pass
+
+###########################################################################
 
     # @profile
     def take_damage(self, amount):
@@ -256,7 +262,7 @@ class Character:
                 print(f'    damaged: {damage_to_take}, remain_hp: {self.current_hp}')
 
                 # 받은 데미지를 데미지 넘버 풀에 추가
-                damage_number = game_world.damage_number_pool.get()
+                damage_number = object_pool.damage_number_pool.get()
                 if damage_number:
                     damage_number.set(self.x, self.y + 10, damage_to_take)
                 else:
@@ -275,3 +281,6 @@ class Character:
         for effect in self.effects:
             if isinstance(effect, effect_type):
                 effect.remove(self)
+
+
+

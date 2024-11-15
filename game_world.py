@@ -6,65 +6,33 @@
 # ...
 # world[8]: layer 8 - effect
 # world[9]: layer 9 - ui
-from attack_animation import Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet, None_AttackBullet
-from object_pool import BulletPool, HitAnimationPool, DamageNumberPool, AttackAnimationPool
 
 world = [[] for _ in range(10)]
-damage_number_pool = None
-mage_bullet_pool = None
-bowman_bullet_pool = None
-soldier_mage_bullet_pool = None
-none_bullet_pool = None
-hit_animation_pool = None
-attack_animation_pool = None
-
-
-def init():
-    global damage_number_pool
-    global mage_bullet_pool, bowman_bullet_pool, soldier_mage_bullet_pool, none_bullet_pool
-    global hit_animation_pool
-    global attack_animation_pool
-
-    damage_number_pool = DamageNumberPool(size=1000)  # 크기는 필요에 따라 조정
-    mage_bullet_pool = BulletPool(Mage_AttackBullet, size = 500)
-    bowman_bullet_pool = BulletPool(Bowman_AttackBullet, size = 500)
-    soldier_mage_bullet_pool = BulletPool(Soldier_Mage_AttackBullet, size = 500)
-    none_bullet_pool = BulletPool(None_AttackBullet, size = 1000)
-    hit_animation_pool = HitAnimationPool(size = 1500)
-    attack_animation_pool = AttackAnimationPool(size = 1500)
-
-    add_object(damage_number_pool, 8)  # 이펙트 레이어에 추가
-    add_object(mage_bullet_pool, 7)
-    add_object(bowman_bullet_pool, 7)
-    add_object(soldier_mage_bullet_pool, 7)
-    add_object(none_bullet_pool, 7)
-    add_object(hit_animation_pool, 7)
-    add_object(attack_animation_pool, 5)
-
-def get_character_bullet(c):
-    from character_list import Mage, Bowman, Soldier_mage
-
-    global mage_bullet_pool, bowman_bullet_pool, soldier_mage_bullet_pool
-    if isinstance(c, Mage):
-        return mage_bullet_pool.get(c.x, c.y, c, c.target)
-    elif isinstance(c, Bowman):
-        return bowman_bullet_pool.get(c.x, c.y, c, c.target)
-    elif isinstance(c, Soldier_mage):
-        return soldier_mage_bullet_pool.get(c.x, c.y, c, c.target)
-    else:
-        return none_bullet_pool.get(c.x, c.y, c, c.target)
+collision_pairs = {}
 
 #======================================================================
 
 def add_object(obj, depth):
     world[depth].append(obj)
 
+def add_objects(ol, depth = 0): #list 추가하기
+    world[depth] += ol
+
+def add_collision_pair(group, a, b):
+    if group not in collision_pairs:
+        collision_pairs[group] = [[], []]
+
+    if a:
+        collision_pairs[group][0].append(a)
+    if b:
+        collision_pairs[group][1].append(b)
+
 # @profile
 def update():
     for layer in world:
         for obj in layer:
             obj.update()
-        # y 좌표에 따라 객체 정렬
+        # y 좌표에 따라 동일 레이어 내 객체 정렬
         layer.sort(key=lambda obj: -obj.y if hasattr(obj, 'y') else 0, reverse=False)
 
 # @profile
@@ -80,6 +48,14 @@ def remove_object(obj):
             return
     print(f'CRITICAL: 존재하지 않는 객체{obj}를 지우려 합니다.')
 
+def remove_collision_object(o):
+    for pairs in collision_pairs.values():
+        if o in pairs[0]:
+            pairs[0].remove(o)
+        if o in pairs[1]:
+            pairs[1].remove(o)
+    pass
+
 def change_object_layer(obj, layer_to):
     for layer in world:
         if obj in layer:
@@ -92,3 +68,23 @@ def change_object_layer(obj, layer_to):
 def clear():
     for layer in world:
         layer.clear()
+
+def collide(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+
+    return True
+
+def handle_collisions():
+    for group, pairs in collision_pairs.items():
+        for a in pairs[0]:
+            for b in pairs[1]:
+                if collide(a, b):
+                    print(f'{group} collide')
+                    a.handle_collision(group, b)
+                    b.handle_collision(group, a)

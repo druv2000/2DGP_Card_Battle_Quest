@@ -1,13 +1,9 @@
-import math
 import random
 import time
 
-from pico2d import get_time
-
-import game_framework
-import game_world
-from effects import StunEffect
 from game_world import world
+from object_pool import *
+from object_pool import get_character_bullet
 
 # attack animation speed
 TIME_PER_ATTACK_ANIMATION = 0.3
@@ -72,7 +68,6 @@ def move_to_target(c):
 
 def attack_target(c):
     from character_list import Soldier_elite
-    from game_world import get_character_bullet
 
     if isinstance(c, Soldier_elite):
         # stun 적용
@@ -135,3 +130,5 @@ def update_attack_animation(c):
         c.attack_animation_progress = 0
         c.is_attack_performed = True
         c.animation_in_progress = False
+
+
