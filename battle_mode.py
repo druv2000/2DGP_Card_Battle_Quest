@@ -72,8 +72,8 @@ def resume():
     pass
 
 def update():
-    game_world.update()
     game_world.handle_collisions()
+    game_world.update()
     delay(0.01)
 
 def draw():

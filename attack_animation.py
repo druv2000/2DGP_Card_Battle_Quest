@@ -92,6 +92,11 @@ class Bullet:
         self.is_active = True
         self.attack_damage = shooter.attack_damage
 
+
+        # if not self.target.is_already_in_pair:
+        #     pass
+        self.collision_group = object_pool.collision_group_pool.get(self, target, 'bullet')
+
     def update(self):
         if not self.is_active or self.target is None:
             return
@@ -99,10 +104,15 @@ class Bullet:
         target_x, target_y = self.target.x, self.target.y
         target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
 
-        dir_x = (target_x - self.x) / target_distance
-        dir_y = (target_y - self.y) / target_distance
-        self.x += dir_x * self.move_speed * game_framework.frame_time
-        self.y += dir_y * self.move_speed * game_framework.frame_time
+        self.dir_x = (target_x - self.x) / target_distance
+        self.dir_y = (target_y - self.y) / target_distance
+        self.x += self.dir_x * self.move_speed * game_framework.frame_time
+        self.y += self.dir_y * self.move_speed * game_framework.frame_time
+        self.rotation = math.atan2(self.dir_y, self.dir_x)
+
+        # 날아가는 도중 타겟 사망 시 충돌체크가 발생하지 않으므로 임의로 투사체 비활성화 수행
+        if target_distance < 50 and not self.target.is_active:
+            self.is_active = False
 
     def draw(self):
         if self.is_active:
@@ -123,11 +133,13 @@ class Bullet:
         return self.x - size, self.y - size, self.x + size, self.y + size
 
     def handle_collision(self, group, other):
-        if group == 'bullet:character':
+        if group.startswith('bullet:') and other == self.target:
+            print(f'    DEBUG: collision checked')
             self.is_active = False
-            # self.target.take_damage(self.attack_damage)
+            self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
             object_pool.hit_animation_pool.get(self.target, 'resource/mage_bullet_hit.png', 192, 170, 8)
+            object_pool.collision_group_pool.release(self.collision_group)
         pass
 
 class Mage_AttackBullet(Bullet):
@@ -138,26 +150,6 @@ class Mage_AttackBullet(Bullet):
         if Mage_AttackBullet.image is None:
             Mage_AttackBullet.image = load_image('resource/mage_bullet.png')
         self.move_speed = 750
-
-    def update(self):
-        if not self.is_active or self.target is None:
-            return
-
-        target_x, target_y = self.target.x, self.target.y
-        target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
-
-        if target_distance < 50:
-            self.is_active = False
-            self.target.take_damage(self.attack_damage)
-            self.shooter.total_damage += self.attack_damage
-            object_pool.hit_animation_pool.get(self.target, 'resource/mage_bullet_hit.png', 192, 170, 8)
-
-        else:
-            dir_x = (target_x - self.x) / target_distance
-            dir_y = (target_y - self.y) / target_distance
-            self.x += dir_x * self.move_speed * game_framework.frame_time
-            self.y += dir_y * self.move_speed * game_framework.frame_time
-        pass
 
 class Bowman_AttackBullet(Bullet):
     image = None
@@ -170,33 +162,6 @@ class Bowman_AttackBullet(Bullet):
         self.dir_x = 0
         self.dir_y = 0
 
-    def set(self, x, y, shooter, target):
-        super().set(x, y, shooter, target)
-
-    def update(self):
-        if not self.is_active or self.target is None:
-            return
-
-        target_x, target_y = self.target.x, self.target.y
-        target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
-
-        if target_distance < 50:
-            self.is_active = False
-            self.target.take_damage(self.attack_damage)
-            self.shooter.total_damage += self.attack_damage
-            object_pool.hit_animation_pool.get(self.target, 'resource/bowman_bullet_hit.png', 128, 128, 8)
-        else:
-            self.dir_x = (self.target.x - self.x) / math.sqrt(
-                (self.target.x - self.x) ** 2 + (self.target.y - self.y) ** 2)
-            self.dir_y = (self.target.y - self.y) / math.sqrt(
-                (self.target.x - self.x) ** 2 + (self.target.y - self.y) ** 2)
-
-            dir_x = (target_x - self.x) / target_distance
-            dir_y = (target_y - self.y) / target_distance
-            self.x += dir_x * self.move_speed * game_framework.frame_time
-            self.y += dir_y * self.move_speed * game_framework.frame_time
-            self.rotation = math.atan2(self.dir_y, self.dir_x)
-
     def draw(self):
         if self.is_active:
             Bowman_AttackBullet.image.composite_draw(
@@ -204,16 +169,18 @@ class Bowman_AttackBullet(Bullet):
             )
             draw_rectangle(*self.get_bb())
 
-    def create_hit_animation(self):
-        hit_animation = HitAnimation()
-        hit_animation.set(self.target, 'resource/bowman_bullet_hit.png', 128, 128, 8)
-        return hit_animation
-
     def get_bb(self):
         size = 5
         return self.x - size, self.y - size, self.x + size, self.y + size
 
     def handle_collision(self, group, other):
+        if group.startswith('bullet:') and other == self.target:
+            print(f'    DEBUG: collision checked')
+            self.is_active = False
+            self.target.take_damage(self.attack_damage)
+            self.shooter.total_damage += self.attack_damage
+            object_pool.hit_animation_pool.get(self.target, 'resource/bowman_bullet_hit.png', 128, 128, 8)
+            object_pool.collision_group_pool.release(self.collision_group)
         pass
 
 class Soldier_Mage_AttackBullet(Bullet):
@@ -225,23 +192,14 @@ class Soldier_Mage_AttackBullet(Bullet):
             Soldier_Mage_AttackBullet.image = load_image('resource/soldier_mage_bullet.png')
         self.move_speed = 750
 
-    def update(self):
-        if not self.is_active or self.target is None:
-            return
-
-        target_x, target_y = self.target.x, self.target.y
-        target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
-
-        if target_distance < 50:
+    def handle_collision(self, group, other):
+        if group.startswith('bullet:') and other == self.target:
+            print(f'    DEBUG: collision checked')
             self.is_active = False
             self.target.take_damage(self.attack_damage)
             self.shooter.total_damage += self.attack_damage
             object_pool.hit_animation_pool.get(self.target, 'resource/soldier_mage_bullet_hit.png', 192, 170, 8)
-        else:
-            dir_x = (target_x - self.x) / target_distance
-            dir_y = (target_y - self.y) / target_distance
-            self.x += dir_x * self.move_speed * game_framework.frame_time
-            self.y += dir_y * self.move_speed * game_framework.frame_time
+            object_pool.collision_group_pool.release(self.collision_group)
         pass
 
 class None_AttackBullet(Bullet):
@@ -256,20 +214,9 @@ class None_AttackBullet(Bullet):
         if not self.is_active or self.target is None:
             return
 
-        target_x, target_y = self.target.x, self.target.y
-        target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
-
-        if target_distance < self.move_speed:
-            self.is_active = False
-            self.target.take_damage(self.attack_damage)
-            self.shooter.total_damage += self.attack_damage
-
-        else:
-            dir_x = (target_x - self.x) / target_distance
-            dir_y = (target_y - self.y) / target_distance
-            self.x += dir_x * self.move_speed
-            self.y += dir_y * self.move_speed
-        pass
+        self.is_active = False
+        self.target.take_damage(self.attack_damage)
+        self.shooter.total_damage += self.attack_damage
 
 # ==================================================
 # HitAnimation

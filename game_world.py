@@ -48,13 +48,30 @@ def remove_object(obj):
             return
     print(f'CRITICAL: 존재하지 않는 객체{obj}를 지우려 합니다.')
 
-def remove_collision_object(o):
-    for pairs in collision_pairs.values():
-        if o in pairs[0]:
-            pairs[0].remove(o)
-        if o in pairs[1]:
-            pairs[1].remove(o)
-    pass
+
+def remove_collision_object(o, group=None):
+    if group:
+        # 특정 그룹에서만 객체 제거
+        if group in collision_pairs:
+            if o in collision_pairs[group][0]:
+                collision_pairs[group][0].remove(o)
+            if o in collision_pairs[group][1]:
+                collision_pairs[group][1].remove(o)
+    else:
+        # 모든 그룹에서 객체 제거
+        groups_to_remove = []
+        for group, pairs in collision_pairs.items():
+            if o in pairs[0]:
+                pairs[0].remove(o)
+            if o in pairs[1]:
+                pairs[1].remove(o)
+            # 그룹이 비어있으면 제거 대상에 추가
+            if not pairs[0] and not pairs[1]:
+                groups_to_remove.append(group)
+
+        # 비어있는 그룹 제거
+        for group in groups_to_remove:
+            del collision_pairs[group]
 
 def change_object_layer(obj, layer_to):
     for layer in world:
@@ -69,8 +86,11 @@ def clear():
     for layer in world:
         layer.clear()
 
-def collide(a, b):
+def collide(group, a, b):
     if not a.is_active or not b.is_active:
+        remove_collision_object(a, group)
+        remove_collision_object(b, group)
+        print(f'    DEBUG: {a.is_active}, {b.is_active} -> so deleted')
         return False
 
     left_a, bottom_a, right_a, top_a = a.get_bb()
@@ -87,7 +107,7 @@ def handle_collisions():
     for group, pairs in collision_pairs.items():
         for a in pairs[0]:
             for b in pairs[1]:
-                if collide(a, b):
+                if collide(group, a, b):
                     print(f'{group} collide')
                     a.handle_collision(group, b)
                     b.handle_collision(group, a)
