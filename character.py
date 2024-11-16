@@ -118,6 +118,7 @@ class Attack_target:
                     c.attack_total_frame
                 )
             c.attack_animation_progress = 0
+
             attack_target(c) # 데미지 처리
 
     @staticmethod
@@ -246,8 +247,7 @@ class Character:
         pass
 
     def handle_collision(self, group, other):
-        if group.startswith('bullet:') and isinstance(other, Bullet):
-            event_system.trigger('character_hit', self, other)
+            pass
 
     def on_hit(self, character, bullet):
         if character == self:  # 자신이 맞았을 때만 처리

@@ -1,4 +1,5 @@
 # card_manager.py
+import random
 
 import game_world
 from card import Card, Highlight
@@ -15,11 +16,13 @@ class CardManager:
 
     def init_deck(self):
         # 덱에 카드 추가
-        self.deck.add_card(Card("1", 'knight',3, 'resource/card.png'))
-        self.deck.add_card(Card("2", 'mage',4, 'resource/card.png'))
-        self.deck.add_card(Card("3", 'mage',4, 'resource/card.png'))
-        self.deck.add_card(Card("4", 'mage',4, 'resource/card.png'))
-        self.deck.add_card(Card("5", 'mage',4, 'resource/card.png'))
+        self.deck.add_card(Card("1", 'knight',3, 'resource/card_knight.png'))
+        self.deck.add_card(Card("2", 'mage',4, 'resource/card_knight.png'))
+        self.deck.add_card(Card("3", 'mage',4, 'resource/card_mage.png'))
+        self.deck.add_card(Card("4", 'mage',4, 'resource/card_mage.png'))
+        self.deck.add_card(Card("5", 'mage',4, 'resource/card_bowman.png'))
+
+        random.shuffle(self.deck.cards)
 
 
     def draw_card(self):

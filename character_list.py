@@ -62,7 +62,12 @@ class Mage(Character):
 
         self.armor = 0
 
-        self.has_attack_animation = False
+        self.has_attack_animation = True
+        self.attack_image_path = 'resource/slash2.png'
+        self.attack_size_x, self.attack_size_y = 128, 128
+        self.attack_offset_x, self.attack_offset_y = 70, 20
+        self.attack_scale_x, self.attack_scale_y = 250, 250
+        self.attack_total_frame = 8
         self.bullet = Mage_AttackBullet()
 
     def get_bb(self):

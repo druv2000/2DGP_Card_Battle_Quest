@@ -67,8 +67,8 @@ def move_to_target(c):
 def attack_target(c):
     from character_list import Soldier_elite
 
+    # elite_soldier 일반공격에 stun 적용
     if isinstance(c, Soldier_elite):
-        # stun 적용
         stun_effect = next((effect for effect in c.target.effects if isinstance(effect, StunEffect)), None)
         if stun_effect:
             stun_effect.refresh()
@@ -77,18 +77,16 @@ def attack_target(c):
             c.target.add_effect(stun_effect)
 
     bullet = get_character_bullet(c)  # 새 bullet 인스턴스 생성
-    if bullet:
-        bullet.set(c.x, c.y, c, c.target)  # target 설정
-    else:
+    if not bullet:
         print(f'        WARNING: bullet_pool is empty!')
 
 
 # =============== animation ===============
 
-WALK_ANIMATION_FREQUENCY = 45  # 걷기 애니메이션의 주파수 조절
-WALK_ANIMATION_AMPLITUDE = 1.5   # 걷기 애니메이션의 진폭 조절
-
+WALK_ANIMATION_FREQUENCY = 45
 def update_walk_animation(c):
+    frame_rate = 1.0 / game_framework.frame_time
+    WALK_ANIMATION_AMPLITUDE = 1.0 if frame_rate >= 60 else 2.0  # 걷기 애니메이션의 진폭 조절
     c.y += math.sin(math.radians(c.frame * WALK_ANIMATION_FREQUENCY)) * WALK_ANIMATION_AMPLITUDE
 
 def is_attack_timing(c):
@@ -100,7 +98,6 @@ def is_attack_timing(c):
         c.attack_frame = 0
         return True
     return False
-
 
 def update_attack_animation(c):
     total_animation_time = 0.3 * (1 / c.attack_speed)
