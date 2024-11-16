@@ -39,7 +39,7 @@ def left_click(event):
 def mouse_leave(event):
     global mouse_x, mouse_y
     return (event[0] == 'MOUSE_LEAVE' and
-            not event[1].contains_point(mouse_x, mouse_y))
+            event[1].type == SDL_MOUSEMOTION)
 
 def mouse_release(event):
     return  (event[0] == 'MOUSE_RELEASE' and

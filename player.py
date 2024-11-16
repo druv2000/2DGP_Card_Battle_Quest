@@ -7,7 +7,6 @@ import game_world
 import globals
 from card_manager import card_manager
 from character_list import Mage, Knight, Bowman, Soldier, Soldier_mage, Soldier_elite
-from globals import mouse_x, mouse_y
 
 
 class Player:
@@ -16,7 +15,8 @@ class Player:
 
     def handle_event(self, event):
         if event.type == SDL_MOUSEMOTION:
-            self.handle_card_hover()
+            globals.mouse_x, globals.mouse_y = event.x, globals.SCREEN_HEIGHT - event.y
+            self.handle_card_hover(event)
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT:
                 card_manager.draw_card()
@@ -37,12 +37,13 @@ class Player:
     ############################################################
     # manage cards
 
-    def handle_card_hover(self):
+    def handle_card_hover(self, event):
         for card in card_manager.hand.cards:
-            if card.contains_point(globals.mouse_x, globals.mouse_y):
-                card.state_machine.add_event(('MOUSE_HOVER', 0))
-            else:
-                card.state_machine.add_event(('MOUSE_LEAVE', 0))
+            print(f'    DEBUG: {card.name}')
+            if card.contains_point(globals.mouse_x, globals.mouse_y) and not card.state_machine.event_que:
+                card.state_machine.add_event(('MOUSE_HOVER', event))
+            elif not card.contains_point(globals.mouse_x, globals.mouse_y) and not card.state_machine.event_que:
+                card.state_machine.add_event(('MOUSE_LEAVE', event))
 
     def handle_card_click(self):
         for card in card_manager.hand.cards:

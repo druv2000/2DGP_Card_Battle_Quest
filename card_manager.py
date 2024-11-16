@@ -1,7 +1,7 @@
 # card_manager.py
 
 import game_world
-from card import Card
+from card import Card, Highlight
 from deck import Deck, Hand
 
 
@@ -15,11 +15,11 @@ class CardManager:
 
     def init_deck(self):
         # 덱에 카드 추가
-        self.deck.add_card(Card("Knight", 3, 'resource/card.png'))
-        self.deck.add_card(Card("Mage", 4, 'resource/card.png'))
-        self.deck.add_card(Card("Mage", 4, 'resource/card.png'))
-        self.deck.add_card(Card("Mage", 4, 'resource/card.png'))
-        self.deck.add_card(Card("Mage", 4, 'resource/card.png'))
+        self.deck.add_card(Card("1", 'knight',3, 'resource/card.png'))
+        self.deck.add_card(Card("2", 'mage',4, 'resource/card.png'))
+        self.deck.add_card(Card("3", 'mage',4, 'resource/card.png'))
+        self.deck.add_card(Card("4", 'mage',4, 'resource/card.png'))
+        self.deck.add_card(Card("5", 'mage',4, 'resource/card.png'))
 
 
     def draw_card(self):
@@ -27,6 +27,7 @@ class CardManager:
         if card and self.hand.add_card(card):
             return True
         return False
+
 
     def use_card(self, card):
         if card in self.hand.cards:
@@ -41,6 +42,7 @@ class CardManager:
     def draw(self):
         for i, card in enumerate(self.hand.cards):
             card.x = 400 + i * 200  # 카드 간격 조정
+            card.original_x = card.x
             card.draw()
 
 card_manager = CardManager()

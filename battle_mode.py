@@ -3,7 +3,6 @@ import random
 
 from pico2d import *
 
-import globals
 from card_manager import card_manager
 from event_system import event_system
 import game_framework
@@ -13,7 +12,6 @@ from background import Background
 from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite, Soldier_boss
 from player import player
 from ui import TotalDamageUI
-from globals import mouse_x, mouse_y, SCREEN_HEIGHT
 
 
 def init():
@@ -103,7 +101,5 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
-        elif event.type == SDL_MOUSEMOTION:
-            globals.mouse_x, globals.mouse_y = event.x, SCREEN_HEIGHT - event.y
         else:
             player.handle_event(event)

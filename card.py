@@ -22,9 +22,15 @@ class Idle:
 class Highlight:
     @staticmethod
     def enter(c, e):
+        c.draw_size_x *= 2
+        c.draw_size_y *= 2
+        c.y += 100
         pass
     @staticmethod
     def exit(c, e):
+        c.draw_size_x /= 2
+        c.draw_size_y /= 2
+        c.y -= 100
         pass
     @staticmethod
     def do(c):
@@ -57,17 +63,19 @@ class Clicked:
 ########################################################
 
 class Card:
-    def __init__(self, name, cost, image_path):
+    def __init__(self, name, user, cost, image_path):
         self.name = name
         self.cost = cost
+        self.user = user
         self.x = 800
-        self.y = 100
+        self.y = 150
+        self.original_x = self.x
+        self.original_y = self.y
         self.image = load_image(image_path)
         self.original_size_x = 160
         self.original_size_y = 240
         self.draw_size_x = 160
         self.draw_size_y = 240
-        self.can_target = False
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
@@ -84,8 +92,8 @@ class Card:
         self.state_machine.draw()
 
     def contains_point(self, x, y):
-        return (self.x - self.original_size_x / 2 < x < self.x + self.original_size_x / 2 and
-                self.y - self.original_size_y / 2 < y < self.y + self.original_size_y / 2)
+        return (self.original_x - self.original_size_x / 2 < x < self.original_x + self.original_size_x / 2 and
+                self.original_y - self.original_size_y / 2 < y < self.original_y + self.original_size_y / 2)
 
     def use(self):
         # 카드 사용 로직 구현
