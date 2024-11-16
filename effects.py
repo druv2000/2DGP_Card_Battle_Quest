@@ -2,6 +2,10 @@
 
 from pico2d import load_image, get_time
 
+import game_framework
+from globals import FRAME_PER_HIT_ANIMATION, CHARACTER_ANIMATION_PER_TIME
+
+
 def draw_effect(c, effect):
     pass
 #=============================
@@ -82,7 +86,8 @@ class StunEffect(Effect):
         pass
 
     def update(self, c):
-        self.frame = (self.frame + self.animation_speed) % self.template.sprite_count
+        self.frame = ((self.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time)
+                      % self.template.sprite_count)
 
         if get_time() - self.start_time >= self.duration:
             self.is_active = False

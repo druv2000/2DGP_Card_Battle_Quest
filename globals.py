@@ -23,4 +23,10 @@ FRAME_PER_ATTACK_ANIMATION = 8
 mouse_x = 0
 mouse_y = 0
 
+# card space
+CARD_SPACE_X1 = 400
+CARD_SPACE_Y1 = 0
+CARD_SPACE_X2 = 1200
+CARD_SPACE_Y2 = 240
+
 

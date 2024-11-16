@@ -198,8 +198,8 @@ class Soldier_boss(Character):
         self.original_image = self.image
         self.hit_image = load_image('resource/boss_hit_sprite.png')
 
-        self.max_hp = 2000
-        self.current_hp = 2000
+        self.max_hp = 200000
+        self.current_hp = 200000
         self.move_speed = 0.0
         self.attack_range = 0.0
         self.attack_speed = 0.0

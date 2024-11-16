@@ -1,6 +1,8 @@
 # state_machine.py
 from sdl2 import SDL_MOUSEBUTTONDOWN, SDL_MOUSEMOTION, SDL_BUTTON_LEFT, SDL_MOUSEBUTTONUP
 
+import globals
+
 
 def start_event(event):
     return event[0] == 'START_EVENT'
@@ -32,7 +34,7 @@ def mouse_hover(event):
             event[1].type == SDL_MOUSEMOTION)
 
 def left_click(event):
-    return (event[0] == 'CLICK' and
+    return (event[0] == 'LEFT_CLICK' and
             event[1].type == SDL_MOUSEBUTTONDOWN and
             event[1].button == SDL_BUTTON_LEFT)
 
@@ -41,9 +43,17 @@ def mouse_leave(event):
     return (event[0] == 'MOUSE_LEAVE' and
             event[1].type == SDL_MOUSEMOTION)
 
-def mouse_release(event):
-    return  (event[0] == 'MOUSE_RELEASE' and
-             event[1].type == SDL_MOUSEBUTTONUP)
+def mouse_left_release_in_card_space(event):
+    return  (event[0] == 'MOUSE_LEFT_RELEASE' and
+             event[1].type == SDL_MOUSEBUTTONUP and
+             globals.CARD_SPACE_X1 < globals.mouse_x < globals.CARD_SPACE_X2 and
+             globals.CARD_SPACE_Y1 < globals.mouse_y < globals.CARD_SPACE_Y2)
+
+def mouse_left_release_out_card_space(event):
+    return  (event[0] == 'MOUSE_LEFT_RELEASE' and
+             event[1].type == SDL_MOUSEBUTTONUP and
+             (not globals.CARD_SPACE_X1 < globals.mouse_x < globals.CARD_SPACE_X2 or
+             not globals.CARD_SPACE_Y1 < globals.mouse_y < globals.CARD_SPACE_Y2))
 
 # ========= STATE MACHINE ==========
 

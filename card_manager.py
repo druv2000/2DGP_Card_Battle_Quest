@@ -25,6 +25,9 @@ class CardManager:
     def draw_card(self):
         card = self.deck.draw_card()
         if card and self.hand.add_card(card):
+            i = len(self.hand.cards)
+            card.x = 200 + i * 200  # 카드 간격 조정
+            card.original_x = card.x
             return True
         return False
 
@@ -41,8 +44,6 @@ class CardManager:
 
     def draw(self):
         for i, card in enumerate(self.hand.cards):
-            card.x = 400 + i * 200  # 카드 간격 조정
-            card.original_x = card.x
             card.draw()
 
 card_manager = CardManager()

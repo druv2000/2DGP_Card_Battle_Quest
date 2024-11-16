@@ -1,12 +1,17 @@
 # card.py
-from pico2d import load_image
+from pico2d import load_image, draw_rectangle, load_font
+from sdl2.examples.gfxdrawing import draw_circles
 
-from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, mouse_release
+import globals
+from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
+    mouse_left_release_in_card_space, mouse_left_release_out_card_space
 
 
 class Idle:
     @staticmethod
     def enter(c, e):
+        c.x = c.original_x
+        c.y = c.original_y
         pass
     @staticmethod
     def exit(c, e):
@@ -28,8 +33,8 @@ class Highlight:
         pass
     @staticmethod
     def exit(c, e):
-        c.draw_size_x /= 2
-        c.draw_size_y /= 2
+        c.draw_size_x = c.original_size_x
+        c.draw_size_y = c.original_size_y
         c.y -= 100
         pass
     @staticmethod
@@ -43,6 +48,32 @@ class Highlight:
 class Clicked:
     @staticmethod
     def enter(c, e):
+        c.draw_size_x = c.original_size_x / 4
+        c.draw_size_y = c.original_size_y / 4
+        pass
+
+    @staticmethod
+    def exit(c, e):
+        if mouse_left_release_in_card_space(e):
+            c.draw_size_x = c.original_size_x
+            c.draw_size_y = c.original_size_y
+        pass
+
+    @staticmethod
+    def do(c):
+        c.x = globals.mouse_x
+        c.y = globals.mouse_y
+        pass
+
+    @staticmethod
+    def draw(c):
+        c.image.draw(c.x, c.y, c.draw_size_x, c.draw_size_y)
+        draw_rectangle(globals.CARD_SPACE_X1, globals.CARD_SPACE_Y1, globals.CARD_SPACE_X2, globals.CARD_SPACE_Y2)
+        pass
+
+class Used:
+    @staticmethod
+    def enter(c, e):
         pass
 
     @staticmethod
@@ -51,12 +82,13 @@ class Clicked:
 
     @staticmethod
     def do(c):
-
         pass
 
     @staticmethod
     def draw(c):
-        c.image.draw(c.x, c.y, c.draw_size_x, c.draw_size_y)
+        draw_rectangle(c.x - 5, c.y - 5, c.x + 5, c.y + 5)
+        c.font = load_font('resource/font/fixedsys.ttf', 30)
+        c.font.draw(c.x, c.y, f' <- CARD USED HERE', (0, 0, 255))
         pass
 
 
@@ -82,7 +114,8 @@ class Card:
         self.state_machine.set_transitions({
             Idle: {mouse_hover: Highlight},
             Highlight: {mouse_leave: Idle, left_click: Clicked},
-            Clicked: {mouse_release: Idle}
+            Clicked: {mouse_left_release_in_card_space: Idle, mouse_left_release_out_card_space: Used},
+            Used: {}
         })
 
     def update(self):

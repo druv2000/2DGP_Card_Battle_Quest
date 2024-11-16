@@ -88,11 +88,8 @@ class Bullet:
         self.target = target
         self.is_active = True
         self.attack_damage = shooter.attack_damage
-
-
-        # if not self.target.is_already_in_pair:
-        #     pass
         self.collision_group = object_pool.collision_group_pool.get(self, target, 'bullet')
+        print(f'    DEBUG: bullet set')
 
     def update(self):
         if not self.is_active or self.target is None:
