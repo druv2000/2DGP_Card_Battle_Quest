@@ -3,6 +3,7 @@ import random
 
 from pico2d import *
 
+from card import Card
 from event_system import event_system
 import game_framework
 import game_world

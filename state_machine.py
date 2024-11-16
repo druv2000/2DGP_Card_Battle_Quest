@@ -1,4 +1,6 @@
 # state_machine.py
+from sdl2 import SDL_MOUSEBUTTONDOWN, SDL_MOUSEMOTION, SDL_BUTTON_LEFT
+
 
 def start_event(event):
     return event[0] == 'START_EVENT'
@@ -23,6 +25,16 @@ def stunned_end(event):
 
 def dead(event):
     return event[0] == 'DEAD'
+
+
+def mouse_hover(event):
+    return (event[0] == 'MOUSE_HOVER' and
+            event[1].type == SDL_MOUSEMOTION)
+
+def left_click(event):
+    return (event[0] == 'CLICK' and
+            event[1].type == SDL_MOUSEBUTTONDOWN and
+            event[1].button == SDL_BUTTON_LEFT)
 
 
 
