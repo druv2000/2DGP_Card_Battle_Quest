@@ -242,7 +242,7 @@ class Character:
         for effect in self.effects:
             if hasattr(effect, 'draw'):
                 effect.draw(self)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         size = self.draw_size / 2

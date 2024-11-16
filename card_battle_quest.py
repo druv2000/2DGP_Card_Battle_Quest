@@ -20,4 +20,4 @@ if __name__ == '__main__':
 
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats('cumulative')
-    stats.print_stats(200)  # 상위 20개 결과 출력
+    stats.print_stats(200)  # 상위 200개 결과 출력

@@ -121,7 +121,7 @@ class Bullet:
     def draw(self):
         if self.is_active:
             self.image.draw(self.x, self.y, 50, 50)
-            draw_rectangle(*self.get_bb())
+            # draw_rectangle(*self.get_bb())
 
     def is_alive(self):
         return self.is_active
@@ -166,7 +166,7 @@ class Bowman_AttackBullet(Bullet):
             Bowman_AttackBullet.image.composite_draw(
                 self.rotation, '', self.x, self.y, 70, 70
             )
-            draw_rectangle(*self.get_bb())
+            # draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         size = 5

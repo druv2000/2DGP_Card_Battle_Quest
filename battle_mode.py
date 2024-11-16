@@ -23,9 +23,9 @@ def init():
 
 
     running = True
-    # # background 생성
-    # background = Background(800, 450)
-    # game_world.add_object(background, 0)
+    # background 생성
+    background = Background(800, 450)
+    game_world.add_object(background, 0)
 
     # test: real
     knight = Knight(200, 450, 'ally')
@@ -38,8 +38,8 @@ def init():
     game_world.add_object(bowman, 4)
     game_world.add_object(total_damage_ui, 4)
 
-    boss = Soldier_boss(1500, 450, 'enemy')
-    game_world.add_object(boss, 3)
+    # boss = Soldier_boss(1500, 450, 'enemy')
+    # game_world.add_object(boss, 3)
 
 #####################################################################
 
