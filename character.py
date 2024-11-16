@@ -4,18 +4,14 @@ import time
 # 이것은 각 상태들을 객체로 구현한 것임.
 from pico2d import get_time
 
+import game_world
 from effects import HitEffect
-from event_system import event_system
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
     update_walk_animation, is_attack_timing
 from game_world import change_object_layer
+from globals import CHARACTER_ANIMATION_PER_TIME
 from object_pool import *
 from state_machine import *
-
-# idle animation speed
-TIME_PER_ACTION = 0.3
-ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAME_PER_ACTION = 8
 
 # ============================================================================================
 
@@ -57,7 +53,7 @@ class Idle:
         if find_closest_target(c) != None:
             c.target = find_closest_target(c)
             c.state_machine.add_event(('TARGET_FOUND', 0))
-        c.frame = (c.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
     @staticmethod
     def draw(c):
         character_draw(c)
@@ -72,7 +68,7 @@ class Move_to_target:
         pass
     @staticmethod
     def do(c):
-        c.frame = (c.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
 
         current_time = time.time()
 
@@ -107,7 +103,7 @@ class Attack_target:
         c.damage_applied = False
     @staticmethod
     def do(c):
-        c.frame = (c.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
         if c.target.state_machine.cur_state == Dead and not c.state_machine.event_que and not c.animation_in_progress:
             c.state_machine.add_event(('TARGET_LOST', 0))
             return
@@ -138,7 +134,7 @@ class Stunned:
         pass
     @staticmethod
     def do(c):
-        c.frame = (c.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
         pass
     @staticmethod
     def draw(c):

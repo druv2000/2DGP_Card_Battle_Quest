@@ -1,3 +1,5 @@
+# uniform_grid.py
+
 class UniformGrid:
     def __init__(self, width, height, cell_size):
         self.cell_size = cell_size

@@ -3,7 +3,8 @@ import random
 
 from pico2d import *
 
-from card import Card
+import globals
+from card_manager import card_manager
 from event_system import event_system
 import game_framework
 import game_world
@@ -12,6 +13,7 @@ from background import Background
 from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite, Soldier_boss
 from player import player
 from ui import TotalDamageUI
+from globals import mouse_x, mouse_y, SCREEN_HEIGHT
 
 
 def init():
@@ -19,6 +21,7 @@ def init():
     global knight
 
     object_pool.init_object_pool()
+    card_manager.init_deck()
     event_system.add_listener('character_hit', on_character_hit)
 
 
@@ -85,19 +88,22 @@ def resume():
 def update():
     game_world.handle_collisions()
     game_world.update()
-    delay(0.01)
+    card_manager.update()
 
 def draw():
     clear_canvas()
     game_world.render()
+    card_manager.draw()
     update_canvas()
 
 def handle_events():
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
-           game_framework.quit()
+            game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
+        elif event.type == SDL_MOUSEMOTION:
+            globals.mouse_x, globals.mouse_y = event.x, SCREEN_HEIGHT - event.y
         else:
             player.handle_event(event)

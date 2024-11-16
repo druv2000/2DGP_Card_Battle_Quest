@@ -3,14 +3,10 @@
 import random
 import time
 
+from effects import StunEffect
 from game_world import world
 from object_pool import *
 from object_pool import get_character_bullet
-
-# attack animation speed
-TIME_PER_ATTACK_ANIMATION = 0.3
-ATTACK_ANIMATION_PER_TIME = 1.0 / TIME_PER_ATTACK_ANIMATION
-FRAME_PER_ATTACK = 8
 
 # =================================================================
 

@@ -1,3 +1,6 @@
+# card_manager.py
+
+import game_world
 from card import Card
 from deck import Deck, Hand
 
@@ -8,10 +11,16 @@ class CardManager:
         self.hand = Hand()
         self.discard_pile = []
 
-    def initialize_deck(self):
+        self.can_target = False
+
+    def init_deck(self):
         # 덱에 카드 추가
-        self.deck.add_card(Card("Knight", 3, 'resource/knight_card.png'))
-        self.deck.add_card(Card("Mage", 4, 'resource/mage_card.png'))
+        self.deck.add_card(Card("Knight", 3, 'resource/card.png'))
+        self.deck.add_card(Card("Mage", 4, 'resource/card.png'))
+        self.deck.add_card(Card("Mage", 4, 'resource/card.png'))
+        self.deck.add_card(Card("Mage", 4, 'resource/card.png'))
+        self.deck.add_card(Card("Mage", 4, 'resource/card.png'))
+
 
     def draw_card(self):
         card = self.deck.draw_card()
@@ -33,3 +42,5 @@ class CardManager:
         for i, card in enumerate(self.hand.cards):
             card.x = 400 + i * 200  # 카드 간격 조정
             card.draw()
+
+card_manager = CardManager()

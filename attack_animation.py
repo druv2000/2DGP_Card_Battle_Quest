@@ -1,20 +1,13 @@
 # attack_animation.py
 import math
 
-from pico2d import load_image, draw_rectangle
-from pygame.transform import scale
+from pico2d import load_image
 
 from event_system import event_system
 import game_framework
-import game_world
 import object_pool
-from game_world import add_collision_pair
 
-from effects import StunEffect
-
-TIME_PER_ACTION = 0.2
-ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAME_PER_ACTION = 8
+from globals import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION
 
 class AttackAnimation:
     def __init__(self):
@@ -54,7 +47,7 @@ class AttackAnimation:
     def update(self):
         if self.frame >= self.total_frames:
             self.is_active = False
-        self.frame = (self.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        self.frame = (self.frame + FRAME_PER_HIT_ANIMATION * HIT_ANIMATION_PER_TIME * game_framework.frame_time)
 
     def draw(self):
         self.image.clip_composite_draw(
@@ -257,7 +250,7 @@ class HitAnimation:
     def update(self):
         if self.frame >= self.total_frames:
             self.is_active = False
-        self.frame = (self.frame + FRAME_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        self.frame = (self.frame + FRAME_PER_HIT_ANIMATION * HIT_ANIMATION_PER_TIME * game_framework.frame_time)
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * self.size_x, 0, self.size_x, self.size_y, self.x, self.y, 150, 150)

@@ -14,6 +14,8 @@ world = [[] for _ in range(10)]
 collision_pairs = {}
 grid = UniformGrid(1600, 900, 100)  # 1600x900 게임 화면, 100x100 셀 크기
 
+
+
 #======================================================================
 
 def add_object(obj, depth):
@@ -126,3 +128,5 @@ def handle_collisions():
                         print(f'{group} collide')
                         a.handle_collision(group, b)
                         b.handle_collision(group, a)
+
+

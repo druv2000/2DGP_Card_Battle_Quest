@@ -1,5 +1,5 @@
 # state_machine.py
-from sdl2 import SDL_MOUSEBUTTONDOWN, SDL_MOUSEMOTION, SDL_BUTTON_LEFT
+from sdl2 import SDL_MOUSEBUTTONDOWN, SDL_MOUSEMOTION, SDL_BUTTON_LEFT, SDL_MOUSEBUTTONUP
 
 
 def start_event(event):
@@ -36,7 +36,14 @@ def left_click(event):
             event[1].type == SDL_MOUSEBUTTONDOWN and
             event[1].button == SDL_BUTTON_LEFT)
 
+def mouse_leave(event):
+    global mouse_x, mouse_y
+    return (event[0] == 'MOUSE_LEAVE' and
+            not event[1].contains_point(mouse_x, mouse_y))
 
+def mouse_release(event):
+    return  (event[0] == 'MOUSE_RELEASE' and
+             event[1].type == SDL_MOUSEBUTTONUP)
 
 # ========= STATE MACHINE ==========
 

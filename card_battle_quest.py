@@ -4,17 +4,16 @@
 import cProfile
 import pstats
 
-from pico2d import open_canvas, clear_canvas, update_canvas, delay, close_canvas
+from pico2d import open_canvas, close_canvas
 import game_framework
-import object_pool
 import title_mode as start_mode
-import game_world
+from globals import SCREEN_WIDTH, SCREEN_HEIGHT
 
 if __name__ == '__main__':
     profiler = cProfile.Profile()
     profiler.enable()
 
-    open_canvas(1600, 900)
+    open_canvas(SCREEN_WIDTH, SCREEN_HEIGHT)
     game_framework.run(start_mode)
     close_canvas()
 
