@@ -25,8 +25,23 @@ class TotalDamageUI:
         self.font.draw(self.x, self.y - 100, f'mage  : {self.p2.total_damage}', (255, 0, 255))
         self.font.draw(self.x, self.y - 140, f'bowman: {self.p3.total_damage}', (0, 255, 0))
 
-class RangeCircleUI:
+class AreaCircleUI:
     def __init__(self, x, y, r):
+        self.x = x
+        self.y = y
+        self.radius = r
+        self.image = load_image('resource/area_circle.png')
+        self.can_target = False
+
+    def update(self):
+        pass
+
+    def draw(self):
+        self.image.draw(self.x, self.y, self.radius*2, self.radius*2)
+
+class RangeCircleUI:
+    def __init__(self, character, x, y, r):
+        self.character = character
         self.x = x
         self.y = y
         self.radius = r
@@ -34,9 +49,11 @@ class RangeCircleUI:
         self.can_target = False
 
     def update(self):
-        self.x = globals.mouse_x
-        self.y = globals.mouse_y
+        self.x = self.character.x
+        self.y = self.character.y
+        pass
 
     def draw(self):
         self.image.draw(self.x, self.y, self.radius*2, self.radius*2)
+
 

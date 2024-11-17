@@ -6,6 +6,7 @@ class Fireball(Card):
     def __init__(self):
         from battle_mode import mage
         super().__init__("Fireball", mage, 3, "resource/card_mage.png")
+        self.range = 400
         self.damage = 20
         self.radius = 100
 

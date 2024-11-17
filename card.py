@@ -1,4 +1,6 @@
 # card.py
+from math import radians
+
 from pico2d import load_image, draw_rectangle, load_font
 from sdl2.examples.gfxdrawing import draw_circles
 
@@ -6,7 +8,8 @@ import game_world
 import globals
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
     mouse_left_release_in_card_space, mouse_left_release_out_card_space
-from ui import RangeCircleUI
+from ui import RangeCircleUI, AreaCircleUI
+from utils import limit_within_range
 
 
 class Idle:
@@ -57,11 +60,14 @@ class Clicked:
     def enter(c, e):
         c.draw_size_x = c.original_size_x / 4
         c.draw_size_y = c.original_size_y / 4
-        if hasattr(c, 'radius'):
+        if hasattr(c, 'range'):
             global range_ui
-            range_ui = RangeCircleUI(c.x, c.y, c.radius)
+            range_ui = RangeCircleUI(c.user, c.x, c.y, c.range)
             game_world.add_object(range_ui, 1)
-        pass
+        if hasattr(c, 'radius'):
+            global area_ui
+            area_ui = AreaCircleUI(c.x, c.y, c.radius)
+            game_world.add_object(area_ui, 1)
 
     @staticmethod
     def exit(c, e):
@@ -69,15 +75,29 @@ class Clicked:
             c.draw_size_x = c.original_size_x
             c.draw_size_y = c.original_size_y
         if hasattr(c, 'radius'):
+            global area_ui
+            game_world.remove_object(area_ui)
+        if hasattr(c, 'range'):
             global range_ui
             game_world.remove_object(range_ui)
         pass
 
     @staticmethod
     def do(c):
-        c.x = globals.mouse_x
-        c.y = globals.mouse_y
-        pass
+        if hasattr(c, 'range') and hasattr(c, 'user'):
+            c.x, c.y = limit_within_range(c, globals.mouse_x, globals.mouse_y)
+        else:
+            c.x = globals.mouse_x
+            c.y = globals.mouse_y
+
+        if hasattr(c, 'radius'):
+            global area_ui
+            area_ui.x = c.x
+            area_ui.y = c.y
+
+        if hasattr(c, 'range'):
+            global range_ui
+            range_ui.update()  # range_ui의 위치 업데이트
 
     @staticmethod
     def draw(c):
