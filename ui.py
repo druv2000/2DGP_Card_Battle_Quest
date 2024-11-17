@@ -1,6 +1,8 @@
 # ui.py
 
-from pico2d import load_font
+from pico2d import load_font, load_image
+
+import globals
 
 
 class TotalDamageUI:
@@ -23,4 +25,18 @@ class TotalDamageUI:
         self.font.draw(self.x, self.y - 100, f'mage  : {self.p2.total_damage}', (255, 0, 255))
         self.font.draw(self.x, self.y - 140, f'bowman: {self.p3.total_damage}', (0, 255, 0))
 
+class RangeCircleUI:
+    def __init__(self, x, y, r):
+        self.x = x
+        self.y = y
+        self.radius = r
+        self.image = load_image('resource/range_circle.png')
+        self.can_target = False
+
+    def update(self):
+        self.x = globals.mouse_x
+        self.y = globals.mouse_y
+
+    def draw(self):
+        self.image.draw(self.x, self.y, self.radius*2, self.radius*2)
 

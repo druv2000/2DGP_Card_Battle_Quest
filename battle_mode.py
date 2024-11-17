@@ -13,13 +13,12 @@ from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_
 from player import player
 from ui import TotalDamageUI
 
-
+global knight, mage, bowman
 def init():
     global running
-    global knight
+    global knight, mage, bowman
 
     object_pool.init_object_pool()
-    card_manager.init_deck()
     event_system.add_listener('character_hit', on_character_hit)
 
 
@@ -42,6 +41,9 @@ def init():
 
     boss = Soldier_boss(1500, 550, 'enemy')
     game_world.add_object(boss, 3)
+
+    card_manager.register_characters(knight, mage, bowman)
+    card_manager.init_deck()
 
 #####################################################################
 

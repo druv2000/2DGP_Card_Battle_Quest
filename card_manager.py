@@ -4,6 +4,7 @@ import random
 
 import game_world
 from card import Card, Highlight
+from card_list import Fireball
 from deck import Deck, Hand
 
 
@@ -12,13 +13,20 @@ class CardManager:
         self.deck = Deck()
         self.hand = Hand()
 
+    def register_characters(self, knight, mage, bowman):
+        self.characters = {
+            'knight': knight,
+            'mage': mage,
+            'bowman': bowman
+        }
+
     def init_deck(self):
         # 덱에 카드 추가
-        self.deck.add_card(Card("1", 'knight',3, 'resource/card_knight.png'))
-        self.deck.add_card(Card("2", 'mage',4, 'resource/card_knight.png'))
-        self.deck.add_card(Card("3", 'mage',4, 'resource/card_mage.png'))
-        self.deck.add_card(Card("4", 'mage',4, 'resource/card_mage.png'))
-        self.deck.add_card(Card("5", 'mage',4, 'resource/card_bowman.png'))
+        self.deck.add_card(Fireball())
+        self.deck.add_card(Fireball())
+        self.deck.add_card(Fireball())
+        self.deck.add_card(Fireball())
+        self.deck.add_card(Fireball())
 
         random.shuffle(self.deck.cards)
 
@@ -63,6 +71,7 @@ class CardManager:
             self.hand.remove_card(card)
             self.deck.add_card(card)
             self.draw_card()
+            self.update_all_cards()
 
     def update(self):
         for card in self.hand.cards:
