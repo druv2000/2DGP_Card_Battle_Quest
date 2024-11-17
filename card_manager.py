@@ -67,7 +67,8 @@ class CardManager:
     def use_card(self, card):
         if card in self.hand.cards:
             # 카드 사용 -> 덱으로 반환 -> 한장 드로우
-            card.use()
+            card.use(card.x, card.y)
+            card.state_machine.add_event(('CARD_USED', 0))
             self.hand.remove_card(card)
             self.deck.add_card(card)
             self.draw_card()

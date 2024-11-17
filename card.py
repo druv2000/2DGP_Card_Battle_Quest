@@ -7,7 +7,7 @@ from sdl2.examples.gfxdrawing import draw_circles
 import game_world
 import globals
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
-    mouse_left_release_in_card_space, mouse_left_release_out_card_space
+    mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used
 from ui import RangeCircleUI, AreaCircleUI
 from utils import limit_within_range
 
@@ -71,9 +71,8 @@ class Clicked:
 
     @staticmethod
     def exit(c, e):
-        if mouse_left_release_in_card_space(e):
-            c.draw_size_x = c.original_size_x
-            c.draw_size_y = c.original_size_y
+        c.draw_size_x = c.original_size_x
+        c.draw_size_y = c.original_size_y
         if hasattr(c, 'radius'):
             global area_ui
             game_world.remove_object(area_ui)
@@ -107,6 +106,8 @@ class Clicked:
 class Used:
     @staticmethod
     def enter(c, e):
+        from card_manager import card_manager
+        card_manager.use_card(c)
         pass
 
     @staticmethod
@@ -119,9 +120,6 @@ class Used:
 
     @staticmethod
     def draw(c):
-        draw_rectangle(c.x - 5, c.y - 5, c.x + 5, c.y + 5)
-        c.font = load_font('resource/font/fixedsys.ttf', 30)
-        c.font.draw(c.x, c.y, f' <- CARD WAS USED HERE', (0, 0, 255))
         pass
 
 
@@ -150,7 +148,7 @@ class Card:
             Idle: {mouse_hover: Highlight},
             Highlight: {mouse_leave: Idle, left_click: Clicked},
             Clicked: {mouse_left_release_in_card_space: Idle, mouse_left_release_out_card_space: Used},
-            Used: {}
+            Used: {card_used: Idle}
         })
 
     def update(self):

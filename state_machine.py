@@ -55,6 +55,9 @@ def mouse_left_release_out_card_space(event):
              (not globals.CARD_SPACE_X1 < globals.mouse_x < globals.CARD_SPACE_X2 or
              not globals.CARD_SPACE_Y1 < globals.mouse_y < globals.CARD_SPACE_Y2))
 
+def card_used(event):
+    return event[0] == 'CARD_USED'
+
 # ========= STATE MACHINE ==========
 
 class StateMachine:
