@@ -68,7 +68,10 @@ class CardManager:
             card.update()
 
     def draw(self):
-        for i, card in enumerate(self.hand.cards):
+        for i, card in enumerate(reversed(self.hand.cards)):
             card.draw()
+        for card in self.hand.cards:
+            if card.state_machine.cur_state == Highlight:
+                card.draw()
 
 card_manager = CardManager()
