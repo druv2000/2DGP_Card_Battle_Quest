@@ -1,6 +1,6 @@
 # object_pool.py
 
-from attack_animation import *
+from animation import *
 from collision_group import CollisionGroup
 from damage_number import DamageNumber
 from game_world import add_object, add_collision_pair, remove_collision_object

@@ -1,13 +1,18 @@
-# attack_animation.py
+# animation.py
 import math
 
 from pico2d import load_image
+from pygame.examples.cursors import image
+from pygame.transform import scale
 
+import game_world
 from event_system import event_system
 import game_framework
 import object_pool
 
-from globals import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION
+from globals import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION, CARD_EFFECT_ANIMATION_PER_TIME, \
+    FRAME_PER_CARD_EFFECT_ANIMATION
+
 
 class AttackAnimation:
     def __init__(self):
@@ -254,3 +259,52 @@ class HitAnimation:
 
     def is_alive(self):
         return self.is_active
+
+class CardEffectAnimation:
+    def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame):
+        self.x = x
+        self.y = y
+        self.size_x = size_x
+        self.size_y = size_y
+        self.scale_x = scale_x
+        self.scale_y = scale_y
+        self.image = load_image(image_path)
+        self.frame = 0
+        self.total_frame = total_frame
+        self.can_target = False
+
+    def update(self):
+        if self.frame >= self.total_frame:
+            game_world.remove_object(self)
+        self.frame = (self.frame + self.total_frame * CARD_EFFECT_ANIMATION_PER_TIME * game_framework.frame_time)
+
+    def draw(self):
+        self.image.clip_draw(
+            int(self.frame) * self.size_x, 0,
+            self.size_x, self.size_y,
+            self.x, self.y,
+            self.scale_x, self.scale_y
+        )
+
+class CardAreaEffectAnimation:
+    def __init__(self, x, y, scale_x, scale_y, image_path, total_time):
+        self.x = x
+        self.y = y
+        self.scale_x = scale_x
+        self.scale_y = scale_y
+        self.image = load_image(image_path)
+        self.frame = 0
+        self.total_frame = 1
+        self.total_time = 1.0 / total_time
+        self.can_target = False
+
+    def update(self):
+        if self.frame >= self.total_frame:
+            game_world.remove_object(self)
+        self.frame = (self.frame + self.total_frame * self.total_time * game_framework.frame_time)
+
+    def draw(self):
+        self.image.draw(
+            self.x, self.y,
+            self.scale_x, self.scale_y
+        )

@@ -9,7 +9,7 @@ import game_framework
 import game_world
 import object_pool
 from background import Background
-from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite, Soldier_boss
+from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite, Soldier_boss, Golem
 from player import player
 from ui import TotalDamageUI
 

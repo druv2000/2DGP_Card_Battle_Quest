@@ -49,8 +49,8 @@ class RangeCircleUI:
         self.can_target = False
 
     def update(self):
-        self.x = self.character.x
-        self.y = self.character.y
+        self.x = self.character.original_x
+        self.y = self.character.original_y
         pass
 
     def draw(self):

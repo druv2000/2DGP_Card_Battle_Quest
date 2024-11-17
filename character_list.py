@@ -2,7 +2,7 @@
 
 from pico2d import load_image
 
-from attack_animation import AttackAnimation, Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
+from animation import Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
 from character import Character
 
 # ==================== ALLY ==========================================
@@ -102,7 +102,33 @@ class Bowman(Character):
     def get_bb(self):
         size = self.draw_size
         return self.x - size/4, self.y - size/2, self.x + size/4, self.y + size/5
-        pass
+
+class Golem(Character):
+    def __init__(self, x, y, team):
+        super().__init__(x, y, team)
+        self.sprite_size = 240
+        self.draw_size = 120
+        self.collision_radius = self.draw_size * (3 / 4)
+
+        self.image = load_image('resource/golem_sprite.png')
+        self.original_image = self.image
+        self.hit_image = load_image('resource/golem_hit_sprite.png')
+
+        self.max_hp = 500
+        self.current_hp = 500
+        self.move_speed = 150
+        self.attack_range = 100
+        self.attack_speed = 1.0
+        self.attack_damage = 1
+
+        self.armor = 0
+
+        self.has_attack_animation = False
+        self.bullet = None
+
+    def get_bb(self):
+        size = self.draw_size
+        return self.x - size / 4, self.y - size / 2, self.x + size / 4, self.y + size / 4
 
 # ================== ENEMY ===================================
 

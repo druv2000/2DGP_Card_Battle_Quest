@@ -4,7 +4,7 @@ import random
 
 import game_world
 from card import Card, Highlight
-from card_list import Fireball
+from card_list import Fireball, SummonGolem
 from deck import Deck, Hand
 
 
@@ -25,8 +25,9 @@ class CardManager:
         self.deck.add_card(Fireball())
         self.deck.add_card(Fireball())
         self.deck.add_card(Fireball())
-        self.deck.add_card(Fireball())
-        self.deck.add_card(Fireball())
+        self.deck.add_card(SummonGolem())
+        self.deck.add_card(SummonGolem())
+        self.deck.add_card(SummonGolem())
 
         random.shuffle(self.deck.cards)
 
@@ -71,7 +72,7 @@ class CardManager:
             card.state_machine.add_event(('CARD_USED', 0))
             self.hand.remove_card(card)
             self.deck.add_card(card)
-            self.draw_card()
+            # self.draw_card()
             self.update_all_cards()
 
     def update(self):

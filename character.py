@@ -2,7 +2,7 @@
 import time
 
 # 이것은 각 상태들을 객체로 구현한 것임.
-from pico2d import get_time
+from pico2d import get_time, draw_rectangle
 
 import game_world
 from effects import HitEffect
@@ -159,13 +159,13 @@ class Dead:
     def do(c):
         if abs(c.rotation - c.target_rotation) > 10:
             if c.sprite_dir == 1:
-                c.rotation -= 5
-                c.y -= 3
-                c.x -= 3
+                c.rotation -= 300 * game_framework.frame_time
+                c.y -= 150 * game_framework.frame_time
+                c.x -= 150 * game_framework.frame_time
             else:
-                c.rotation += 5
-                c.y -= 3
-                c.x += 3
+                c.rotation += 300 * game_framework.frame_time
+                c.y -= 150 * game_framework.frame_time
+                c.x += 150 * game_framework.frame_time
         else:
             c.rotation = c.target_rotation
 
