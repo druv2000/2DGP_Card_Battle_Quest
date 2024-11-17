@@ -21,7 +21,12 @@ class Idle:
         pass
     @staticmethod
     def draw(c):
-        c.image.draw(c.x, c.y, c.draw_size_x, c.draw_size_y)
+        c.image.composite_draw(
+            -c.rotation * 3.141592 / 180,  # 회전 각도 (라디안)
+            '',  # 반전 없음
+            c.x, c.y,  # 그려질 위치
+            c.draw_size_x, c.draw_size_y  # 그려질 크기
+        )
         pass
 
 class Highlight:
@@ -29,7 +34,7 @@ class Highlight:
     def enter(c, e):
         c.draw_size_x *= 1.5
         c.draw_size_y *= 1.5
-        c.y += 100
+        c.y = 200
         pass
     @staticmethod
     def exit(c, e):
@@ -108,6 +113,8 @@ class Card:
         self.original_size_y = 240
         self.draw_size_x = 160
         self.draw_size_y = 240
+        self.rotation = 0
+        self.original_rotation = 0
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)

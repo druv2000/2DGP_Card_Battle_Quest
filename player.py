@@ -44,12 +44,19 @@ class Player:
     # manage cards
 
     def handle_card_hover(self, event):
+        hovered_card = None
+        for card in card_manager.hand.cards:  # 역순으로 순회하여 위에 있는 카드부터 확인
+            if card.contains_point(globals.mouse_x, globals.mouse_y):
+                hovered_card = card
+                break  # 가장 위의 카드를 찾았으므로 루프 종료
+
         for card in card_manager.hand.cards:
-            print(f'    DEBUG: {card.name}')
-            if card.contains_point(globals.mouse_x, globals.mouse_y) and not card.state_machine.event_que:
-                card.state_machine.add_event(('MOUSE_HOVER', event))
-            elif not card.contains_point(globals.mouse_x, globals.mouse_y) and not card.state_machine.event_que:
-                card.state_machine.add_event(('MOUSE_LEAVE', event))
+            if card == hovered_card:
+                if not card.state_machine.event_que:
+                    card.state_machine.add_event(('MOUSE_HOVER', event))
+            else:
+                if not card.state_machine.event_que:
+                    card.state_machine.add_event(('MOUSE_LEAVE', event))
 
     def handle_card_click(self, event):
         for card in card_manager.hand.cards:
