@@ -11,7 +11,6 @@ class CardManager:
     def __init__(self):
         self.deck = Deck()
         self.hand = Hand()
-        self.discard_pile = []
 
     def init_deck(self):
         # 덱에 카드 추가
@@ -59,9 +58,11 @@ class CardManager:
 
     def use_card(self, card):
         if card in self.hand.cards:
+            # 카드 사용 -> 덱으로 반환 -> 한장 드로우
             card.use()
             self.hand.remove_card(card)
-            self.discard_pile.append(card)
+            self.deck.add_card(card)
+            self.draw_card()
 
     def update(self):
         for card in self.hand.cards:

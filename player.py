@@ -69,12 +69,6 @@ class Player:
             if card.state_machine.cur_state == Clicked:
                 card.state_machine.add_event(('MOUSE_LEFT_RELEASE', event))
 
-    def use_card(self, card):
-        # 카드 사용 로직
-        # card_manager.use_card(card)
-        # 예: 캐릭터 소환, 효과 적용 등
-        pass
-
     ############################################################
     # spawn object
 
