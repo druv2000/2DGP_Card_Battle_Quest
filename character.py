@@ -208,6 +208,11 @@ class Dead:
 
         c.can_target = False
         change_object_layer(c, 1)
+
+        # 활성화된 이펙트 전부 비활성화
+        for effect in c.effects:
+            effect.remove(c)
+        c.effects.clear()
     @staticmethod
     def exit(c, e):
         pass

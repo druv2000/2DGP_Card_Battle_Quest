@@ -1,4 +1,5 @@
 # ui.py
+import math
 
 from pico2d import load_font, load_image
 
@@ -39,6 +40,27 @@ class AreaCircleUI:
 
     def draw(self):
         self.image.draw(self.x, self.y, self.radius*2, self.radius*2)
+
+class AreaBeamUI:
+    def __init__(self, shooter_x, shooter_y, x, y, width):
+        self.shooter_x = shooter_x
+        self.shooter_y = shooter_y
+        self.x = x
+        self.y = y
+        self.width = width
+        self.rotation = 0
+        self.image = load_image('resource/area_beam.png')
+        self.can_target = False
+
+    def update(self):
+        pass
+
+    def draw(self):
+        self.image.composite_draw(
+            self.rotation, '',
+            self.shooter_x, self.shooter_y,
+            self.width * 390, self.width
+        )
 
 class RangeCircleUI:
     def __init__(self, character, x, y, r):

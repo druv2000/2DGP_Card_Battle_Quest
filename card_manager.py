@@ -4,7 +4,7 @@ import random
 
 import game_world
 from card import Card, Highlight
-from card_list import Fireball, SummonGolem
+from card_list import Fireball, SummonGolem, SnipeShot
 from deck import Deck, Hand
 
 
@@ -24,10 +24,9 @@ class CardManager:
         # 덱에 카드 추가
         self.deck.add_card(Fireball())
         self.deck.add_card(Fireball())
-        self.deck.add_card(Fireball())
         self.deck.add_card(SummonGolem())
         self.deck.add_card(SummonGolem())
-        self.deck.add_card(SummonGolem())
+        self.deck.add_card(SnipeShot())
 
         random.shuffle(self.deck.cards)
 

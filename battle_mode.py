@@ -36,7 +36,7 @@ def init():
 
     # game_world.add_object(knight, 4)
     game_world.add_object(mage, 4)
-    # game_world.add_object(bowman, 4)
+    game_world.add_object(bowman, 4)
     game_world.add_object(total_damage_ui, 4)
 
     # boss = Soldier_boss(1500, 550, 'enemy')

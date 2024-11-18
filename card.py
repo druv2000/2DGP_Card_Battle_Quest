@@ -1,4 +1,5 @@
 # card.py
+import math
 from math import radians
 
 from pico2d import load_image, draw_rectangle, load_font
@@ -8,7 +9,7 @@ import game_world
 import globals
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
     mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card
-from ui import RangeCircleUI, AreaCircleUI
+from ui import RangeCircleUI, AreaCircleUI, AreaBeamUI
 from utils import limit_within_range
 
 
@@ -75,20 +76,27 @@ class Clicked:
             range_ui = RangeCircleUI(c.user, c.x, c.y, c.range)
             game_world.add_object(range_ui, 1)
         if hasattr(c, 'radius'):
-            global area_ui
-            area_ui = AreaCircleUI(c.x, c.y, c.radius)
-            game_world.add_object(area_ui, 1)
+            global area_circle_ui
+            area_circle_ui = AreaCircleUI(c.x, c.y, c.radius)
+            game_world.add_object(area_circle_ui, 1)
+        if hasattr(c, 'width'):
+            global area_beam_ui
+            area_beam_ui = AreaBeamUI(c.user.original_x, c.user.original_y, c.x, c.y, c.width)
+            game_world.add_object(area_beam_ui, 1)
 
     @staticmethod
     def exit(c, e):
         c.draw_size_x = c.original_size_x
         c.draw_size_y = c.original_size_y
         if hasattr(c, 'radius'):
-            global area_ui
-            game_world.remove_object(area_ui)
+            global area_circle_ui
+            game_world.remove_object(area_circle_ui)
         if hasattr(c, 'range'):
             global range_ui
             game_world.remove_object(range_ui)
+        if hasattr(c, 'width'):
+            global area_beam_ui
+            game_world.remove_object(area_beam_ui)
         pass
 
     @staticmethod
@@ -100,13 +108,25 @@ class Clicked:
             c.y = globals.mouse_y
 
         if hasattr(c, 'radius'):
-            global area_ui
-            area_ui.x = c.x
-            area_ui.y = c.y
+            global area_circle_ui
+            area_circle_ui.x = c.x
+            area_circle_ui.y = c.y
 
         if hasattr(c, 'range'):
             global range_ui
             range_ui.update()  # range_ui의 위치 업데이트
+
+        if hasattr(c, 'width'):
+            global area_beam_ui
+            area_beam_ui.x = c.x
+            area_beam_ui.y = c.y
+            area_beam_ui.shooter_x = c.user.original_x
+            area_beam_ui.shooter_y = c.user.original_y
+
+            target_distance = math.sqrt((c.x - c.user.original_x) ** 2 + (c.y - c.user.original_y) ** 2)
+            area_beam_ui.dir_x = (c.x - c.user.original_x) / target_distance
+            area_beam_ui.dir_y = (c.y - c.user.original_y) / target_distance
+            area_beam_ui.rotation = math.atan2(area_beam_ui.dir_y, area_beam_ui.dir_x)
 
     @staticmethod
     def draw(c):

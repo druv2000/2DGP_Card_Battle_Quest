@@ -8,6 +8,8 @@ from game_world import world, add_object
 from globals import HUGE_TIME
 
 
+####################### MAGE ################################
+
 class Fireball(Card):
     def __init__(self):
         from battle_mode import mage
@@ -57,7 +59,6 @@ class Fireball(Card):
                     if distance <= self.radius:
                         self.user.total_damage += self.damage
                         obj.take_damage(self.damage)
-        pass
 
 class SummonGolem(Card):
     def __init__(self):
@@ -111,7 +112,25 @@ class SummonGolem(Card):
                             taunt_effect = TauntEffect(5.0, golem)
                             obj.add_effect(taunt_effect)
 
+############################# BOWMAN #########################################
 
+class SnipeShot(Card):
+    def __init__(self):
+        from battle_mode import bowman
+        super().__init__("SnipeShot", bowman, 3, "resource/card_bowman.png")
+        self.range = 2000
+        self.damage = 15
+        self.width = 30
+        self.casting_time = 1.0
+        self.area_beam_ui = None
+
+    def use(self, x, y):
+        self.user.state_machine.add_event(('CAST_START', self.casting_time))
+        self.user.current_card = self
+        self.user.card_target = (x, y)
+
+    def apply_effect(self, x, y):
+        pass
 
 
 
