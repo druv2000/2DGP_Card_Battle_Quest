@@ -2,6 +2,7 @@
 
 from pico2d import load_font, load_image
 
+import game_framework
 import globals
 
 
@@ -55,5 +56,32 @@ class RangeCircleUI:
 
     def draw(self):
         self.image.draw(self.x, self.y, self.radius*2, self.radius*2)
+
+class ProgressBar:
+    def __init__(self, character, x, y, duration):
+      self.c = character
+      self.x = x
+      self.y = y
+      self.size_x = 224
+      self.size_y = 40
+
+      self.image = load_image('resource/cast_progress_bar.png')
+      self.frame = 0
+      self.total_frame = 39
+      self.duration = duration
+      self.can_target = False
+
+    def update(self):
+        self.frame = (self.frame + self.total_frame * (1.0 / self.duration) * game_framework.frame_time)
+
+    def draw(self):
+        if self.frame <= self.total_frame:
+            self.image.clip_draw(
+                int(self.frame) * self.size_x, 0,
+                self.size_x, self.size_y,
+                self.x, self.y,
+                self.size_x / 2, self.size_y / 2
+            )
+
 
 

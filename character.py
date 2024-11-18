@@ -7,11 +7,13 @@ from pico2d import get_time, draw_rectangle
 import game_world
 from effects import HitEffect
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
-    update_walk_animation, is_attack_timing
+    update_walk_animation, is_attack_timing, update_cast_animation
 from game_world import change_object_layer
 from globals import CHARACTER_ANIMATION_PER_TIME
 from object_pool import *
 from state_machine import *
+from ui import ProgressBar
+
 
 # ============================================================================================
 
@@ -109,6 +111,14 @@ class Attack_target:
             return
         update_attack_animation(c)
         if is_attack_timing(c):
+
+            # 공격 방향 계산
+            epsilon = 0.000001
+            target_distance = math.sqrt((c.target.x - c.x) ** 2 + (c.target.y - c.y) ** 2)
+            c.dir_x = (c.target.x - c.x) / (target_distance + epsilon)
+            c.dir_y = (c.target.y - c.y) / (target_distance + epsilon)
+
+            # 공격 애니메이션 생성(slash)
             if c.has_attack_animation:
                 object_pool.attack_animation_pool.get(
                     c, c.attack_image_path,
@@ -120,6 +130,45 @@ class Attack_target:
             c.attack_animation_progress = 0
 
             attack_target(c) # 데미지 처리
+
+    @staticmethod
+    def draw(c):
+        character_draw(c)
+
+class Casting:
+    @staticmethod
+    def enter(c, e):
+        global cast_start_time, cast_duration, cast_progress_bar
+        cast_start_time = get_time()
+        cast_duration = e[1]
+        cast_progress_bar = ProgressBar(c, c.x, c.y + 50, cast_duration)
+        game_world.add_object(cast_progress_bar, 9)
+        c.frame = 0
+        pass
+
+    @staticmethod
+    def exit(c, e):
+        global cast_progress_bar
+        game_world.remove_object(cast_progress_bar)
+
+        c.rotation = c.original_rotation
+        c.cast_animation_progress = 0
+        if c.current_card and c.card_target:
+            x, y = c.card_target
+            c.current_card.apply_effect(x, y)
+            c.current_card = None
+            c.card_target = None
+
+    @staticmethod
+    def do(c):
+        global cast_start_time, cast_duration
+        if get_time() - cast_start_time >= cast_duration:
+            c.state_machine.add_event(('CAST_END', 0))
+            return
+
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        update_cast_animation(c, cast_duration)
+        pass
 
     @staticmethod
     def draw(c):
@@ -189,6 +238,7 @@ class Summoned:
     def exit(c, e):
         c.original_x = c.x
         c.original_y = c.y
+
         pass
     @staticmethod
     def do(c):
@@ -218,7 +268,6 @@ class Character:
         self.effects = []
 
         self.last_attack_time = get_time()
-        self.attack_animation_progress = 0
         self.animation_speed = 0.0
         self.hit_effect_duration = 3
         self.can_target = True
@@ -228,21 +277,48 @@ class Character:
 
         self.total_damage = 0
 
+        self.attack_animation_progress = 0
         self.is_attack_performed = False
         self.animation_in_progress = False
         self.damage_applied = False
+
+        self.cast_animation_progress = 0
+        self.is_cast_performed = False
+        self.current_card = None
+        self.card_target = None
 
         event_system.add_listener('character_hit', self.on_hit)
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
         self.state_machine.set_transitions({
-            Idle: {target_found: Move_to_target, target_lost: Idle, stunned: Stunned, dead: Dead},
-            Move_to_target: {target_lost: Idle, can_attack_target: Attack_target, stunned: Stunned, dead: Dead},
-            Attack_target: {target_lost: Idle, stunned: Stunned, dead: Dead},
-            Stunned: {stunned_end: Idle, dead: Dead},
+            Idle: {
+                target_found: Move_to_target,
+                target_lost: Idle,
+                stunned: Stunned,
+                dead: Dead,
+                cast_start: Casting
+            },
+            Move_to_target: {
+                target_lost: Idle,
+                can_attack_target: Attack_target,
+                stunned: Stunned,
+                dead: Dead,
+                cast_start: Casting
+            },
+            Attack_target: {
+                target_lost: Idle,
+                stunned: Stunned,
+                dead: Dead,
+                cast_start: Casting
+            },
+            Stunned: {
+                stunned_end: Idle,
+                dead: Dead
+            },
             Dead: {},
-            Summoned: {summon_end: Idle}
+            Summoned: {summon_end: Idle},
+            Casting: {cast_end: Idle}
         })
 
     def update(self):

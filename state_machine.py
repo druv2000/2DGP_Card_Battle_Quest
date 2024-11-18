@@ -31,6 +31,12 @@ def dead(event):
 def summon_end(event):
     return event[0] == 'SUMMON_END'
 
+def cast_start(event):
+    return event[0] == 'CAST_START'
+
+def cast_end(event):
+    return event[0] == 'CAST_END'
+
 
 def mouse_hover(event):
     return (event[0] == 'MOUSE_HOVER' and

@@ -126,4 +126,37 @@ def update_attack_animation(c):
         c.is_attack_performed = True
         c.animation_in_progress = False
 
+def update_cast_animation(c, cast_duration):
+    total_animation_time = cast_duration
+    progress_increment = game_framework.frame_time / total_animation_time
+    max_backward_rotation = -30 if c.sprite_dir == 1 else 30
+    max_forward_rotation = 60 if c.sprite_dir == 1 else -60
+    rush_distance = 20 if c.sprite_dir == 1 else -20
+
+    # cast_animation 업데이트
+    if c.cast_animation_progress < 0.8:
+        # (0 ~ 80)천천히 뒤로 눕기
+        target_rotation = max_backward_rotation * (c.cast_animation_progress / 0.8)
+        c.rotation = target_rotation
+        c.x = c.original_x - rush_distance * c.cast_animation_progress
+    else:
+        # (80 ~ 100)앞으로 지르기
+        forward_progress = (c.cast_animation_progress - 0.8) / 0.2
+        target_rotation = max_backward_rotation + (max_forward_rotation - max_backward_rotation) * forward_progress
+        c.rotation = target_rotation
+        # 앞으로 지르는 동안 x 위치 조정
+        c.x = c.original_x - rush_distance * 0.8 + rush_distance * forward_progress
+
+    # Calculate animation progress
+    c.cast_animation_progress += progress_increment
+
+    # Reset animation when completed
+    if c.cast_animation_progress >= 1:
+        c.rotation = c.original_rotation
+        c.x = c.original_x  # x 위치를 원래 위치로 복원
+        c.cast_animation_progress = 0
+        c.is_cast_performed = True
+
+
+
 

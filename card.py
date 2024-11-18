@@ -162,5 +162,10 @@ class Card:
                 self.original_y - self.original_size_y / 2 < y < self.original_y + self.original_size_y / 2)
 
     def use(self):
-        # 카드 사용 로직 구현
+        # user 상태를 casting으로 변경
+        pass
+
+    def apply_effect(self):
+        # user casting 종료 시 실행
+        # 카드 사용 로직 수행
         pass
