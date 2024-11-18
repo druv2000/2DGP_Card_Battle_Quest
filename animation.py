@@ -1,7 +1,7 @@
 # animation.py
 import math
 
-from pico2d import load_image
+from pico2d import load_image, draw_rectangle
 from pygame.examples.cursors import image
 from pygame.transform import scale
 
@@ -11,7 +11,7 @@ import game_framework
 import object_pool
 
 from globals import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION, CARD_EFFECT_ANIMATION_PER_TIME, \
-    FRAME_PER_CARD_EFFECT_ANIMATION
+    FRAME_PER_CARD_EFFECT_ANIMATION, SCREEN_WIDTH, SCREEN_HEIGHT
 
 
 class AttackAnimation:
@@ -145,6 +145,74 @@ class Mage_AttackBullet(Bullet):
             Mage_AttackBullet.image = load_image('resource/mage_bullet.png')
         self.move_speed = 750
 
+
+class Bowman_SnipeShotBullet(Bullet):
+    image = None
+
+    def __init__(self):
+        super().__init__()
+        if Bowman_SnipeShotBullet.image is None:
+            Bowman_SnipeShotBullet.image = load_image('resource/bowman_snipe_shot_bullet.png')
+        self.move_speed = 2000
+        self.dir_x = 0
+        self.dir_y = 0
+        self.hit_targets = set()  # 충돌한 대상을 추적하기 위한 집합
+
+    def set(self, shooter, x, y, target_x, target_y):
+        self.x = x
+        self.y = y
+        self.shooter = shooter
+        self.is_active = True
+        self.attack_damage = 15
+        self.first_hit_attack_damage = 100
+        self.is_first_hit = True
+        self.hit_targets.clear()  # 새로운 발사마다 충돌 대상 초기화
+
+        target_distance = math.sqrt((target_x - self.x) ** 2 + (target_y - self.y) ** 2)
+        self.dir_x = (target_x - self.x) / target_distance
+        self.dir_y = (target_y - self.y) / target_distance
+        self.rotation = math.atan2(self.dir_y, self.dir_x)
+
+        game_world.add_collision_pair('snipe_bullet:enemy', self, None)
+
+    def update(self):
+        if not self.is_active:
+            game_world.remove_object(self)
+
+        self.x += self.dir_x * self.move_speed * game_framework.frame_time
+        self.y += self.dir_y * self.move_speed * game_framework.frame_time
+
+        if not 0 - 100 < self.x < SCREEN_WIDTH + 100 or not 0 - 100 < self.y < SCREEN_HEIGHT + 100:
+            self.is_active = False
+
+    def draw(self):
+        if self.is_active:
+            Bowman_SnipeShotBullet.image.composite_draw(
+                self.rotation, '', self.x, self.y, 150, 150
+            )
+            # draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        size = 20
+        return self.x - size, self.y - size, self.x + size, self.y + size
+
+    def handle_collision(self, group, other):
+        if group == 'snipe_bullet:enemy' and other not in self.hit_targets:
+            self.hit_targets.add(other)  # 충돌한 대상 추가
+            event_system.trigger('character_hit', other, self)
+
+    def on_character_hit(self, character, bullet):
+        if bullet == self:
+            self.hit_targets.add(character)  # 충돌한 대상 추가
+            if self.is_first_hit:
+                self.shooter.total_damage += self.first_hit_attack_damage
+                self.is_first_hit = False
+            else:
+                self.shooter.total_damage += self.attack_damage
+            object_pool.hit_animation_pool.get(character, 'resource/bowman_bullet_hit.png', 128, 128, 8)
+
+
+
 class Bowman_AttackBullet(Bullet):
     image = None
 
@@ -221,6 +289,9 @@ class None_AttackBullet(Bullet):
 
     def on_character_hit(self, character, bullet):
         pass
+
+
+
 
 # ==================================================
 # HitAnimation

@@ -366,7 +366,10 @@ class Character:
 
     def on_hit(self, character, bullet):
         if character == self:  # 자신이 맞았을 때만 처리
-            self.take_damage(bullet.attack_damage)
+            if hasattr(bullet, 'is_first_hit'):
+                self.take_damage(bullet.first_hit_attack_damage if bullet.is_first_hit else bullet.attack_damage)
+            else:
+                self.take_damage(bullet.attack_damage)
 
 ###########################################################################
 

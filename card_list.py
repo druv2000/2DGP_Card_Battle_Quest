@@ -1,6 +1,6 @@
 # card_list.py
 import game_world
-from animation import CardEffectAnimation, CardAreaEffectAnimation
+from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_SnipeShotBullet
 from card import Card
 from character_list import Golem
 from effects import TauntEffect
@@ -121,8 +121,7 @@ class SnipeShot(Card):
         self.range = 2000
         self.damage = 15
         self.width = 30
-        self.casting_time = 1.0
-        self.area_beam_ui = None
+        self.casting_time = 0.75
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -130,6 +129,9 @@ class SnipeShot(Card):
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
+        snipe_shot_bullet = Bowman_SnipeShotBullet()
+        snipe_shot_bullet.set(self.user, self.user.x, self.user.y, x, y, )
+        game_world.add_object(snipe_shot_bullet, 7)
         pass
 
 

@@ -97,18 +97,22 @@ class Player:
     def spawn_enemy_soldier(self,x, y):
         new_enemy = Soldier(x, y, 'enemy')
         game_world.add_object(new_enemy, 3)  # 적 추가
+        game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
 
     def spawn_enemy_soldier_mage(self, x, y):
         new_enemy = Soldier_mage(x, y, 'enemy')
         game_world.add_object(new_enemy, 3)  # 적 추가
+        game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
 
     def spawn_enemy_soldier_elite(self, x, y):
         new_enemy = Soldier_elite(x, y, 'enemy')
         game_world.add_object(new_enemy, 3)  # 적 추가
+        game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
 
     def spawn_enemy_boss(self, x, y):
         new_enemy = Soldier_boss(x, y, 'enemy')
         game_world.add_object(new_enemy, 3)
+        game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
 
 
 player = Player()
