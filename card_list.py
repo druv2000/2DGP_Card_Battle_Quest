@@ -5,6 +5,7 @@ from card import Card
 from character_list import Golem
 from effects import TauntEffect
 from game_world import world, add_object
+from globals import HUGE_TIME
 
 
 class Fireball(Card):
@@ -17,11 +18,23 @@ class Fireball(Card):
         self.casting_time = 1.0
 
     def use(self, x, y):
+        global expected_card_area
+        expected_card_area = CardAreaEffectAnimation(
+            x, y,
+            self.radius * 2, self.radius * 2,
+            'resource/explosion_area_effect.png', 0.2,
+            HUGE_TIME
+        )
+        game_world.add_object(expected_card_area, 1)
+
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
         self.user.current_card = self
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
+        global expected_card_area
+        game_world.remove_object(expected_card_area)
+
         card_effect_animation = CardEffectAnimation(
             x, y,
             137, 150,
@@ -32,7 +45,7 @@ class Fireball(Card):
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/explosion_area_effect.png',
+            'resource/explosion_area_effect.png', 1.0,
             0.05
         )
         game_world.add_object(card_effect_area_animation, 1)
@@ -52,20 +65,31 @@ class SummonGolem(Card):
         super().__init__("SummonGolem", mage, 3, "resource/card_summon_golem.png")
         self.range = 400
         self.damage = 0
-        self.radius = 100
+        self.radius = 150
         self.casting_time = 0.5
 
     def use(self, x, y):
-        self.user.sprite_dir = -1 if self.user.x - x > 0 else 1
+        global expected_card_area
+        expected_card_area = CardAreaEffectAnimation(
+            x, y,
+            self.radius * 2, self.radius * 2,
+            'resource/explosion_area_effect.png', 0.2,
+            HUGE_TIME
+        )
+        game_world.add_object(expected_card_area, 1)
+
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
         self.user.current_card = self
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
+        global expected_card_area
+        game_world.remove_object(expected_card_area)
+
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/explosion_area_effect.png',
+            'resource/explosion_area_effect.png', 1.0,
             0.05
         )
         game_world.add_object(card_effect_area_animation, 1)

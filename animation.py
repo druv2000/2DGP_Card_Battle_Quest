@@ -287,12 +287,13 @@ class CardEffectAnimation:
         )
 
 class CardAreaEffectAnimation:
-    def __init__(self, x, y, scale_x, scale_y, image_path, total_time):
+    def __init__(self, x, y, scale_x, scale_y, image_path, opacify, total_time):
         self.x = x
         self.y = y
         self.scale_x = scale_x
         self.scale_y = scale_y
         self.image = load_image(image_path)
+        self.image.opacify(opacify)
         self.frame = 0
         self.total_frame = 1
         self.total_time = 1.0 / total_time
