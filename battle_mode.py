@@ -39,8 +39,8 @@ def init():
     game_world.add_object(bowman, 4)
     game_world.add_object(total_damage_ui, 4)
 
-    boss = Soldier_boss(1500, 550, 'enemy')
-    game_world.add_object(boss, 3)
+    # boss = Soldier_boss(1500, 550, 'enemy')
+    # game_world.add_object(boss, 3)
 
     card_manager.register_characters(knight, mage, bowman)
     card_manager.init_deck()

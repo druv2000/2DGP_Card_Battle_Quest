@@ -29,7 +29,7 @@ class Fireball(Card):
             'resource/explosion_area_effect.png',
             0.05
         )
-        game_world.add_object(card_effect_area_animation, 8)
+        game_world.add_object(card_effect_area_animation, 1)
         game_world.add_object(card_effect_animation, 8) # effect layer
         for layer in world:
             for obj in layer:
@@ -53,9 +53,9 @@ class SummonGolem(Card):
             x, y,
             self.radius*2, self.radius*2,
             'resource/explosion_area_effect.png',
-            0.05
+            0.1
         )
-        game_world.add_object(card_effect_area_animation, 8)
+        game_world.add_object(card_effect_area_animation, 1)
 
         golem = Golem(x, y, 'ally')
         game_world.add_object(golem, 4)

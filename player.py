@@ -7,7 +7,7 @@ import game_world
 import globals
 from card import Clicked
 from card_manager import card_manager
-from character_list import Mage, Knight, Bowman, Soldier, Soldier_mage, Soldier_elite
+from character_list import Mage, Knight, Bowman, Soldier, Soldier_mage, Soldier_elite, Soldier_boss
 
 
 class Player:
@@ -39,6 +39,8 @@ class Player:
             self.spawn_mage(globals.mouse_x, globals.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_e:
             self.spawn_bowman(globals.mouse_x, globals.mouse_y)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
+            self.spawn_enemy_boss(globals.mouse_x, globals.mouse_y)
 
     ############################################################
     # manage cards
@@ -74,7 +76,7 @@ class Player:
 
     def spawn_knight(self, x, y):
         new_enemy = Knight(x, y, 'ally')
-        game_world.add_object(new_enemy, 5)  # 적 추가
+        game_world.add_object(new_enemy, 4)  # 적 추가
 
     def spawn_mage(self, x, y):
         new_ally = Mage(x, y, 'ally')
@@ -95,6 +97,10 @@ class Player:
     def spawn_enemy_soldier_elite(self, x, y):
         new_enemy = Soldier_elite(x, y, 'enemy')
         game_world.add_object(new_enemy, 3)  # 적 추가
+
+    def spawn_enemy_boss(self, x, y):
+        new_enemy = Soldier_boss(x, y, 'enemy')
+        game_world.add_object(new_enemy, 3)
 
 
 player = Player()
