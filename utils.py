@@ -3,7 +3,7 @@ import math
 
 def limit_within_range(card, mouse_x, mouse_y):
     # 카드 사용자의 위치
-    user_x, user_y = card.user.x, card.user.y
+    user_x, user_y = card.user.original_x, card.user.original_y
 
     # 마우스 위치와 사용자 위치 사이의 거리 계산
     dx = mouse_x - user_x

@@ -146,6 +146,7 @@ def update_cast_animation(c, cast_duration):
         c.rotation = target_rotation
         # 앞으로 지르는 동안 x 위치 조정
         c.x = c.original_x - rush_distance * 0.8 + rush_distance * forward_progress
+        pass
 
     # Calculate animation progress
     c.cast_animation_progress += progress_increment
