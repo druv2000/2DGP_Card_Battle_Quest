@@ -178,6 +178,30 @@ class Dead:
     def draw(c):
         character_draw(c)
 
+class Summoned:
+    @staticmethod
+    def enter(c, e):
+        global goal_y
+        goal_y = c.y - 100
+        c.frame = 0
+        pass
+    @staticmethod
+    def exit(c, e):
+        c.original_x = c.x
+        c.original_y = c.y
+        pass
+    @staticmethod
+    def do(c):
+        global goal_y
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        c.y -= 1000 * game_framework.frame_time
+        if c.y <= goal_y:
+            c.state_machine.add_event(('SUMMON_END', 0))
+        pass
+    @staticmethod
+    def draw(c):
+        character_draw(c)
+
 # ==============================================
 
 class Character:
@@ -217,7 +241,8 @@ class Character:
             Move_to_target: {target_lost: Idle, can_attack_target: Attack_target, stunned: Stunned, dead: Dead},
             Attack_target: {target_lost: Idle, stunned: Stunned, dead: Dead},
             Stunned: {stunned_end: Idle, dead: Dead},
-            Dead: {}
+            Dead: {},
+            Summoned: {summon_end: Idle}
         })
 
     def update(self):

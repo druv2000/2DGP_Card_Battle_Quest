@@ -28,6 +28,9 @@ def stunned_end(event):
 def dead(event):
     return event[0] == 'DEAD'
 
+def summon_end(event):
+    return event[0] == 'SUMMON_END'
+
 
 def mouse_hover(event):
     return (event[0] == 'MOUSE_HOVER' and

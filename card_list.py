@@ -3,6 +3,7 @@ import game_world
 from animation import CardEffectAnimation, CardAreaEffectAnimation
 from card import Card
 from character_list import Golem
+from effects import TauntEffect
 from game_world import world, add_object
 
 
@@ -53,10 +54,28 @@ class SummonGolem(Card):
             x, y,
             self.radius*2, self.radius*2,
             'resource/explosion_area_effect.png',
-            0.1
+            0.05
         )
         game_world.add_object(card_effect_area_animation, 1)
 
-        golem = Golem(x, y, 'ally')
+        golem = Golem(x, y + 120, 'ally')
         game_world.add_object(golem, 4)
+
+        for layer in world:
+            for obj in layer:
+                if obj.can_target and obj.team != self.user.team:
+                    taunt_effect = next((effect for effect in obj.effects if isinstance(effect, TauntEffect)), None)
+                    distance = ((obj.x - x) ** 2 + (obj.y - y) ** 2) ** 0.5
+                    if distance <= self.radius:
+                        if taunt_effect:
+                            obj.effects.remove(taunt_effect)
+                            taunt_effect = TauntEffect(5.0, golem)
+                            obj.add_effect(taunt_effect)
+                        else:
+                            taunt_effect = TauntEffect(5.0, golem)
+                            obj.add_effect(taunt_effect)
+
+
+
+
 

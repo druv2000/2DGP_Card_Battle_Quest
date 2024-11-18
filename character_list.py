@@ -3,7 +3,8 @@
 from pico2d import load_image
 
 from animation import Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
-from character import Character
+from character import Character, Summoned
+
 
 # ==================== ALLY ==========================================
 
@@ -125,6 +126,8 @@ class Golem(Character):
 
         self.has_attack_animation = False
         self.bullet = None
+
+        self.state_machine.start(Summoned)
 
     def get_bb(self):
         size = self.draw_size
