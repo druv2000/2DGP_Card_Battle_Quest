@@ -7,7 +7,7 @@ from sdl2.examples.gfxdrawing import draw_circles
 import game_world
 import globals
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
-    mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used
+    mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card
 from ui import RangeCircleUI, AreaCircleUI
 from utils import limit_within_range
 
@@ -26,12 +26,22 @@ class Idle:
         pass
     @staticmethod
     def draw(c):
+
+
         c.image.composite_draw(
             -c.rotation * 3.141592 / 180,  # 회전 각도 (라디안)
             '',  # 반전 없음
             c.x, c.y,  # 그려질 위치
             c.draw_size_x, c.draw_size_y  # 그려질 크기
         )
+
+        if not c.user.can_use_card:
+            c.unable_image.composite_draw(
+                -c.rotation * 3.141592 / 180,  # 회전 각도 (라디안)
+                '',  # 반전 없음
+                c.x, c.y,  # 그려질 위치
+                100, 100  # 그려질 크기
+            )
         pass
 
 class Highlight:
@@ -135,6 +145,7 @@ class Card:
         self.original_x = self.x
         self.original_y = self.y
         self.image = load_image(image_path)
+        self.unable_image = load_image('resource/red_x.png')
         self.original_size_x = 160
         self.original_size_y = 240
         self.draw_size_x = 160
@@ -145,10 +156,21 @@ class Card:
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
         self.state_machine.set_transitions({
-            Idle: {mouse_hover: Highlight},
-            Highlight: {mouse_leave: Idle, left_click: Clicked},
-            Clicked: {mouse_left_release_in_card_space: Idle, mouse_left_release_out_card_space: Used},
-            Used: {card_used: Idle}
+            Idle: {
+                mouse_hover: Highlight
+            },
+            Highlight: {
+                mouse_leave: Idle,
+                left_click: Clicked
+            },
+            Clicked: {
+                mouse_left_release_in_card_space: Idle,
+                mouse_left_release_out_card_space: Used,
+                cannot_use_card: Idle
+            },
+            Used: {
+                card_used: Idle
+            }
         })
 
     def update(self):

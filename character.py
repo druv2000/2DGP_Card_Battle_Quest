@@ -138,12 +138,17 @@ class Attack_target:
 class Casting:
     @staticmethod
     def enter(c, e):
+        if c.card_target:
+            c.sprite_dir = 1 if c.card_target[0] - c.x > 0 else -1
+
         global cast_start_time, cast_duration, cast_progress_bar
         cast_start_time = get_time()
         cast_duration = e[1]
         cast_progress_bar = ProgressBar(c, c.x, c.y + 50, cast_duration)
         game_world.add_object(cast_progress_bar, 9)
         c.frame = 0
+        c.can_use_card = False
+
         pass
 
     @staticmethod
@@ -153,6 +158,7 @@ class Casting:
 
         c.rotation = c.original_rotation
         c.cast_animation_progress = 0
+        c.can_use_card = True
         if c.current_card and c.card_target:
             x, y = c.card_target
             c.current_card.apply_effect(x, y)
@@ -178,13 +184,14 @@ class Stunned:
     @staticmethod
     def enter(c, e):
         c.frame = 0
+        c.can_use_card = False
         pass
     @staticmethod
     def exit(c, e):
+        c.can_use_card = True
         pass
     @staticmethod
     def do(c):
-        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
         pass
     @staticmethod
     def draw(c):
@@ -285,6 +292,8 @@ class Character:
         self.cast_animation_progress = 0
         self.is_cast_performed = False
         self.current_card = None
+        self.can_use_card = True
+
         self.card_target = None
 
         event_system.add_listener('character_hit', self.on_hit)

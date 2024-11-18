@@ -17,7 +17,6 @@ class Fireball(Card):
         self.casting_time = 1.0
 
     def use(self, x, y):
-        self.user.sprite_dir = -1 if self.user.x - x > 0 else 1
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
         self.user.current_card = self
         self.user.card_target = (x, y)
