@@ -153,7 +153,7 @@ def init_object_pool():
     add_object(none_bullet_pool, 7)
     add_object(hit_animation_pool, 7)
     add_object(attack_animation_pool, 5)
-    add_object(collision_group_pool, 1)  # 낮은 우선순위 레이어에 추가
+    add_object(collision_group_pool, 0)  # 낮은 우선순위 레이어에 추가
 
 
 def get_character_bullet(c):

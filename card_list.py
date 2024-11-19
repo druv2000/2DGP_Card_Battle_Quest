@@ -145,7 +145,6 @@ class SnipeShot(Card):
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
-        global expected_card_area
         game_world.remove_object(self.expected_card_area)
 
         snipe_shot_bullet = Bowman_SnipeShotBullet()

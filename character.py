@@ -371,7 +371,6 @@ class Character:
 
 ###########################################################################
 
-    # @profile
     def take_damage(self, amount):
         if self.state_machine.cur_state not in [Dead]:
             damage_to_take = amount
