@@ -8,8 +8,8 @@ class DamageNumber:
     def __init__(self):
         self.x, self.y = 0, 0
         self.damage = 0
-        self.font_size = 40
-        self.font = load_font('resource/font/fixedsys.ttf', self.font_size)
+        self.basic_font_size = 40
+        self.font = load_font('resource/font/fixedsys.ttf', self.basic_font_size)
         self.life_time = 0.3
         self.start_time = 0
         self.is_active = False
@@ -19,10 +19,10 @@ class DamageNumber:
         self.x, self.y = x, y
         self.damage = damage
         if self.damage >= 20:
-            self.font_size = int(40 * (100 + self.damage) / 100)
-            self.font = load_font('resource/font/fixedsys.ttf', self.font_size)
+            new_font_size = int(40 * (100 + self.damage) / 100)
+            self.font = load_font('resource/font/fixedsys.ttf', new_font_size)
         else:
-            self.font = load_font('resource/font/fixedsys.ttf', 32)
+            self.font = load_font('resource/font/fixedsys.ttf', self.basic_font_size)
         self.start_time = get_time()
         self.is_active = True
         self.frame_count = 0

@@ -141,20 +141,16 @@ class Casting:
         if c.card_target:
             c.sprite_dir = 1 if c.card_target[0] - c.x > 0 else -1
 
-        global cast_start_time, cast_duration, cast_progress_bar
-        cast_start_time = get_time()
-        cast_duration = e[1]
-        cast_progress_bar = ProgressBar(c, c.x, c.y + 50, cast_duration)
-        game_world.add_object(cast_progress_bar, 9)
+        c.cast_start_time = get_time()
+        c.cast_duration = e[1]
+        c.cast_progress_bar = ProgressBar(c, c.x, c.y + 50, c.cast_duration)
+        game_world.add_object(c.cast_progress_bar, 9)
         c.frame = 0
         c.can_use_card = False
 
-        pass
-
     @staticmethod
     def exit(c, e):
-        global cast_progress_bar
-        game_world.remove_object(cast_progress_bar)
+        game_world.remove_object(c.cast_progress_bar)
 
         c.rotation = c.original_rotation
         c.cast_animation_progress = 0
@@ -167,14 +163,12 @@ class Casting:
 
     @staticmethod
     def do(c):
-        global cast_start_time, cast_duration
-        if get_time() - cast_start_time >= cast_duration:
+        if get_time() - c.cast_start_time >= c.cast_duration:
             c.state_machine.add_event(('CAST_END', 0))
             return
 
         c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
-        update_cast_animation(c, cast_duration)
-        pass
+        update_cast_animation(c, c.cast_duration)
 
     @staticmethod
     def draw(c):
@@ -298,6 +292,10 @@ class Character:
         self.is_cast_performed = False
         self.current_card = None
         self.can_use_card = True
+
+        self.cast_start_time = 0
+        self.cast_duration = 0
+        self.cast_progress_bar = None
 
         self.card_target = None
 

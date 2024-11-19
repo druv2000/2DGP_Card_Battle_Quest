@@ -121,11 +121,11 @@ class Clicked:
             area_beam_ui.x = c.x
             area_beam_ui.y = c.y
             area_beam_ui.shooter_x = c.user.original_x
-            area_beam_ui.shooter_y = c.user.original_y
+            area_beam_ui.shooter_y = c.user.original_y - 20
 
-            target_distance = math.sqrt((c.x - c.user.original_x) ** 2 + (c.y - c.user.original_y) ** 2)
-            area_beam_ui.dir_x = (c.x - c.user.original_x) / target_distance
-            area_beam_ui.dir_y = (c.y - c.user.original_y) / target_distance
+            target_distance = math.sqrt((area_beam_ui.x - area_beam_ui.shooter_x) ** 2 + (area_beam_ui.y - area_beam_ui.shooter_y) ** 2)
+            area_beam_ui.dir_x = (area_beam_ui.x - area_beam_ui.shooter_x) / target_distance
+            area_beam_ui.dir_y = (area_beam_ui.y - area_beam_ui.shooter_y) / target_distance
             area_beam_ui.rotation = math.atan2(area_beam_ui.dir_y, area_beam_ui.dir_x)
 
     @staticmethod

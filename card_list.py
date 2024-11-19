@@ -22,16 +22,16 @@ class Fireball(Card):
         self.damage = 20
         self.radius = 100
         self.casting_time = 1.0
+        self.expected_card_area = None
 
     def use(self, x, y):
-        global expected_card_area
-        expected_card_area = CardAreaEffectAnimation(
+        self.expected_card_area = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
             'resource/expected_area_effect.png', 0.2,
             HUGE_TIME
         )
-        game_world.add_object(expected_card_area, 1)
+        game_world.add_object(self.expected_card_area, 1)
 
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
         self.user.current_card = self
@@ -39,7 +39,7 @@ class Fireball(Card):
 
     def apply_effect(self, x, y):
         global expected_card_area
-        game_world.remove_object(expected_card_area)
+        game_world.remove_object(self.expected_card_area)
 
         card_effect_animation = CardEffectAnimation(
             x, y,
@@ -74,24 +74,23 @@ class SummonGolem(Card):
         self.damage = 0
         self.radius = 150
         self.casting_time = 0.5
+        self.expected_card_area = None
 
     def use(self, x, y):
-        global expected_card_area
-        expected_card_area = CardAreaEffectAnimation(
+        self.expected_card_area = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
             'resource/expected_area_effect.png', 0.2,
             HUGE_TIME
         )
-        game_world.add_object(expected_card_area, 1)
+        game_world.add_object(self.expected_card_area, 1)
 
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
         self.user.current_card = self
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
-        global expected_card_area
-        game_world.remove_object(expected_card_area)
+        game_world.remove_object(self.expected_card_area)
 
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,
@@ -131,15 +130,15 @@ class SnipeShot(Card):
         self.damage = 15
         self.width = 50
         self.casting_time = 0.75
+        self.expected_card_area = None
 
     def use(self, x, y):
-        global expected_card_area
-        expected_card_area = CardBeamAreaEffectAnimation(
-            self.user.original_x, self.user.original_y,
+        self.expected_card_area = CardBeamAreaEffectAnimation(
+            self.user.original_x, self.user.original_y - 20,
             x, y, self.width,
             0.2, HUGE_TIME
         )
-        game_world.add_object(expected_card_area, 1)
+        game_world.add_object(self.expected_card_area, 1)
 
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
         self.user.current_card = self
@@ -147,10 +146,10 @@ class SnipeShot(Card):
 
     def apply_effect(self, x, y):
         global expected_card_area
-        game_world.remove_object(expected_card_area)
+        game_world.remove_object(self.expected_card_area)
 
         snipe_shot_bullet = Bowman_SnipeShotBullet()
-        snipe_shot_bullet.set(self.user, self.user.x, self.user.y, x, y, )
+        snipe_shot_bullet.set(self.user, self.user.original_x, self.user.original_y - 20, x, y)
         game_world.add_object(snipe_shot_bullet, 7)
         self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
         pass
