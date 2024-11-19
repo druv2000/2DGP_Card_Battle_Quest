@@ -37,6 +37,18 @@ def cast_start(event):
 def cast_end(event):
     return event[0] == 'CAST_END'
 
+def knight_body_tackle_start(event):
+    return event[0] == 'KNIGHT_BODY_TACKLE_START'
+
+def knight_body_tackle_end(event):
+    return event[0] == 'KNIGHT_BODY_TACKLE_END'
+
+def bowman_rolling_start(event):
+    return event[0] == 'BOWMAN_ROLLING_START'
+
+def bowman_rolling_end(event):
+    return event[0] == 'BOWMAN_ROLLING_END'
+
 
 def mouse_hover(event):
     return (event[0] == 'MOUSE_HOVER' and

@@ -5,6 +5,7 @@ import time
 
 from effects import StunEffect
 from game_world import world
+from globals import KNIGHT_BODY_TACKLE_RUSH_SPEED
 from object_pool import *
 from object_pool import get_character_bullet
 
@@ -79,6 +80,29 @@ def attack_target(c):
     bullet = get_character_bullet(c)  # 새 bullet 인스턴스 생성
     if not bullet:
         print(f'        WARNING: bullet_pool is empty!')
+
+def perform_body_tackle(c):
+    target_distance = math.sqrt((c.card_target_x - c.x) ** 2 + (c.card_target_y - c.y) ** 2)
+    c.dir_x = (c.card_target_x - c.x) / (target_distance)
+    c.dir_y = (c.card_target_y - c.y) / (target_distance)
+    c.sprite_dir = -1 if c.dir_x < 0 else 1
+
+    if target_distance > 25 if 1.0 / game_framework.frame_time > 50 else 50:
+        # 타겟과의 거리가 일정 수준보다 멀다면 타겟 방향으로 이동
+        c.x += c.dir_x * KNIGHT_BODY_TACKLE_RUSH_SPEED * game_framework.frame_time
+        c.y += c.dir_y * KNIGHT_BODY_TACKLE_RUSH_SPEED * game_framework.frame_time
+        c.rotation = 30 if c.sprite_dir == 1 else -30
+    else:
+        c.x = c.card_target_x
+        c.y = c.card_target_y
+        # 충돌 애니메이션 출력
+        # 충돌 범위 내 적들 데미지 + 기절
+        if not c.state_machine.event_que:
+            c.state_machine.add_event(('KNIGHT_BODY_TACKLE_END', 0))
+
+    c.original_x = c.x
+    c.original_y = c.y
+
 
 
 # =============== animation ===============

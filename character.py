@@ -7,9 +7,9 @@ from pico2d import get_time, draw_rectangle
 import game_world
 from effects import HitEffect
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
-    update_walk_animation, is_attack_timing, update_cast_animation
+    update_walk_animation, is_attack_timing, update_cast_animation, perform_body_tackle
 from game_world import change_object_layer
-from globals import CHARACTER_ANIMATION_PER_TIME
+from globals import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
 from object_pool import *
 from state_machine import *
 from ui import ProgressBar
@@ -93,7 +93,6 @@ class Move_to_target:
     def draw(c):
         character_draw(c)
 
-
 class Attack_target:
     @staticmethod
     def enter(c, e):
@@ -157,7 +156,7 @@ class Casting:
         c.can_use_card = True
         if c.current_card and c.card_target:
             x, y = c.card_target
-            c.current_card.apply_effect(x, y)
+            c.current_card.apply_effect(x, y) # apply effect를 수행
             c.current_card = None
             c.card_target = None
 
@@ -258,6 +257,45 @@ class Summoned:
     def draw(c):
         character_draw(c)
 
+############################################### 카드 효과
+
+class KnightBodyTackle:
+    @staticmethod
+    def enter(c, e):
+        c.can_use_card = False
+        c.frame = 0
+        c.card_target_x, c.card_target_y = e[1]
+        pass
+    @staticmethod
+    def exit(c, e):
+        c.card_target_x = None
+        c.card_target_y = None
+        c.can_use_card = True
+
+        c.rotation = c.original_rotation
+    @staticmethod
+    def do(c):
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        perform_body_tackle(c)
+    @staticmethod
+    def draw(c):
+        character_draw(c)
+
+class BowmanRolling:
+    @staticmethod
+    def enter(c, e):
+        c.frame = 0
+        pass
+    @staticmethod
+    def exit(c, e):
+        pass
+    @staticmethod
+    def do(c):
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+    @staticmethod
+    def draw(c):
+        character_draw(c)
+
 # ==============================================
 
 class Character:
@@ -309,7 +347,9 @@ class Character:
                 target_lost: Idle,
                 stunned: Stunned,
                 dead: Dead,
-                cast_start: Casting
+                cast_start: Casting,
+                knight_body_tackle_start: KnightBodyTackle,
+                bowman_rolling_start: BowmanRolling
             },
             Move_to_target: {
                 target_lost: Idle,
@@ -329,8 +369,18 @@ class Character:
                 dead: Dead
             },
             Dead: {},
-            Summoned: {summon_end: Idle},
-            Casting: {cast_end: Idle}
+            Summoned: {
+                summon_end: Idle
+            },
+            Casting: {
+                cast_end: Idle
+            },
+            KnightBodyTackle: {
+                knight_body_tackle_end: Idle
+            },
+            BowmanRolling: {
+                bowman_rolling_end: Idle
+            }
         })
 
     def update(self):

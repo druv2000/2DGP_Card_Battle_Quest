@@ -13,17 +13,17 @@ from globals import HUGE_TIME
 
 ############ knight #####################
 
-class Rush(Card):
+class BodyTackle(Card):
     def __init__(self):
         from battle_mode import knight
         super().__init__("Rush", knight, 2, "resource/card_knight.png")
-        self.range = 450
+        self.range = 600
         self.damage = 0
-        self.radius = 50
-        self.width = 50
+        self.radius = 100
+        self.width = 100
         self.length = self.range
         self.casting_time = 0.25
-        self.is_summon_obj = True
+        self.is_summon_obj = True # 미리보기가 필요한가
         self.summon_image_path = 'resource/knight_sprite.png'
         self.summon_size_x = 240
         self.summon_size_y = 240
@@ -31,19 +31,12 @@ class Rush(Card):
         self.expected_card_area = None
 
     def use(self, x, y):
-        self.expected_card_area = CardAreaEffectAnimation(
-            x, y,
-            self.radius * 2, self.radius * 2,
-            'resource/expected_area_effect.png', 0.2,
-            HUGE_TIME
-        )
-        game_world.add_object(self.expected_card_area, 1)
-
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
         self.user.current_card = self
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
+        self.user.state_machine.add_event(('KNIGHT_BODY_TACKLE_START', (x, y)))
         pass
 
 ####################### MAGE ################################
