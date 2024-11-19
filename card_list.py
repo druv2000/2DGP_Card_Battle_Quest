@@ -1,6 +1,10 @@
 # card_list.py
+import time
+
+from pico2d import get_time
+
 import game_world
-from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_SnipeShotBullet
+from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_SnipeShotBullet, CardBeamAreaEffectAnimation
 from card import Card
 from character_list import Golem
 from effects import TauntEffect
@@ -24,7 +28,7 @@ class Fireball(Card):
         expected_card_area = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/explosion_area_effect.png', 0.2,
+            'resource/expected_area_effect.png', 0.2,
             HUGE_TIME
         )
         game_world.add_object(expected_card_area, 1)
@@ -47,7 +51,7 @@ class Fireball(Card):
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/explosion_area_effect.png', 1.0,
+            'resource/expected_area_effect.png', 1.0,
             0.05
         )
         game_world.add_object(card_effect_area_animation, 1)
@@ -59,6 +63,8 @@ class Fireball(Card):
                     if distance <= self.radius:
                         self.user.total_damage += self.damage
                         obj.take_damage(self.damage)
+
+        self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
 
 class SummonGolem(Card):
     def __init__(self):
@@ -74,7 +80,7 @@ class SummonGolem(Card):
         expected_card_area = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/explosion_area_effect.png', 0.2,
+            'resource/expected_area_effect.png', 0.2,
             HUGE_TIME
         )
         game_world.add_object(expected_card_area, 1)
@@ -90,7 +96,7 @@ class SummonGolem(Card):
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/explosion_area_effect.png', 1.0,
+            'resource/expected_area_effect.png', 1.0,
             0.05
         )
         game_world.add_object(card_effect_area_animation, 1)
@@ -112,6 +118,9 @@ class SummonGolem(Card):
                             taunt_effect = TauntEffect(5.0, golem)
                             obj.add_effect(taunt_effect)
 
+        self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
+
+
 ############################# BOWMAN #########################################
 
 class SnipeShot(Card):
@@ -120,18 +129,30 @@ class SnipeShot(Card):
         super().__init__("SnipeShot", bowman, 3, "resource/card_bowman.png")
         self.range = 2000
         self.damage = 15
-        self.width = 30
+        self.width = 50
         self.casting_time = 0.75
 
     def use(self, x, y):
+        global expected_card_area
+        expected_card_area = CardBeamAreaEffectAnimation(
+            self.user.original_x, self.user.original_y,
+            x, y, self.width,
+            0.2, HUGE_TIME
+        )
+        game_world.add_object(expected_card_area, 1)
+
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
         self.user.current_card = self
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
+        global expected_card_area
+        game_world.remove_object(expected_card_area)
+
         snipe_shot_bullet = Bowman_SnipeShotBullet()
         snipe_shot_bullet.set(self.user, self.user.x, self.user.y, x, y, )
         game_world.add_object(snipe_shot_bullet, 7)
+        self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
         pass
 
 
