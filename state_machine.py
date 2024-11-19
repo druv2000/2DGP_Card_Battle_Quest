@@ -10,6 +10,9 @@ def start_event(event):
 def target_found(event):
     return event[0] == 'TARGET_FOUND'
 
+def target_out_of_range(event):
+    return event[0] == 'TARGET_OUT_OF_RANGE'
+
 def target_lost(event):
     return event[0] == 'TARGET_LOST'
 

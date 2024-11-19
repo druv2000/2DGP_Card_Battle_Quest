@@ -3,7 +3,7 @@ import math
 import random
 
 from card import Highlight
-from card_list import Fireball, SummonGolem, SnipeShot, BodyTackle
+from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle
 from deck import Deck, Hand
 
 
@@ -21,7 +21,7 @@ class CardManager:
 
     def init_deck(self):
         # 덱에 카드 추가
-        self.deck.add_card(Fireball())
+        self.deck.add_card(Explosion())
         self.deck.add_card(BodyTackle())
         self.deck.add_card(SummonGolem())
         self.deck.add_card(SummonGolem())

@@ -165,6 +165,14 @@ class Clicked:
         c.image.draw(c.x, c.y, c.draw_size_x, c.draw_size_y)
         draw_rectangle(globals.CARD_SPACE_X1, globals.CARD_SPACE_Y1, globals.CARD_SPACE_X2, globals.CARD_SPACE_Y2)
 
+        if not c.user.can_use_card:
+            c.unable_image.composite_draw(
+                0,  # 회전 각도 (라디안)
+                '',  # 반전 없음
+                c.x, c.y,  # 그려질 위치
+                25, 25  # 그려질 크기
+            )
+
 class Used:
     @staticmethod
     def enter(c, e):

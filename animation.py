@@ -329,7 +329,7 @@ class HitAnimation:
         return self.is_active
 
 class CardEffectAnimation:
-    def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame):
+    def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame, total_time):
         self.x = x
         self.y = y
         self.size_x = size_x
@@ -339,12 +339,13 @@ class CardEffectAnimation:
         self.image = load_image(image_path)
         self.frame = 0
         self.total_frame = total_frame
+        self.total_time = total_time
         self.can_target = False
 
     def update(self):
         if self.frame >= self.total_frame:
             game_world.remove_object(self)
-        self.frame = (self.frame + self.total_frame * CARD_EFFECT_ANIMATION_PER_TIME * game_framework.frame_time)
+        self.frame = (self.frame + self.total_frame * 1.0 / self.total_time * game_framework.frame_time)
 
     def draw(self):
         self.image.clip_draw(

@@ -1,11 +1,12 @@
 # effects.py
 import math
+from tempfile import template
 
 from pico2d import load_image, get_time
 
 import game_framework
 from globals import FRAME_PER_HIT_ANIMATION, CHARACTER_ANIMATION_PER_TIME, FRAME_PER_TAUNT_ANIMATION, \
-    TAUNT_ANIMATION_PER_TIME
+    TAUNT_ANIMATION_PER_TIME, HIT_ANIMATION_PER_TIME
 
 
 def draw_effect(c, effect):
@@ -146,3 +147,29 @@ class TauntEffect(Effect):
             c.x + 10, c.y + 20,
             50, 50
         )
+
+class ForcedMovementEffect(Effect):
+    def __init__(self, duration, move_speed, dir_x, dir_y):
+        super().__init__('taunted', duration)
+        self.move_speed = move_speed
+        self.move_dir_x = dir_x
+        self.move_dir_y = dir_y
+
+    def apply(self, c):
+        pass
+
+    def remove(self, c):
+        pass
+
+    def update(self, c):
+        c.x += self.move_dir_x * self.move_speed * game_framework.frame_time
+        c.y += self.move_dir_y * self.move_speed * game_framework.frame_time
+        c.original_x = c.x
+        c.original_y = c.y
+
+        if get_time() - self.start_time >= self.duration:
+            self.is_active = False
+            self.remove(c)
+
+    def draw(self, c):
+        pass

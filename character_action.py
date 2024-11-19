@@ -3,9 +3,9 @@
 import random
 import time
 
-from effects import StunEffect
+from effects import StunEffect, ForcedMovementEffect
 from game_world import world
-from globals import KNIGHT_BODY_TACKLE_RUSH_SPEED
+from globals import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, KNIGHT_BODY_TACKLE_KNOCKBACK_DISTANCE
 from object_pool import *
 from object_pool import get_character_bullet
 
@@ -83,6 +83,8 @@ def attack_target(c):
 
 def perform_body_tackle(c):
     target_distance = math.sqrt((c.card_target_x - c.x) ** 2 + (c.card_target_y - c.y) ** 2)
+    if target_distance == 0:
+        target_distance += 0.1
     c.dir_x = (c.card_target_x - c.x) / (target_distance)
     c.dir_y = (c.card_target_y - c.y) / (target_distance)
     c.sprite_dir = -1 if c.dir_x < 0 else 1
@@ -95,8 +97,63 @@ def perform_body_tackle(c):
     else:
         c.x = c.card_target_x
         c.y = c.card_target_y
+
         # 충돌 애니메이션 출력
+        card_effect_animation = CardEffectAnimation(
+            c.x, c.y,
+            256, 256,
+            250, 250,
+            'resource/landing_effect.png',
+            8, 0.25
+        )
+        card_effect_animation_2 = CardEffectAnimation(
+            c.x, c.y,
+            128, 128,
+            400, 400,
+            'resource/bowman_bullet_hit.png',
+            8, 0.25
+        )
+        card_effect_area_animation = CardAreaEffectAnimation(
+            c.x, c.y,
+            200, 200,
+            'resource/expected_area_effect.png', 1.0,
+            0.05
+        )
+        game_world.add_object(card_effect_animation, 8)
+        game_world.add_object(card_effect_animation_2, 8)
+        game_world.add_object(card_effect_area_animation, 1)
+
         # 충돌 범위 내 적들 데미지 + 기절
+
+        for layer in world:
+            for obj in layer:
+                if obj.can_target and obj.team != c.team:
+                    distance = ((obj.x - c.x) ** 2 + (obj.y - c.y) ** 2) ** 0.5
+                    if distance <= KNIGHT_BODY_TACKLE_RADIUS:
+
+                        # 기절 적용
+                        stun_effect = next((effect for effect in obj.effects if isinstance(effect, StunEffect)), None)
+                        if stun_effect:
+                            stun_effect.refresh()
+                        else:
+                            stun_effect = StunEffect(2.0)
+                            obj.add_effect(stun_effect)
+
+                        # 넉백 적용
+                        forced_movement_effect = next((effect for effect in obj.effects if isinstance(effect, ForcedMovementEffect)), None)
+                        if forced_movement_effect:
+                            obj.remove_effect(ForcedMovementEffect)
+                            forced_movement_effect = ForcedMovementEffect(0.4, 500, c.dir_x, c.dir_y)
+                            obj.add_effect(forced_movement_effect)
+                        else:
+                            forced_movement_effect = ForcedMovementEffect(0.4, 500, c.dir_x, c.dir_y)
+                            obj.add_effect(forced_movement_effect)
+
+                        # 데미지 적용
+                        damage = c.attack_damage - 2
+                        c.total_damage += damage
+                        obj.take_damage(damage)
+
         if not c.state_machine.event_que:
             c.state_machine.add_event(('KNIGHT_BODY_TACKLE_END', 0))
 

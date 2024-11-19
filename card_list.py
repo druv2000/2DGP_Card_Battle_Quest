@@ -9,7 +9,8 @@ from card import Card
 from character_list import Golem
 from effects import TauntEffect
 from game_world import world, add_object
-from globals import HUGE_TIME
+from globals import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
+
 
 ############ knight #####################
 
@@ -18,8 +19,8 @@ class BodyTackle(Card):
         from battle_mode import knight
         super().__init__("Rush", knight, 2, "resource/card_knight.png")
         self.range = 600
-        self.damage = 0
-        self.radius = 100
+        self.damage = self.user.attack_damage + 3
+        self.radius = KNIGHT_BODY_TACKLE_RADIUS
         self.width = 100
         self.length = self.range
         self.casting_time = 0.25
@@ -41,7 +42,7 @@ class BodyTackle(Card):
 
 ####################### MAGE ################################
 
-class Fireball(Card):
+class Explosion(Card):
     def __init__(self):
         from battle_mode import mage
         super().__init__("Fireball", mage, 3, "resource/card_fireball.png")
@@ -73,7 +74,7 @@ class Fireball(Card):
             137, 150,
             300, 300,
             'resource/explosion_effect.png',
-            26
+            26, 0.5
         )
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,

@@ -1,13 +1,14 @@
 # character.py
 import time
+from math import sqrt
 
 # 이것은 각 상태들을 객체로 구현한 것임.
 from pico2d import get_time, draw_rectangle
 
 import game_world
-from effects import HitEffect
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
     update_walk_animation, is_attack_timing, update_cast_animation, perform_body_tackle
+from effects import HitEffect
 from game_world import change_object_layer
 from globals import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
 from object_pool import *
@@ -108,10 +109,23 @@ class Attack_target:
         if c.target.state_machine.cur_state == Dead and not c.state_machine.event_que and not c.animation_in_progress:
             c.state_machine.add_event(('TARGET_LOST', 0))
             return
+
+        # 만약 공격 범위보다 타겟이 멀다면
+        target_distance = math.sqrt((c.target.x - c.x) ** 2 + (c.target.y - c.y) ** 2)
+        if c.attack_range < target_distance:
+            if abs(c.attack_range - target_distance) <= 100 and not c.state_machine.event_que:
+                # 멀어진 거리가 100 이하면 그냥 따라감
+                c.state_machine.add_event(('TARGET_OUT_OF_RANGE', 0))
+                pass
+            elif abs(c.attack_range - target_distance) > 100 and not c.state_machine.event_que:
+                # 100보다 크면 타겟 로스트
+                c.state_machine.add_event(('TARGET_LOST', 0))
+            return
+
         update_attack_animation(c)
         if is_attack_timing(c):
 
-            # 공격 방향 계산
+            # 타겟 거리, 공격 방향 계산
             epsilon = 0.000001
             target_distance = math.sqrt((c.target.x - c.x) ** 2 + (c.target.y - c.y) ** 2)
             c.dir_x = (c.target.x - c.x) / (target_distance + epsilon)
@@ -271,8 +285,8 @@ class KnightBodyTackle:
         c.card_target_x = None
         c.card_target_y = None
         c.can_use_card = True
-
         c.rotation = c.original_rotation
+        c.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
     @staticmethod
     def do(c):
         c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
@@ -359,6 +373,7 @@ class Character:
                 cast_start: Casting
             },
             Attack_target: {
+                target_out_of_range: Move_to_target,
                 target_lost: Idle,
                 stunned: Stunned,
                 dead: Dead,
