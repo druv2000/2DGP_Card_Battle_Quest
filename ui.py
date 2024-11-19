@@ -60,6 +60,31 @@ class AreaBeamUI:
             self.width * 390, self.width
         )
 
+class AreaStraightUI:
+    def __init__(self, shooter_x, shooter_y, x, y, width, length):
+        self.shooter_x = shooter_x
+        self.shooter_y = shooter_y
+        self.x = x
+        self.y = y
+        self.width = width
+        self.length = length
+        self.rotation = 0
+        self.image = load_image('resource/area_straight.png')
+        self.can_target = False
+
+    def update(self):
+        pass
+
+    def draw(self):
+        mid_x = (self.shooter_x + self.x) / 2
+        mid_y = (self.shooter_y + self.y) / 2
+
+        self.image.composite_draw(
+            self.rotation, '',
+            mid_x, mid_y,
+            self.length, self.width
+        )
+
 class RangeCircleUI:
     def __init__(self, character, x, y, r):
         self.character = character

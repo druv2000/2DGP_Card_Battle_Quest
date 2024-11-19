@@ -9,7 +9,7 @@ import game_world
 import globals
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
     mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card
-from ui import RangeCircleUI, AreaCircleUI, AreaBeamUI, SummonUI
+from ui import RangeCircleUI, AreaCircleUI, AreaBeamUI, SummonUI, AreaStraightUI
 from utils import limit_within_range
 
 
@@ -79,10 +79,14 @@ class Clicked:
             global area_circle_ui
             area_circle_ui = AreaCircleUI(c.x, c.y, c.radius)
             game_world.add_object(area_circle_ui, 1)
-        if hasattr(c, 'width'):
+        if hasattr(c, 'width') and not hasattr(c, 'length'):
             global area_beam_ui
             area_beam_ui = AreaBeamUI(c.user.original_x, c.user.original_y, c.x, c.y, c.width)
             game_world.add_object(area_beam_ui, 1)
+        if hasattr(c, 'width') and hasattr(c, 'length'):
+            global area_straight_ui
+            area_straight_ui = AreaStraightUI(c.user.original_x, c.user.original_y, c.x, c.y, c.width, c.range)
+            game_world.add_object(area_straight_ui, 1)
         if hasattr(c, 'is_summon_obj'):
             global summon_ui
             summon_ui = SummonUI(c.summon_image_path, c.x, c.y, c.summon_size_x, c.summon_size_y, c.summon_scale)
@@ -98,9 +102,12 @@ class Clicked:
         if hasattr(c, 'range'):
             global range_ui
             game_world.remove_object(range_ui)
-        if hasattr(c, 'width'):
+        if hasattr(c, 'width') and not hasattr(c, 'length'):
             global area_beam_ui
             game_world.remove_object(area_beam_ui)
+        if hasattr(c, 'width') and hasattr(c, 'length'):
+            global area_straight_ui
+            game_world.remove_object(area_straight_ui)
         if hasattr(c, 'is_summon_obj'):
             global summon_ui
             game_world.remove_object(summon_ui)
@@ -119,7 +126,7 @@ class Clicked:
             area_circle_ui.x = c.x
             area_circle_ui.y = c.y
 
-        if hasattr(c, 'width'):
+        if hasattr(c, 'width') and not hasattr(c, 'length'):
             global area_beam_ui
             area_beam_ui.x = c.x
             area_beam_ui.y = c.y
@@ -130,6 +137,23 @@ class Clicked:
             area_beam_ui.dir_x = (area_beam_ui.x - area_beam_ui.shooter_x) / target_distance
             area_beam_ui.dir_y = (area_beam_ui.y - area_beam_ui.shooter_y) / target_distance
             area_beam_ui.rotation = math.atan2(area_beam_ui.dir_y, area_beam_ui.dir_x)
+
+        if hasattr(c, 'width') and hasattr(c, 'length'):
+            global area_straight_ui
+            area_straight_ui.x = c.x
+            area_straight_ui.y = c.y
+            area_straight_ui.shooter_x = c.user.original_x
+            area_straight_ui.shooter_y = c.user.original_y - 20
+
+            target_distance = math.sqrt(
+                (area_straight_ui.x - area_straight_ui.shooter_x) ** 2 + (area_straight_ui.y - area_straight_ui.shooter_y) ** 2
+            )
+
+            area_straight_ui.length = target_distance
+            area_straight_ui.dir_x = (area_straight_ui.x - area_straight_ui.shooter_x) / target_distance
+            area_straight_ui.dir_y = (area_straight_ui.y - area_straight_ui.shooter_y) / target_distance
+            area_straight_ui.rotation = math.atan2(area_straight_ui.dir_y, area_straight_ui.dir_x)
+
 
         if hasattr(c, 'is_summon_obj'):
             global summon_ui
