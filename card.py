@@ -9,7 +9,7 @@ import game_world
 import globals
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
     mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card
-from ui import RangeCircleUI, AreaCircleUI, AreaBeamUI
+from ui import RangeCircleUI, AreaCircleUI, AreaBeamUI, SummonUI
 from utils import limit_within_range
 
 
@@ -83,6 +83,10 @@ class Clicked:
             global area_beam_ui
             area_beam_ui = AreaBeamUI(c.user.original_x, c.user.original_y, c.x, c.y, c.width)
             game_world.add_object(area_beam_ui, 1)
+        if hasattr(c, 'is_summon_obj'):
+            global summon_ui
+            summon_ui = SummonUI(c.summon_image_path, c.x, c.y, c.summon_size_x, c.summon_size_y, c.summon_scale)
+            game_world.add_object(summon_ui, 5)
 
     @staticmethod
     def exit(c, e):
@@ -97,7 +101,9 @@ class Clicked:
         if hasattr(c, 'width'):
             global area_beam_ui
             game_world.remove_object(area_beam_ui)
-        pass
+        if hasattr(c, 'is_summon_obj'):
+            global summon_ui
+            game_world.remove_object(summon_ui)
 
     @staticmethod
     def do(c):
@@ -107,14 +113,11 @@ class Clicked:
             c.x = globals.mouse_x
             c.y = globals.mouse_y
 
+        # 범위를 제한한 c.x, c.y가 필요하기 때문에 ui.update()가 아닌 여기서 처리함
         if hasattr(c, 'radius'):
             global area_circle_ui
             area_circle_ui.x = c.x
             area_circle_ui.y = c.y
-
-        if hasattr(c, 'range'):
-            global range_ui
-            range_ui.update()  # range_ui의 위치 업데이트
 
         if hasattr(c, 'width'):
             global area_beam_ui
@@ -127,6 +130,11 @@ class Clicked:
             area_beam_ui.dir_x = (area_beam_ui.x - area_beam_ui.shooter_x) / target_distance
             area_beam_ui.dir_y = (area_beam_ui.y - area_beam_ui.shooter_y) / target_distance
             area_beam_ui.rotation = math.atan2(area_beam_ui.dir_y, area_beam_ui.dir_x)
+
+        if hasattr(c, 'is_summon_obj'):
+            global summon_ui
+            summon_ui.x = c.x
+            summon_ui.y = c.y + 20 # 시각적 보정
 
     @staticmethod
     def draw(c):

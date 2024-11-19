@@ -1,11 +1,10 @@
 # title_mode.py
 
-from pico2d import delay, clear_canvas, update_canvas, get_events, load_image
+from pico2d import clear_canvas, update_canvas, get_events, load_image
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE, SDLK_SPACE
 
 import battle_mode
 import game_framework
-import game_world
 
 
 def init():

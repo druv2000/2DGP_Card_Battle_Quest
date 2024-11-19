@@ -2,8 +2,7 @@
 import math
 import random
 
-import game_world
-from card import Card, Highlight
+from card import Highlight
 from card_list import Fireball, SummonGolem, SnipeShot
 from deck import Deck, Hand
 

@@ -18,7 +18,7 @@ class Fireball(Card):
     def __init__(self):
         from battle_mode import mage
         super().__init__("Fireball", mage, 3, "resource/card_fireball.png")
-        self.range = 600
+        self.range = 650
         self.damage = 20
         self.radius = 100
         self.casting_time = 1.0
@@ -70,10 +70,15 @@ class SummonGolem(Card):
     def __init__(self):
         from battle_mode import mage
         super().__init__("SummonGolem", mage, 3, "resource/card_summon_golem.png")
-        self.range = 400
+        self.range = 450
         self.damage = 0
         self.radius = 150
         self.casting_time = 0.5
+        self.is_summon_obj = True
+        self.summon_image_path = 'resource/golem_sprite.png'
+        self.summon_size_x = 240
+        self.summon_size_y = 240
+        self.summon_scale = 120
         self.expected_card_area = None
 
     def use(self, x, y):

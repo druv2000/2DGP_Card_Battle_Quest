@@ -1,10 +1,8 @@
 # ui.py
-import math
 
 from pico2d import load_font, load_image
 
 import game_framework
-import globals
 
 
 class TotalDamageUI:
@@ -78,6 +76,28 @@ class RangeCircleUI:
 
     def draw(self):
         self.image.draw(self.x, self.y, self.radius*2, self.radius*2)
+
+class SummonUI:
+    def __init__(self, sprite_path, x, y, size_x, size_y, scale):
+        self.image = load_image(sprite_path)
+        self.image.opacify(0.5)
+        self.x = x
+        self.y = y
+        self.size_x = size_x
+        self.size_y = size_y
+        self.scale = scale
+        self.can_target = False
+
+    def update(self):
+        pass
+
+    def draw(self):
+        self.image.clip_draw(
+            0, 0,  # 소스의 좌표
+            self.size_x, self.size_y,  # 소스의 크기
+            self.x, self.y,  # 그려질 위치
+            self.scale, self.scale  # 그려질 크기
+        )
 
 class ProgressBar:
     def __init__(self, character, x, y, duration):
