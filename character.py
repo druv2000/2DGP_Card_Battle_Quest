@@ -151,8 +151,12 @@ class Attack_target:
 class Casting:
     @staticmethod
     def enter(c, e):
-        if c.card_target:
-            c.sprite_dir = 1 if c.card_target[0] - c.x >= -10 else -1
+
+        # 방향 설정
+        if c.current_card.range == 0:
+            pass
+        elif c.card_target:
+            c.sprite_dir = 1 if c.card_target[0] - c.x >= 0 else -1
 
         c.cast_start_time = get_time()
         c.cast_duration = e[1]

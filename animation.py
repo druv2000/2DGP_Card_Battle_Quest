@@ -361,27 +361,26 @@ class WarCryEffectAnimation():
         self.y = y
         self.size_x = size_x
         self.size_y = size_y
-        self.scale_x = scale_x
-        self.scale_y = scale_y
+        self.scale_x = 10
+        self.scale_y = 10
+        self.max_scale_x = scale_x + 100
+        self.max_scale_y = scale_y + 100
         self.image = load_image(image_path)
         self.frame = 0
         self.total_frame = 1
         self.total_time = total_time
         self.can_target = False
 
-        self.increse_speed = 20
+        self.increse_speed = 5000
 
     def update(self):
-        if self.frame >= self.total_frame:
+        if self.scale_x >= self.max_scale_x:
             game_world.remove_object(self)
-        self.frame = (self.frame + self.total_frame * 1.0 / self.total_time * game_framework.frame_time)
-        self.scale_x += self.frame * self.increse_speed
-        self.scale_y += self.frame * self.increse_speed
+        self.scale_x += self.increse_speed * game_framework.frame_time
+        self.scale_y += self.increse_speed * game_framework.frame_time
 
     def draw(self):
-        self.image.clip_draw(
-            int(self.frame) * self.size_x, 0,
-            self.size_x, self.size_y,
+        self.image.draw(
             self.x, self.y,
             self.scale_x, self.scale_y
         )
@@ -410,9 +409,10 @@ class WarCryEffectAnimation2():
         self.y - self.c.original_y
 
     def draw(self):
-        self.image.clip_draw(
+        self.image.clip_composite_draw(
             int(self.frame) * self.size_x, 0,
             self.size_x, self.size_y,
+            0, '' if self.c.sprite_dir == 1 else 'h',
             self.x, self.y,
             self.scale_x, self.scale_y
         )

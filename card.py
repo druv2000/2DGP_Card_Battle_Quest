@@ -48,9 +48,9 @@ class Idle:
 class Highlight:
     @staticmethod
     def enter(c, e):
-        c.draw_size_x *= 1.5
-        c.draw_size_y *= 1.5
-        c.y = 200
+        c.draw_size_x *= 2.0
+        c.draw_size_y *= 2.0
+        c.y = + 250
         pass
     @staticmethod
     def exit(c, e):

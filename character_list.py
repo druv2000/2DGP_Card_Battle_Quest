@@ -206,7 +206,7 @@ class Soldier_mage(Character):
         self.hit_image = load_image('resource/soldier(mage)_hit_sprite.png')
 
         self.max_hp = 30
-        self.current_hp = 9
+        self.current_hp = 15
         self.move_speed = 100
         self.attack_range = 400
         self.attack_speed = 1.3

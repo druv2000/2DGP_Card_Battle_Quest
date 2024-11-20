@@ -69,9 +69,9 @@ class WarCry(Card):
         war_cry_effect = WarCryEffectAnimation(
             x, y,
             680, 680,
-            10, 10,
+            self.radius * 2, self.radius * 2,
             'resource/warcry_effect.png',
-            1, 0.5
+            1, HUGE_TIME
         )
         game_world.add_object(war_cry_effect, 8)
 

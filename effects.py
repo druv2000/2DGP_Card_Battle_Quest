@@ -110,7 +110,6 @@ class StunEffect(Effect):
 
         if get_time() - self.start_time >= self.duration:
             self.is_active = False
-            self.remove(c)
 
     def draw(self, c):
         self.template.image.clip_draw(
@@ -146,7 +145,6 @@ class TauntEffect(Effect):
 
         if get_time() - self.start_time >= self.duration:
             self.is_active = False
-            self.remove(c)
 
     def draw(self, c):
         self.template.image.clip_draw(
@@ -177,7 +175,6 @@ class ForcedMovementEffect(Effect):
 
         if get_time() - self.start_time >= self.duration:
             self.is_active = False
-            self.remove(c)
 
     def draw(self, c):
         pass
@@ -205,7 +202,6 @@ class AtkDownEffect(Effect):
 
         if get_time() - self.start_time >= self.duration:
             self.is_active = False
-            self.remove(c)
 
     def draw(self, c):
         self.template.image.clip_draw(
