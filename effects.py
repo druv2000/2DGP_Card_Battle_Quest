@@ -39,6 +39,15 @@ class TauntTemplate:
         self.sprite_size_y = 108
         pass
 
+class AtkDownTemplate:
+    def __init__(self):
+        self.name = 'atk_down'
+        self.image = load_image('resource/atk_down_effect.png')
+        self.sprite_count = 5
+        self.sprite_size_x = 75
+        self.sprite_size_y = 75
+        pass
+
 # ===============================
 
 class Effect:
@@ -89,7 +98,6 @@ class StunEffect(Effect):
 
     def apply(self, c):
         c.state_machine.add_event(('STUNNED', 0))
-        print(f'    stun applied')
         pass
 
     def remove(self, c):
@@ -173,3 +181,36 @@ class ForcedMovementEffect(Effect):
 
     def draw(self, c):
         pass
+
+class AtkDownEffect(Effect):
+    def __init__(self, duration, mount):
+        super().__init__('stun', duration)
+        self.template = AtkDownTemplate()
+        self.frame = 0
+        self.mount = mount
+
+    def apply(self, c):
+        self.original_attack_damage = c.attack_damage
+        c.attack_damage = max(c.attack_damage - self.mount, 1)
+        self.total_decresement = self.original_attack_damage - c.attack_damage
+        pass
+
+    def remove(self, c):
+        c.attack_damage += self.total_decresement
+        pass
+
+    def update(self, c):
+        self.frame = ((self.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time)
+                      % self.template.sprite_count)
+
+        if get_time() - self.start_time >= self.duration:
+            self.is_active = False
+            self.remove(c)
+
+    def draw(self, c):
+        self.template.image.clip_draw(
+            int(self.frame) * self.template.sprite_size_x, 0,
+            self.template.sprite_size_x, self.template.sprite_size_y,
+            c.x + 20, c.y - 30,
+            50, 50
+        )

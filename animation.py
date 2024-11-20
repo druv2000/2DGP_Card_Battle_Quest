@@ -355,6 +355,68 @@ class CardEffectAnimation:
             self.scale_x, self.scale_y
         )
 
+class WarCryEffectAnimation():
+    def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame, total_time):
+        self.x = x
+        self.y = y
+        self.size_x = size_x
+        self.size_y = size_y
+        self.scale_x = scale_x
+        self.scale_y = scale_y
+        self.image = load_image(image_path)
+        self.frame = 0
+        self.total_frame = 1
+        self.total_time = total_time
+        self.can_target = False
+
+        self.increse_speed = 20
+
+    def update(self):
+        if self.frame >= self.total_frame:
+            game_world.remove_object(self)
+        self.frame = (self.frame + self.total_frame * 1.0 / self.total_time * game_framework.frame_time)
+        self.scale_x += self.frame * self.increse_speed
+        self.scale_y += self.frame * self.increse_speed
+
+    def draw(self):
+        self.image.clip_draw(
+            int(self.frame) * self.size_x, 0,
+            self.size_x, self.size_y,
+            self.x, self.y,
+            self.scale_x, self.scale_y
+        )
+
+class WarCryEffectAnimation2():
+    def __init__(self, c, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame, total_time):
+        self.c = c
+        self.x = x
+        self.y = y
+        self.size_x = size_x
+        self.size_y = size_y
+        self.scale_x = scale_x
+        self.scale_y = scale_y
+        self.image = load_image(image_path)
+        self.frame = 0
+        self.total_frame = 1
+        self.total_time = total_time
+        self.can_target = False
+
+    def update(self):
+        if self.frame >= self.total_frame:
+            game_world.remove_object(self)
+        self.frame = (self.frame + self.total_frame * 1.0 / self.total_time * game_framework.frame_time)
+        self.image.opacify(max(0.8 - self.frame, 0))
+        self.x = self.c.original_x
+        self.y - self.c.original_y
+
+    def draw(self):
+        self.image.clip_draw(
+            int(self.frame) * self.size_x, 0,
+            self.size_x, self.size_y,
+            self.x, self.y,
+            self.scale_x, self.scale_y
+        )
+
 class CardAreaEffectAnimation:
     def __init__(self, x, y, scale_x, scale_y, image_path, opacify, total_time):
         self.x = x

@@ -183,7 +183,7 @@ class Soldier(Character):
         self.move_speed = 115
         self.attack_range = 75
         self.attack_speed = 1.0
-        self.attack_damage = 1
+        self.attack_damage = 2
 
         self.armor = 0
 
@@ -210,7 +210,7 @@ class Soldier_mage(Character):
         self.move_speed = 100
         self.attack_range = 400
         self.attack_speed = 1.3
-        self.attack_damage = 1
+        self.attack_damage = 4
 
         self.armor = 0
 

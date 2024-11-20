@@ -148,7 +148,8 @@ class Clicked:
             target_distance = math.sqrt(
                 (area_straight_ui.x - area_straight_ui.shooter_x) ** 2 + (area_straight_ui.y - area_straight_ui.shooter_y) ** 2
             )
-
+            if target_distance == 0:
+                target_distance = 0.0001
             area_straight_ui.length = target_distance
             area_straight_ui.dir_x = (area_straight_ui.x - area_straight_ui.shooter_x) / target_distance
             area_straight_ui.dir_y = (area_straight_ui.y - area_straight_ui.shooter_y) / target_distance
