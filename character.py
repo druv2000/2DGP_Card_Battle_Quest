@@ -13,7 +13,7 @@ from game_world import change_object_layer
 from globals import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
 from object_pool import *
 from state_machine import *
-from ui import ProgressBar
+from ui import ProgressBar, HPbarUI
 
 
 # ============================================================================================

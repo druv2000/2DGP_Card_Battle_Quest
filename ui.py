@@ -5,6 +5,36 @@ from pico2d import load_font, load_image
 import game_framework
 
 
+class HPbarUI:
+    def __init__(self, character):
+        self.c = character
+        self.x = self.c.original_x
+        self.y = self.c.original_y + 30 * self.c.draw_size / 100
+
+        self.HP_frame_image = load_image('resource/HP_frame.png')
+        self.HP_white_image = load_image('resource/HP_white.png')
+        if self.c.team == 'ally':
+            self.HP_main_image = load_image('resource/HP_blue.png')
+        else:
+            self.HP_main_image = load_image('resource/HP_red.png')
+
+        self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
+        self.can_target = False
+
+    def update(self):
+        self.x = self.c.original_x
+        self.y = self.c.original_y + 30 * self.c.draw_size / 100
+        self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
+        self.main_frame = 50 - min(50, int(self.cur_hp_state / 2))
+        if self.main_frame == 50 and self.cur_hp_state > 0:
+            self.main_frame = 49
+
+    def draw(self):
+       if self.cur_hp_state != 0:
+           self.HP_frame_image.draw(self.x, self.y, 54, 8)
+           self.HP_main_image.clip_draw(0, self.main_frame * 8, 100, 8, self.x, self.y, 50, 4)
+
+
 class TotalDamageUI:
     def __init__(self, p1, p2, p3):
         self.x = 1200

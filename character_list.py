@@ -2,8 +2,10 @@
 
 from pico2d import load_image
 
+import game_world
 from animation import Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
 from character import Character, Summoned
+from ui import HPbarUI
 
 
 # ==================== ALLY ==========================================
@@ -19,8 +21,8 @@ class Knight(Character):
         self.original_image = self.image
         self.hit_image = load_image('resource/Knight_hit_sprite.png')
 
-        self.max_hp = 30000           # max_hp
-        self.current_hp = 30000      # current_hp
+        self.max_hp = 1000         # max_hp
+        self.current_hp = 1000     # current_hp
         self.move_speed = 200       # move pixel per second
         self.attack_range = 100     # pixel
         self.attack_speed = 1.3     # attack per second
@@ -34,6 +36,9 @@ class Knight(Character):
         self.attack_scale_x, self.attack_scale_y = 250, 250
         self.attack_total_frame = 8
         self.bullet = None
+
+        self.HP_bar = HPbarUI(self)
+        game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
         size = self.draw_size
@@ -71,6 +76,9 @@ class Mage(Character):
         self.attack_total_frame = 8
         self.bullet = Mage_AttackBullet()
 
+        self.HP_bar = HPbarUI(self)
+        game_world.add_object(self.HP_bar, 9)
+
     def get_bb(self):
         size = self.draw_size
         return self.x - size/4, self.y - size/2, self.x + size/4, self.y + size/5
@@ -100,6 +108,9 @@ class Bowman(Character):
         self.has_attack_animation = False
         self.bullet = Bowman_AttackBullet()
 
+        self.HP_bar = HPbarUI(self)
+        game_world.add_object(self.HP_bar, 9)
+
     def get_bb(self):
         size = self.draw_size
         return self.x - size/4, self.y - size/2, self.x + size/4, self.y + size/5
@@ -128,6 +139,9 @@ class Golem(Character):
         self.bullet = None
 
         self.state_machine.start(Summoned)
+
+        self.HP_bar = HPbarUI(self)
+        game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
         size = self.draw_size
@@ -163,6 +177,9 @@ class Soldier_elite(Character):
         self.attack_total_frame = 8
         self.bullet = None
 
+        self.HP_bar = HPbarUI(self)
+        game_world.add_object(self.HP_bar, 9)
+
     def get_bb(self):
         size = self.draw_size
         return self.x - size / 4, self.y - size / 2, self.x + size / 4, self.y + size / 5
@@ -190,6 +207,9 @@ class Soldier(Character):
         self.has_attack_animation = False
         self.bullet = None
 
+        self.HP_bar = HPbarUI(self)
+        game_world.add_object(self.HP_bar, 9)
+
     def get_bb(self):
         size = self.draw_size
         return self.x - size / 4, self.y - size / 2, self.x + size / 4, self.y + size / 10
@@ -205,7 +225,7 @@ class Soldier_mage(Character):
         self.original_image = self.image
         self.hit_image = load_image('resource/soldier(mage)_hit_sprite.png')
 
-        self.max_hp = 30
+        self.max_hp = 15
         self.current_hp = 15
         self.move_speed = 100
         self.attack_range = 400
@@ -216,6 +236,9 @@ class Soldier_mage(Character):
 
         self.has_attack_animation = False
         self.bullet = Soldier_Mage_AttackBullet()
+
+        self.HP_bar = HPbarUI(self)
+        game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
         size = self.draw_size
@@ -248,6 +271,9 @@ class Soldier_boss(Character):
         self.attack_scale_x, self.attack_scale_y = 250, 250
         self.attack_total_frame = 8
         self.bullet = None
+
+        self.HP_bar = HPbarUI(self)
+        game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
         size = self.draw_size
