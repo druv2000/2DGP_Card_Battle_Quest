@@ -119,7 +119,7 @@ def handle_collisions():
             if not a.is_active:
                 continue
 
-            # UniformGrid를 사용하여 근처의 객체만 가져옵니다.
+            # UniformGrid를 사용하여 근처의 객체만 사용
             nearby_objects = grid.get_nearby_objects(a.x, a.y, a.collision_radius)
 
             for b in nearby_objects:

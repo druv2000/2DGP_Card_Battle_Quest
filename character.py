@@ -29,6 +29,16 @@ def character_draw(c):
                 c.x, c.y,  # 그려질 위치
                 c.draw_size, c.draw_size  # 그려질 크기
             )
+            if c.is_highlight:
+                c.highlight_image.clip_composite_draw(
+                    int(c.frame) * c.sprite_size, 0,  # 소스의 좌표
+                    c.sprite_size, c.sprite_size,  # 소스의 크기
+                    -c.rotation * 3.141592 / 180,  # 회전 각도 (라디안)
+                    'h',  # 좌우 반전
+                    c.x, c.y,  # 그려질 위치
+                    c.draw_size, c.draw_size  # 그려질 크기
+                )
+
         else:  # 오른쪽을 바라보고 있을 때
             c.image.clip_composite_draw(
                 int(c.frame) * c.sprite_size, 0,  # 소스의 좌표
@@ -38,6 +48,15 @@ def character_draw(c):
                 c.x, c.y,  # 그려질 위치
                 c.draw_size, c.draw_size  # 그려질 크기
             )
+            if c.is_highlight:
+                c.highlight_image.clip_composite_draw(
+                    int(c.frame) * c.sprite_size, 0,  # 소스의 좌표
+                    c.sprite_size, c.sprite_size,  # 소스의 크기
+                    -c.rotation * 3.141592 / 180,  # 회전 각도 (라디안)
+                    '',  # 반전 없음
+                    c.x, c.y,  # 그려질 위치
+                    c.draw_size, c.draw_size  # 그려질 크기
+                )
 
 # ============================================================================================
 
@@ -56,7 +75,7 @@ class Idle:
         if find_closest_target(c) != None:
             c.target = find_closest_target(c)
             c.state_machine.add_event(('TARGET_FOUND', 0))
-        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
     @staticmethod
     def draw(c):
         character_draw(c)
@@ -71,7 +90,7 @@ class Move_to_target:
         pass
     @staticmethod
     def do(c):
-        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
 
         current_time = time.time()
 
@@ -105,7 +124,7 @@ class Attack_target:
         c.damage_applied = False
     @staticmethod
     def do(c):
-        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
         if c.target.state_machine.cur_state == Dead and not c.state_machine.event_que and not c.animation_in_progress:
             c.state_machine.add_event(('TARGET_LOST', 0))
             return
@@ -184,7 +203,7 @@ class Casting:
             c.state_machine.add_event(('CAST_END', 0))
             return
 
-        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
         update_cast_animation(c, c.cast_duration)
 
     @staticmethod
@@ -266,7 +285,7 @@ class Summoned:
     @staticmethod
     def do(c):
         global goal_y
-        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
         c.y -= 1000 * game_framework.frame_time
         if c.y <= goal_y:
             c.state_machine.add_event(('SUMMON_END', 0))
@@ -293,7 +312,7 @@ class KnightBodyTackle:
         c.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
     @staticmethod
     def do(c):
-        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
         perform_body_tackle(c)
     @staticmethod
     def draw(c):
@@ -309,7 +328,7 @@ class BowmanRolling:
         pass
     @staticmethod
     def do(c):
-        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time) % 8
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
     @staticmethod
     def draw(c):
         character_draw(c)
@@ -330,7 +349,7 @@ class Character:
         self.effects = []
 
         self.last_attack_time = get_time()
-        self.animation_speed = 0.0
+        self.animation_speed = 1.0
         self.hit_effect_duration = 3
         self.can_target = True
 
@@ -352,7 +371,7 @@ class Character:
         self.cast_start_time = 0
         self.cast_duration = 0
         self.cast_progress_bar = None
-
+        self.is_highlight = False
         self.card_target = None
 
         event_system.add_listener('character_hit', self.on_hit)
@@ -414,6 +433,7 @@ class Character:
                 effect.remove(self)
         self.effects = active_effects
 
+
     def handle_event(self, event):
         pass
 
@@ -422,6 +442,7 @@ class Character:
         for effect in self.effects:
             if hasattr(effect, 'draw'):
                 effect.draw(self)
+
         # draw_rectangle(*self.get_bb())
 
     def get_bb(self):

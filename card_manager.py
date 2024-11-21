@@ -53,18 +53,18 @@ class CardManager:
 
     def update_all_cards(self):
         num_cards = len(self.hand.cards)
-        fan_angle = min(120, max(60, num_cards * 10))  # 카드 수에 따라 각도 조정
+        fan_angle = min(120, max(45, num_cards * 3))  # 카드 수에 따라 각도 조정
 
         for i, card in enumerate(self.hand.cards):
             angle = -fan_angle / 2 + (i / (num_cards - 1)) * fan_angle if num_cards > 1 else 0
 
             # 카드 위치 계산용 원 중심
             center_x = 800
-            center_y = -400
+            center_y = -800
             radius = 100
 
-            new_x = center_x + radius * math.sin(math.radians(angle)) * 5
-            new_y = center_y + radius * math.cos(math.radians(angle)) * 5
+            new_x = center_x + radius * math.sin(math.radians(angle)) * 8
+            new_y = center_y + radius * math.cos(math.radians(angle)) * 9
 
             card.x = new_x
             card.y = new_y
@@ -96,7 +96,7 @@ class CardManager:
             card.update()
 
     def draw(self):
-        for i, card in enumerate(reversed(self.hand.cards)):
+        for i, card in enumerate(self.hand.cards):
             card.draw()
 
         next_card = None

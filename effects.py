@@ -222,18 +222,28 @@ class AtkDownEffect(Effect):
             50, 50
         )
 
-class ContinuousHealEffect(Effect):
-    def __init__(self, duration, interval, amount):
-        super().__init__('continuous_heal', duration)
+class VitalitySurgeEffect(Effect):
+    def __init__(self, duration, interval, heal_amount, attack_speed_amount):
+        super().__init__('vitality_surge', duration)
         self.template = HealTemplate()
         self.frame = 0
-        self.amount = amount
+        self.heal_amount = heal_amount
+        self.attack_speed_amount = attack_speed_amount
         self.interval = interval
         self.last_update_time = get_time()
 
     def apply(self, c):
+        self.original_attack_speed = c.attack_speed
+        c.attack_speed *= (100 + self.attack_speed_amount) / 100
+        self.attack_speed_increment = c.attack_speed - self.original_attack_speed
+
+        self.original_animation_speed = c.animation_speed
+        c.animation_speed *= (100 + self.attack_speed_amount) / 100
+        self.animation_speed_increment = c.animation_speed - self.original_animation_speed
         pass
     def remove(self, c):
+        c.attack_speed -= self.attack_speed_increment
+        c.animation_speed -= self.animation_speed_increment
         pass
 
     def update(self, c):
@@ -242,7 +252,7 @@ class ContinuousHealEffect(Effect):
 
         # interval마다 회복 효과 적용
         if get_time() - self.last_update_time >= self.interval:
-            c.take_heal(self.amount)
+            c.take_heal(self.heal_amount)
             self.last_update_time = get_time()
 
 

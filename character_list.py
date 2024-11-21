@@ -20,6 +20,7 @@ class Knight(Character):
         self.image = load_image('resource/Knight_sprite.png')
         self.original_image = self.image
         self.hit_image = load_image('resource/Knight_hit_sprite.png')
+        self.highlight_image = load_image('resource/knight_highlight_sprite.png')
 
         self.max_hp = 300         # max_hp
         self.current_hp = 300       # current_hp
@@ -58,6 +59,7 @@ class Mage(Character):
         self.image = load_image('resource/Mage_sprite.png')
         self.original_image = self.image
         self.hit_image = load_image('resource/Mage_hit_sprite.png')
+        self.highlight_image = load_image('resource/mage_highlight_sprite.png')
 
         self.max_hp = 200
         self.current_hp = 200
@@ -95,6 +97,7 @@ class Bowman(Character):
         self.image = load_image('resource/bowman_sprite.png')
         self.original_image = self.image
         self.hit_image = load_image('resource/Bowman_hit_sprite.png')
+        self.highlight_image = load_image('resource/bowman_highlight_sprite.png')
 
         self.max_hp = 150
         self.current_hp = 150
@@ -125,6 +128,7 @@ class Golem(Character):
         self.image = load_image('resource/golem_sprite.png')
         self.original_image = self.image
         self.hit_image = load_image('resource/golem_hit_sprite.png')
+        self.highlight_image = load_image('resource/golem_highlight_sprite.png')
 
         self.max_hp = 500
         self.current_hp = 500

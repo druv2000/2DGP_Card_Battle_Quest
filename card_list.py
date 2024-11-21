@@ -8,7 +8,7 @@ from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_Snipe
     WarCryEffectAnimation, WarCryEffectAnimation2
 from card import Card
 from character_list import Golem
-from effects import TauntEffect, HitEffect, AtkDownEffect, ContinuousHealEffect
+from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect
 from game_world import world, add_object
 from globals import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 
@@ -249,6 +249,7 @@ class VitalitySurge(Card):
         self.instant_heal_amount = 20 # 즉시 회복량
         self.continuous_heal_amount = 20 # 틱당 회복량
         self.continuous_heal_interval = 1.0 # 틱 간격
+        self.atk_speed_increment = 50 # (%)
         self.duration = 5.0
         self.casting_time = 0.25
         self.expected_card_area = None
@@ -260,16 +261,19 @@ class VitalitySurge(Card):
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
+        self.target.is_highlight = False
+
         # 즉시 힐
         self.target.take_heal(self.instant_heal_amount)
 
         # 지속 힐 effect 적용
-        continuous_heal_effect = next((effect for effect in self.target.effects if isinstance(effect, ContinuousHealEffect)), None)
-        if continuous_heal_effect:
-            continuous_heal_effect.refresh()
-        else:
-            continuous_heal_effect = ContinuousHealEffect(self.duration, self.continuous_heal_interval, self.continuous_heal_amount)
-            self.target.add_effect(continuous_heal_effect)
+        continuous_heal_effect = VitalitySurgeEffect(
+            self.duration,
+            self.continuous_heal_interval,
+            self.continuous_heal_amount,
+            self.atk_speed_increment
+        )
+        self.target.add_effect(continuous_heal_effect)
 
         self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
 

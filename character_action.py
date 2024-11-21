@@ -89,7 +89,7 @@ def perform_body_tackle(c):
     c.dir_y = (c.card_target_y - c.y) / (target_distance)
     c.sprite_dir = -1 if c.dir_x < 0 else 1
 
-    if target_distance > 25 if 1.0 / game_framework.frame_time > 50 else 50:
+    if target_distance > 25 if 1.0 / game_framework.frame_time > 50 else 100:
         # 타겟과의 거리가 일정 수준보다 멀다면 타겟 방향으로 이동
         c.x += c.dir_x * KNIGHT_BODY_TACKLE_RUSH_SPEED * game_framework.frame_time
         c.y += c.dir_y * KNIGHT_BODY_TACKLE_RUSH_SPEED * game_framework.frame_time
