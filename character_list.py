@@ -5,7 +5,7 @@ from pico2d import load_image
 import game_world
 from animation import Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
 from character import Character, Summoned
-from ui import HPbarUI
+from ui import StandardHpbarui, MainCharacterHpbarui
 
 
 # ==================== ALLY ==========================================
@@ -37,7 +37,7 @@ class Knight(Character):
         self.attack_total_frame = 8
         self.bullet = None
 
-        self.HP_bar = HPbarUI(self)
+        self.HP_bar = MainCharacterHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
@@ -76,7 +76,7 @@ class Mage(Character):
         self.attack_total_frame = 8
         self.bullet = Mage_AttackBullet()
 
-        self.HP_bar = HPbarUI(self)
+        self.HP_bar = MainCharacterHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
@@ -108,7 +108,7 @@ class Bowman(Character):
         self.has_attack_animation = False
         self.bullet = Bowman_AttackBullet()
 
-        self.HP_bar = HPbarUI(self)
+        self.HP_bar = MainCharacterHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
@@ -140,7 +140,7 @@ class Golem(Character):
 
         self.state_machine.start(Summoned)
 
-        self.HP_bar = HPbarUI(self)
+        self.HP_bar = StandardHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
@@ -177,7 +177,7 @@ class Soldier_elite(Character):
         self.attack_total_frame = 8
         self.bullet = None
 
-        self.HP_bar = HPbarUI(self)
+        self.HP_bar = StandardHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
@@ -207,7 +207,7 @@ class Soldier(Character):
         self.has_attack_animation = False
         self.bullet = None
 
-        self.HP_bar = HPbarUI(self)
+        self.HP_bar = StandardHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
@@ -237,7 +237,7 @@ class Soldier_mage(Character):
         self.has_attack_animation = False
         self.bullet = Soldier_Mage_AttackBullet()
 
-        self.HP_bar = HPbarUI(self)
+        self.HP_bar = StandardHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):
@@ -272,7 +272,7 @@ class Soldier_boss(Character):
         self.attack_total_frame = 8
         self.bullet = None
 
-        self.HP_bar = HPbarUI(self)
+        self.HP_bar = StandardHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
 
     def get_bb(self):

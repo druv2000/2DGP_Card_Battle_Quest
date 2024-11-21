@@ -3,7 +3,7 @@ import math
 import random
 
 from card import Highlight
-from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle, WarCry
+from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle, WarCry, VitalitySurge
 from deck import Deck, Hand
 
 
@@ -21,11 +21,12 @@ class CardManager:
 
     def init_deck(self):
         # 덱에 카드 추가
-        self.deck.add_card(Explosion())
+        # self.deck.add_card(Explosion())
         self.deck.add_card(BodyTackle())
         self.deck.add_card(WarCry())
         self.deck.add_card(SummonGolem())
         self.deck.add_card(SnipeShot())
+        self.deck.add_card(VitalitySurge())
 
         random.shuffle(self.deck.cards)
 

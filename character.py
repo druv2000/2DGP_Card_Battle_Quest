@@ -13,7 +13,7 @@ from game_world import change_object_layer
 from globals import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
 from object_pool import *
 from state_machine import *
-from ui import ProgressBar, HPbarUI
+from ui import ProgressBar, StandardHpbarui
 
 
 # ============================================================================================
@@ -160,7 +160,7 @@ class Casting:
 
         c.cast_start_time = get_time()
         c.cast_duration = e[1]
-        c.cast_progress_bar = ProgressBar(c, c.x, c.y + 50, c.cast_duration)
+        c.cast_progress_bar = ProgressBar(c, c.cast_duration)
         game_world.add_object(c.cast_progress_bar, 9)
         c.frame = 0
         c.can_use_card = False
@@ -474,6 +474,21 @@ class Character:
             # 3. 사망 계산
             if self.current_hp <= 0:
                 self.state_machine.add_event(('DEAD', 0))
+
+    def take_heal(self, amount):
+        if self.state_machine.cur_state not in [Dead]:
+            heal_to_take = amount
+            old_hp = self.current_hp
+
+            self.current_hp = min(self.max_hp, self.current_hp + heal_to_take)
+            event_system.trigger('hp_changed', self, old_hp, self.current_hp)
+            print(f'    healed: {heal_to_take}, remain_hp: {self.current_hp}')
+
+            heal_number = object_pool.heal_number_pool.get()
+            if heal_number:
+                heal_number.set(self.x, self.y + 10, heal_to_take)
+            else:
+                print("Warning: DamageNumber pool is empty")
 
     def add_effect(self, effect):
         effect.apply(self)

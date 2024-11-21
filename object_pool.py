@@ -2,7 +2,7 @@
 
 from animation import *
 from collision_group import CollisionGroup
-from damage_number import DamageNumber
+from damage_number import DamageNumber, HealNumber
 from game_world import add_object, add_collision_pair, remove_collision_object
 
 
@@ -92,6 +92,27 @@ class DamageNumberPool(ObjectPool):
         for damage_number in self.active_objects:
             damage_number.draw()
 
+class HealNumberPool(ObjectPool):
+    def __init__(self, size=50):
+        super().__init__(HealNumber, size)
+
+    def get(self):
+        heal_number = super().get()
+        if heal_number:
+            heal_number.set(0, 0, 0)  # 초기값 설정
+        return heal_number
+
+    def update(self):
+        for heal_number in self.active_objects[:]:  # 복사본을 순회
+            heal_number.update()
+            if not heal_number.is_alive():
+                self.active_objects.remove(heal_number)
+                heal_number.is_active = False
+
+    def draw(self):
+        for heal_number in self.active_objects:
+            heal_number.draw()
+
 class CollisionGroupPool(ObjectPool):
     def __init__(self, size=1000):
         super().__init__(CollisionGroup, size)
@@ -121,6 +142,7 @@ class CollisionGroupPool(ObjectPool):
 #################################################################################################
 
 damage_number_pool = None
+heal_number_pool = None
 mage_bullet_pool = None
 bowman_bullet_pool = None
 soldier_mage_bullet_pool = None
@@ -130,7 +152,7 @@ attack_animation_pool = None
 collision_group_pool = None
 
 def init_object_pool():
-    global damage_number_pool
+    global damage_number_pool, heal_number_pool
     global mage_bullet_pool, bowman_bullet_pool, soldier_mage_bullet_pool, none_bullet_pool
     global hit_animation_pool
     global attack_animation_pool
@@ -138,6 +160,7 @@ def init_object_pool():
 
 
     damage_number_pool = DamageNumberPool(size=1000)  # 크기는 필요에 따라 조정
+    heal_number_pool = HealNumberPool(size=500)
     mage_bullet_pool = BulletPool(Mage_AttackBullet, size = 500)
     bowman_bullet_pool = BulletPool(Bowman_AttackBullet, size = 500)
     soldier_mage_bullet_pool = BulletPool(Soldier_Mage_AttackBullet, size = 500)
@@ -146,13 +169,14 @@ def init_object_pool():
     attack_animation_pool = AttackAnimationPool(size = 1500)
     collision_group_pool = CollisionGroupPool(size=1500)
 
-    add_object(damage_number_pool, 8)  # 이펙트 레이어에 추가
+    add_object(damage_number_pool, 7)  # 이펙트 레이어에 추가
+    add_object(heal_number_pool, 7)
     add_object(mage_bullet_pool, 7)
     add_object(bowman_bullet_pool, 7)
     add_object(soldier_mage_bullet_pool, 7)
     add_object(none_bullet_pool, 7)
     add_object(hit_animation_pool, 7)
-    add_object(attack_animation_pool, 5)
+    add_object(attack_animation_pool, 7)
     add_object(collision_group_pool, 0)  # 낮은 우선순위 레이어에 추가
 
 

@@ -220,8 +220,10 @@ class SummonGolem(Card):
             for obj in layer:
                 if obj.can_target and obj.team != self.user.team:
                     taunt_effect = next((effect for effect in obj.effects if isinstance(effect, TauntEffect)), None)
+                    hit_effect = next((effect for effect in obj.effects if isinstance(effect, HitEffect)), None)
                     distance = ((obj.x - x) ** 2 + (obj.y - y) ** 2) ** 0.5
                     if distance <= self.radius:
+                        # 도발 적용
                         if taunt_effect:
                             obj.effects.remove(taunt_effect)
                             taunt_effect = TauntEffect(5.0, golem)
@@ -230,6 +232,40 @@ class SummonGolem(Card):
                             taunt_effect = TauntEffect(5.0, golem)
                             obj.add_effect(taunt_effect)
 
+                        # hit_effect 적용 (시각적 피드백)
+                        if hit_effect:
+                            hit_effect.refresh()
+                        else:
+                            hit_effect = HitEffect(0.075)
+                            obj.add_effect(hit_effect)
+
+        self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
+
+class VitalitySurge(Card):
+    def __init__(self):
+        from battle_mode import mage
+        super().__init__("VitalitySurge", mage, 3, "resource/card_mage.png")
+        self.range = 1000
+        self.instant_heal_amount = 100
+        self.continuous_heal_amount = 100 # 틱당 회복량
+        self.duration = 5.0
+        self.casting_time = 0.25
+        self.expected_card_area = None
+
+    def use(self, x, y):
+        self.user.state_machine.add_event(('CAST_START', self.casting_time))
+        self.user.current_card = self
+        self.user.card_target = (x, y)
+
+        for layer in world:
+            for obj in layer:
+                if obj.can_target and obj.team == self.user.team:
+                    x1, y1, x2, y2 = obj.get_bb()
+                    if x1 <= x <= x2 and y1 <= y <= y2:
+                        self.target = obj
+
+    def apply_effect(self, x, y):
+        self.target.take_heal(self.instant_heal_amount)
         self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
 
 
