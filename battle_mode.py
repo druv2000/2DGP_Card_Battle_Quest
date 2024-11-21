@@ -42,6 +42,7 @@ def init():
     # boss = Soldier_boss(1500, 550, 'enemy')
     # game_world.add_object(boss, 3)
 
+    card_manager.font = load_font('resource/font/fixedsys.ttf', 32)
     card_manager.register_characters(knight, mage, bowman)
     card_manager.init_deck()
 

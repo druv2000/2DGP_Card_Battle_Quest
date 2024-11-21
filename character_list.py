@@ -5,7 +5,7 @@ from pico2d import load_image
 import game_world
 from animation import Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
 from character import Character, Summoned
-from ui import StandardHpbarui, MainCharacterHpbarui
+from ui import StandardHpbarui, MainCharacterHpbarui, BossHpbarui
 
 
 # ==================== ALLY ==========================================
@@ -141,7 +141,7 @@ class Golem(Character):
         self.state_machine.start(Summoned)
 
         self.HP_bar = StandardHpbarui(self)
-        game_world.add_object(self.HP_bar, 9)
+        game_world.add_object(self.HP_bar, 8)
 
     def get_bb(self):
         size = self.draw_size
@@ -178,7 +178,7 @@ class Soldier_elite(Character):
         self.bullet = None
 
         self.HP_bar = StandardHpbarui(self)
-        game_world.add_object(self.HP_bar, 9)
+        game_world.add_object(self.HP_bar, 8)
 
     def get_bb(self):
         size = self.draw_size
@@ -208,7 +208,7 @@ class Soldier(Character):
         self.bullet = None
 
         self.HP_bar = StandardHpbarui(self)
-        game_world.add_object(self.HP_bar, 9)
+        game_world.add_object(self.HP_bar, 8)
 
     def get_bb(self):
         size = self.draw_size
@@ -238,7 +238,7 @@ class Soldier_mage(Character):
         self.bullet = Soldier_Mage_AttackBullet()
 
         self.HP_bar = StandardHpbarui(self)
-        game_world.add_object(self.HP_bar, 9)
+        game_world.add_object(self.HP_bar, 8)
 
     def get_bb(self):
         size = self.draw_size
@@ -255,8 +255,8 @@ class Soldier_boss(Character):
         self.original_image = self.image
         self.hit_image = load_image('resource/boss_hit_sprite.png')
 
-        self.max_hp = 200000
-        self.current_hp = 200000
+        self.max_hp = 2000
+        self.current_hp = 2000
         self.move_speed = 0.0
         self.attack_range = 0.0
         self.attack_speed = 0.0
@@ -272,8 +272,8 @@ class Soldier_boss(Character):
         self.attack_total_frame = 8
         self.bullet = None
 
-        self.HP_bar = StandardHpbarui(self)
-        game_world.add_object(self.HP_bar, 9)
+        self.HP_bar = BossHpbarui(self)
+        game_world.add_object(self.HP_bar, 8)
 
     def get_bb(self):
         size = self.draw_size

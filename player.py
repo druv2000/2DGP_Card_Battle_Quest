@@ -21,8 +21,6 @@ class Player:
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT:
                 self.handle_card_click(event)
-            elif event.button == SDL_BUTTON_RIGHT:
-                card_manager.draw_card()
         elif event.type == SDL_MOUSEBUTTONUP:
             self.handle_card_release(event)
             pass

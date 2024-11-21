@@ -12,6 +12,8 @@ class MainCharacterHpbarui:
         self.y = self.c.original_y + 30 * self.c.draw_size / 100
         self.frame_draw_size = (112, 16)
         self.bar_draw_size = (104, 8)
+        self.font_size = 14
+        self.font = load_font('resource/font/fixedsys.ttf', self.font_size)
 
         self.HP_frame_image = load_image('resource/HP_frame.png')
         self.HP_white_image = load_image('resource/HP_white.png')
@@ -36,6 +38,7 @@ class MainCharacterHpbarui:
         if self.cur_hp_state != 0:
             self.HP_frame_image.draw(self.x, self.y, *self.frame_draw_size)
             self.HP_image.clip_draw(0, self.main_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
+            self.font.draw(self.x - 20, self.y - 15, f'{self.c.current_hp} / {self.c.max_hp}', (255, 255, 255))
 
 class StandardHpbarui:
     def __init__(self, character):
@@ -69,12 +72,40 @@ class StandardHpbarui:
             self.HP_frame_image.draw(self.x, self.y, *self.frame_draw_size)
             self.HP_image.clip_draw(0, self.main_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
 
+class BossHpbarui:
+    def __init__(self, character):
+        self.c = character
+        self.x = 800
+        self.y = 850
+        self.frame_draw_size = (816, 48)
+        self.bar_draw_size = (800, 32)
+        self.font_size = 24
+        self.font = load_font('resource/font/fixedsys.ttf', self.font_size)
+
+        self.HP_frame_image = load_image('resource/HP_frame_boss.png')
+        self.HP_white_image = load_image('resource/HP_boss_white.png')
+        self.HP_main_image = load_image('resource/HP_boss_red.png')
+
+        self.HP_image = self.HP_main_image
+        self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
+        self.can_target = False
+
+    def update(self):
+        self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
+        self.main_frame = 100 - int(self.cur_hp_state)
+
+    def draw(self):
+        if self.cur_hp_state != 0:
+            self.HP_frame_image.draw(self.x, self.y, *self.frame_draw_size)
+            self.HP_image.clip_draw(0, self.main_frame * 8, 200, 8, self.x, self.y, *self.bar_draw_size)
+            self.font.draw(self.x - 60, self.y, f'{self.c.current_hp} / {self.c.max_hp}', (255, 255, 255))
+
 
 
 class TotalDamageUI:
     def __init__(self, p1, p2, p3):
-        self.x = 1200
-        self.y = 820
+        self.x = 20
+        self.y = 200
         self.p1 = p1
         self.p2 = p2
         self.p3 = p3

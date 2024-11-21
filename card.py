@@ -8,7 +8,7 @@ from sdl2.examples.gfxdrawing import draw_circles
 import game_world
 import globals
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
-    mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card
+    mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card, card_move_to_hand
 from ui import RangeCircleUI, AreaCircleUI, AreaBeamUI, SummonUI, AreaStraightUI
 from utils import limit_within_range
 
@@ -18,6 +18,8 @@ class Idle:
     def enter(c, e):
         c.x = c.original_x
         c.y = c.original_y
+        c.draw_size_x = c.original_size_x
+        c.draw_size_y = c.original_size_y
         pass
     @staticmethod
     def exit(c, e):
@@ -27,8 +29,6 @@ class Idle:
         pass
     @staticmethod
     def draw(c):
-
-
         c.image.composite_draw(
             -c.rotation * 3.141592 / 180,  # 회전 각도 (라디안)
             '',  # 반전 없음
@@ -193,6 +193,8 @@ class Used:
 
         from card_manager import card_manager
         card_manager.use_card(c)
+        c.state_machine.add_event(('CARD_USED', 0))
+
         pass
 
     @staticmethod
@@ -205,6 +207,33 @@ class Used:
 
     @staticmethod
     def draw(c):
+        pass
+
+class InDeck:
+    @staticmethod
+    def enter(c, e):
+        c.x = 1300
+        c.y = 20
+        c.draw_size_x = c.original_size_x * 3 / 4
+        c.draw_size_y = c.original_size_y * 3 / 4
+
+
+    @staticmethod
+    def exit(c, e):
+        c.draw_size_x = c.original_size_x
+        c.draw_size_y = c.original_size_y
+        pass
+
+    @staticmethod
+    def do(c):
+        pass
+
+    @staticmethod
+    def draw(c):
+        c.image.draw(
+            c.x, c.y,  # 그려질 위치
+            c.draw_size_x, c.draw_size_y  # 그려질 크기
+        )
         pass
 
 
@@ -229,7 +258,7 @@ class Card:
         self.original_rotation = 0
 
         self.state_machine = StateMachine(self)
-        self.state_machine.start(Idle)
+        self.state_machine.start(InDeck)
         self.state_machine.set_transitions({
             Idle: {
                 mouse_hover: Highlight
@@ -244,8 +273,11 @@ class Card:
                 cannot_use_card: Idle
             },
             Used: {
-                card_used: Idle,
+                card_used: InDeck,
                 cannot_use_card: Idle
+            },
+            InDeck: {
+                card_move_to_hand: Idle
             }
         })
 

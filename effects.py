@@ -48,6 +48,15 @@ class AtkDownTemplate:
         self.sprite_size_y = 75
         pass
 
+class HealTemplate:
+    def __init__(self):
+        self.name = 'heal'
+        self.image = load_image('resource/healing_effect.png')
+        self.sprite_count = 12
+        self.sprite_size_x = 256
+        self.sprite_size_y = 256
+        pass
+
 # ===============================
 
 class Effect:
@@ -158,7 +167,7 @@ class TauntEffect(Effect):
 
 class ForcedMovementEffect(Effect):
     def __init__(self, duration, move_speed, dir_x, dir_y):
-        super().__init__('taunted', duration)
+        super().__init__('forced_movement', duration)
         self.move_speed = move_speed
         self.move_dir_x = dir_x
         self.move_dir_y = dir_y
@@ -182,15 +191,15 @@ class ForcedMovementEffect(Effect):
         pass
 
 class AtkDownEffect(Effect):
-    def __init__(self, duration, mount):
+    def __init__(self, duration, amount):
         super().__init__('stun', duration)
         self.template = AtkDownTemplate()
         self.frame = 0
-        self.mount = mount
+        self.amount = amount
 
     def apply(self, c):
         self.original_attack_damage = c.attack_damage
-        c.attack_damage = max(c.attack_damage - self.mount, 1)
+        c.attack_damage = max(c.attack_damage - self.amount, 1)
         self.total_decresement = self.original_attack_damage - c.attack_damage
         pass
 
@@ -211,4 +220,39 @@ class AtkDownEffect(Effect):
             self.template.sprite_size_x, self.template.sprite_size_y,
             c.x + 20, c.y - 30,
             50, 50
+        )
+
+class ContinuousHealEffect(Effect):
+    def __init__(self, duration, interval, amount):
+        super().__init__('continuous_heal', duration)
+        self.template = HealTemplate()
+        self.frame = 0
+        self.amount = amount
+        self.interval = interval
+        self.last_update_time = get_time()
+
+    def apply(self, c):
+        pass
+    def remove(self, c):
+        pass
+
+    def update(self, c):
+        self.frame = ((self.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time)
+                      % self.template.sprite_count)
+
+        # interval마다 회복 효과 적용
+        if get_time() - self.last_update_time >= self.interval:
+            c.take_heal(self.amount)
+            self.last_update_time = get_time()
+
+
+        if get_time() - self.start_time >= self.duration:
+            self.is_active = False
+
+    def draw(self, c):
+        self.template.image.clip_draw(
+            int(self.frame) * self.template.sprite_size_x, 0,
+            self.template.sprite_size_x, self.template.sprite_size_y,
+            c.x, c.y,
+            150, 150
         )

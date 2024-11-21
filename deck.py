@@ -5,7 +5,7 @@ class Deck:
         self.cards = []
 
     def add_card(self, card):
-        self.cards.append(card)
+        self.cards.insert(0, card)
 
     def draw_card(self):
         if self.cards:
