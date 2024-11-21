@@ -177,6 +177,20 @@ class Clicked:
 class Used:
     @staticmethod
     def enter(c, e):
+        # 대상 지정 카드의 경우 타겟이 없으면 사용실패 - 패로 돌아감
+        if hasattr(c, 'target'):
+            target = None
+            for layer in game_world.world:
+                for obj in layer:
+                    if obj.can_target and obj.team == c.user.team:
+                        x1, y1, x2, y2 = obj.get_bb()
+                        if x1 <= c.x <= x2 and y1 <= c.y <= y2:
+                            target = obj
+            c.target = target
+            if target == None:
+                c.state_machine.add_event(('CANNOT_USE_CARD', 0))
+                return
+
         from card_manager import card_manager
         card_manager.use_card(c)
         pass
@@ -230,7 +244,8 @@ class Card:
                 cannot_use_card: Idle
             },
             Used: {
-                card_used: Idle
+                card_used: Idle,
+                cannot_use_card: Idle
             }
         })
 

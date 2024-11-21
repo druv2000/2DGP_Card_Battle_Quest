@@ -84,10 +84,12 @@ class HitEffect(Effect):
 
     def apply(self, c):
         c.image = c.hit_image
+        c.HP_bar.HP_image = c.HP_bar.HP_white_image
         pass
 
     def remove(self, c):
         c.image = c.original_image
+        c.HP_bar.HP_image = c.HP_bar.HP_main_image
         pass
 
 class StunEffect(Effect):

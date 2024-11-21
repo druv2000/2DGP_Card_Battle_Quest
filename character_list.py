@@ -21,8 +21,8 @@ class Knight(Character):
         self.original_image = self.image
         self.hit_image = load_image('resource/Knight_hit_sprite.png')
 
-        self.max_hp = 1000         # max_hp
-        self.current_hp = 1000     # current_hp
+        self.max_hp = 300         # max_hp
+        self.current_hp = 300       # current_hp
         self.move_speed = 200       # move pixel per second
         self.attack_range = 100     # pixel
         self.attack_speed = 1.3     # attack per second

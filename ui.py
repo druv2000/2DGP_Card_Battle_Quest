@@ -20,6 +20,7 @@ class MainCharacterHpbarui:
         else:
             self.HP_main_image = load_image('resource/HP_red.png')
 
+        self.HP_image = self.HP_main_image
         self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
         self.can_target = False
 
@@ -34,7 +35,7 @@ class MainCharacterHpbarui:
     def draw(self):
         if self.cur_hp_state != 0:
             self.HP_frame_image.draw(self.x, self.y, *self.frame_draw_size)
-            self.HP_main_image.clip_draw(0, self.main_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
+            self.HP_image.clip_draw(0, self.main_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
 
 class StandardHpbarui:
     def __init__(self, character):
@@ -51,6 +52,7 @@ class StandardHpbarui:
         else:
             self.HP_main_image = load_image('resource/HP_red.png')
 
+        self.HP_image = self.HP_main_image
         self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
         self.can_target = False
 
@@ -65,7 +67,7 @@ class StandardHpbarui:
     def draw(self):
         if self.cur_hp_state != 0:
             self.HP_frame_image.draw(self.x, self.y, *self.frame_draw_size)
-            self.HP_main_image.clip_draw(0, self.main_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
+            self.HP_image.clip_draw(0, self.main_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
 
 
 
