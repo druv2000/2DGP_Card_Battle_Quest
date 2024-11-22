@@ -6,7 +6,7 @@ from pico2d import load_image, get_time
 
 import game_framework
 from globals import FRAME_PER_HIT_ANIMATION, CHARACTER_ANIMATION_PER_TIME, FRAME_PER_TAUNT_ANIMATION, \
-    TAUNT_ANIMATION_PER_TIME, HIT_ANIMATION_PER_TIME
+    TAUNT_ANIMATION_PER_TIME, HIT_ANIMATION_PER_TIME, HUGE_TIME
 
 
 def draw_effect(c, effect):
@@ -80,7 +80,6 @@ class Effect:
     def update(self, character):
         if get_time() - self.start_time >= self.duration:
             self.is_active = False
-            self.remove(character)
 
     def refresh(self):
         self.start_time = get_time()
@@ -233,18 +232,15 @@ class VitalitySurgeEffect(Effect):
         self.last_update_time = get_time()
 
     def apply(self, c):
-        self.original_attack_speed = c.attack_speed
-        c.attack_speed *= (100 + self.attack_speed_amount) / 100
-        self.attack_speed_increment = c.attack_speed - self.original_attack_speed
+        print(f"Applying BowmanMaxPowerEffect: {self.attack_speed_amount}")
+        c.attack_speed_modifiers.append(self.attack_speed_amount)
+        c.animation_speed_modifiers.append(self.attack_speed_amount)
 
-        self.original_animation_speed = c.animation_speed
-        c.animation_speed *= (100 + self.attack_speed_amount) / 100
-        self.animation_speed_increment = c.animation_speed - self.original_animation_speed
-        pass
     def remove(self, c):
-        c.attack_speed -= self.attack_speed_increment
-        c.animation_speed -= self.animation_speed_increment
-        pass
+        print(f"Removing BowmanMaxPowerEffect: {self.attack_speed_amount}")
+        print(f"Current attack_speed_modifiers: {c.attack_speed_modifiers}")
+        c.attack_speed_modifiers.remove(self.attack_speed_amount)
+        c.animation_speed_modifiers.remove(self.attack_speed_amount)
 
     def update(self, c):
         self.frame = ((self.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time)
@@ -266,3 +262,27 @@ class VitalitySurgeEffect(Effect):
             c.x, c.y,
             150, 150
         )
+
+class BowmanMaxPowerEffect(Effect):
+    def __init__(self, duration, attack_speed_amount):
+        super().__init__('bowman_max_power', duration)
+        self.image = load_image('resource/bowman_max_power_sprite.png')
+        self.attack_speed_amount = attack_speed_amount
+
+    def apply(self, c):
+        print(f"Applying BowmanMaxPowerEffect: {self.attack_speed_amount}")
+        self.original_image = c.original_image
+        c.original_image = self.image
+        c.image = self.image
+        c.attack_speed_modifiers.append(self.attack_speed_amount)
+        c.animation_speed_modifiers.append(self.attack_speed_amount)
+        pass
+
+    def remove(self, c):
+        print(f"Removing BowmanMaxPowerEffect: {self.attack_speed_amount}")
+        print(f"Current attack_speed_modifiers: {c.attack_speed_modifiers}")
+        c.original_image = self.original_image
+        c.image = c.original_image
+        c.attack_speed_modifiers.remove(self.attack_speed_amount)
+        c.animation_speed_modifiers.remove(self.attack_speed_amount)
+        pass

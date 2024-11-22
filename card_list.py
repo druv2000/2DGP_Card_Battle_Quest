@@ -5,10 +5,10 @@ from pico2d import get_time
 
 import game_world
 from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_SnipeShotBullet, CardBeamAreaEffectAnimation, \
-    WarCryEffectAnimation, WarCryEffectAnimation2
+    WarCryEffectAnimation, FadeOutEffectAnimation
 from card import Card
 from character_list import Golem
-from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect
+from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, BowmanMaxPowerEffect
 from game_world import world, add_object
 from globals import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 
@@ -75,7 +75,7 @@ class WarCry(Card):
         )
         game_world.add_object(war_cry_effect, 8)
 
-        war_cry_effect_2 = WarCryEffectAnimation2(
+        war_cry_effect_2 = FadeOutEffectAnimation(
             self.user,
             x, y,
             171, 171,
@@ -154,7 +154,8 @@ class Explosion(Card):
             137, 150,
             300, 300,
             'resource/explosion_effect.png',
-            26, 0.5
+            26, 0.5,
+            1
         )
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,
@@ -244,7 +245,7 @@ class SummonGolem(Card):
 class VitalitySurge(Card):
     def __init__(self):
         from battle_mode import mage
-        super().__init__("VitalitySurge", mage, 3, "resource/card_mage.png")
+        super().__init__("VitalitySurge", mage, 3, "resource/card_vitility_surge.png")
         self.range = 1000
         self.instant_heal_amount = 20 # 즉시 회복량
         self.continuous_heal_amount = 20 # 틱당 회복량
@@ -262,18 +263,27 @@ class VitalitySurge(Card):
 
     def apply_effect(self, x, y):
         self.target.is_highlight = False
+        card_effect_animation = CardEffectAnimation(
+            x, y - 15,
+            360, 360,
+            200, 200,
+            'resource/healing_effect_2.png',
+            4, 0.5,
+            2.5
+        )
+        game_world.add_object(card_effect_animation, 1)
 
         # 즉시 힐
         self.target.take_heal(self.instant_heal_amount)
 
         # 지속 힐 effect 적용
-        continuous_heal_effect = VitalitySurgeEffect(
+        vitality_surge_effect = VitalitySurgeEffect(
             self.duration,
             self.continuous_heal_interval,
             self.continuous_heal_amount,
             self.atk_speed_increment
         )
-        self.target.add_effect(continuous_heal_effect)
+        self.target.add_effect(vitality_surge_effect)
 
         self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
 
@@ -311,5 +321,68 @@ class SnipeShot(Card):
         self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
         pass
 
+class AdditionalArrow(Card):
+    def __init__(self):
+        from battle_mode import bowman
+        super().__init__("AdditionalArrow", bowman, 3, "resource/card_bowman.png")
+        self.range = 0
+        self.casting_time = 0.25
+        self.target = self.user
+
+    def use(self, x, y):
+        self.user.state_machine.add_event(('CAST_START', self.casting_time))
+        self.user.current_card = self
+        self.user.card_target = (x, y)
+
+    def apply_effect(self, x, y):
+        self.target.is_highlight = False
+
+        if self.user.additional_attack == 0:
+            additional_arrow_effect = FadeOutEffectAnimation(
+                self.user,
+                x, y,
+                340, 340,
+                200, 200,
+                'resource/additional_arrow_effect_1.png',
+                1, 0.75
+            )
+        elif self.user.additional_attack == 1:
+            additional_arrow_effect = FadeOutEffectAnimation(
+                self.user,
+                x, y,
+                1181, 1084,
+                330, 300,
+                'resource/additional_arrow_effect_2.png',
+                1, 0.75
+            )
+        elif self.user.additional_attack == 2:
+            additional_arrow_effect = FadeOutEffectAnimation(
+                self.user,
+                x, y,
+                1181, 1084,
+               330,300,
+                'resource/additional_arrow_effect_3.png',
+                1, 0.75
+            )
+        else:
+            additional_arrow_effect = FadeOutEffectAnimation(
+                self.user,
+                x, y,
+                1182, 1084,
+                330, 300,
+                'resource/additional_arrow_effect_4.png',
+                1, 0.75
+            )
+        game_world.add_object(additional_arrow_effect, 8)
+
+        if self.user.additional_attack < 4:
+            self.user.additional_attack = min(4, self.user.additional_attack + 1)
+        else:
+            bowman_max_power_effect = next((effect for effect in self.target.effects if isinstance(effect, BowmanMaxPowerEffect)), None)
+            if bowman_max_power_effect:
+                bowman_max_power_effect.refresh()
+            else:
+                bowman_max_power_effect = BowmanMaxPowerEffect(5.0, 50)
+                self.target.add_effect(bowman_max_power_effect)
 
 

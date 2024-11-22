@@ -5,7 +5,7 @@ import random
 from pico2d import load_font
 
 from card import Highlight
-from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle, WarCry, VitalitySurge
+from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle, WarCry, VitalitySurge, AdditionalArrow
 from deck import Deck, Hand
 
 
@@ -30,13 +30,9 @@ class CardManager:
         self.deck.add_card(SummonGolem())
         self.deck.add_card(SnipeShot())
         self.deck.add_card(VitalitySurge())
+        self.deck.add_card(AdditionalArrow())
 
-        self.deck.add_card(Explosion())
-        self.deck.add_card(BodyTackle())
-        self.deck.add_card(WarCry())
-        self.deck.add_card(SummonGolem())
-        self.deck.add_card(SnipeShot())
-        self.deck.add_card(VitalitySurge())
+
 
         random.shuffle(self.deck.cards)
 
@@ -63,7 +59,7 @@ class CardManager:
             center_y = -800
             radius = 100
 
-            new_x = center_x + radius * math.sin(math.radians(angle)) * 8
+            new_x = center_x + radius * math.sin(math.radians(angle)) * 7
             new_y = center_y + radius * math.cos(math.radians(angle)) * 9
 
             card.x = new_x

@@ -26,7 +26,7 @@ class Knight(Character):
         self.current_hp = 300       # current_hp
         self.move_speed = 200       # move pixel per second
         self.attack_range = 100     # pixel
-        self.attack_speed = 1.3     # attack per second
+        self.base_attack_speed = 1.3     # attack per second
         self.attack_damage = 12     # damage per attack
         self.armor = 0
 
@@ -34,7 +34,7 @@ class Knight(Character):
         self.attack_image_path = 'resource/slash1.png'
         self.attack_size_x, self.attack_size_y = 74, 74
         self.attack_offset_x, self.attack_offset_y = 70, 70
-        self.attack_scale_x, self.attack_scale_y = 250, 250
+        self.attack_scale_x, self.attack_scale_y = 300, 300
         self.attack_total_frame = 8
         self.bullet = None
 
@@ -65,7 +65,7 @@ class Mage(Character):
         self.current_hp = 200
         self.move_speed = 130
         self.attack_range = 400
-        self.attack_speed = 1.0
+        self.base_attack_speed = 1.0
         self.attack_damage = 8
 
         self.armor = 0
@@ -103,8 +103,9 @@ class Bowman(Character):
         self.current_hp = 150
         self.move_speed = 120
         self.attack_range = 650
-        self.attack_speed = 1.5
+        self.base_attack_speed = 1.5
         self.attack_damage = 10
+        self.additional_attack = 0
 
         self.armor = 0
 
@@ -130,12 +131,12 @@ class Golem(Character):
         self.hit_image = load_image('resource/golem_hit_sprite.png')
         self.highlight_image = load_image('resource/golem_highlight_sprite.png')
 
-        self.max_hp = 500
-        self.current_hp = 500
+        self.max_hp = 200
+        self.current_hp = 200
         self.move_speed = 150
         self.attack_range = 100
-        self.attack_speed = 1.0
-        self.attack_damage = 1
+        self.base_attack_speed = 1.0
+        self.attack_damage = 5
 
         self.armor = 0
 
@@ -168,7 +169,7 @@ class Soldier_elite(Character):
         self.current_hp = 250
         self.move_speed =200
         self.attack_range = 125
-        self.attack_speed = 0.2
+        self.base_attack_speed = 0.2
         self.attack_damage = 10
 
         self.armor = 0
@@ -203,7 +204,7 @@ class Soldier(Character):
         self.current_hp = 50
         self.move_speed = 115
         self.attack_range = 75
-        self.attack_speed = 1.0
+        self.base_attack_speed = 1.0
         self.attack_damage = 2
 
         self.armor = 0
@@ -229,11 +230,11 @@ class Soldier_mage(Character):
         self.original_image = self.image
         self.hit_image = load_image('resource/soldier(mage)_hit_sprite.png')
 
-        self.max_hp = 15
-        self.current_hp = 15
+        self.max_hp = 30
+        self.current_hp = 30
         self.move_speed = 100
         self.attack_range = 400
-        self.attack_speed = 1.3
+        self.base_attack_speed = 1.3
         self.attack_damage = 4
 
         self.armor = 0
@@ -263,7 +264,7 @@ class Soldier_boss(Character):
         self.current_hp = 2000
         self.move_speed = 0.0
         self.attack_range = 0.0
-        self.attack_speed = 0.0
+        self.base_attack_speed = 0.0
         self.attack_damage = 5
 
         self.armor = 0

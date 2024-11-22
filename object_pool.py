@@ -147,6 +147,7 @@ mage_bullet_pool = None
 bowman_bullet_pool = None
 soldier_mage_bullet_pool = None
 none_bullet_pool = None
+bowman_additional_bullet_pool = None
 hit_animation_pool = None
 attack_animation_pool = None
 collision_group_pool = None
@@ -154,6 +155,7 @@ collision_group_pool = None
 def init_object_pool():
     global damage_number_pool, heal_number_pool
     global mage_bullet_pool, bowman_bullet_pool, soldier_mage_bullet_pool, none_bullet_pool
+    global bowman_additional_bullet_pool
     global hit_animation_pool
     global attack_animation_pool
     global collision_group_pool
@@ -163,6 +165,7 @@ def init_object_pool():
     heal_number_pool = HealNumberPool(size=500)
     mage_bullet_pool = BulletPool(Mage_AttackBullet, size = 500)
     bowman_bullet_pool = BulletPool(Bowman_AttackBullet, size = 500)
+    bowman_additional_bullet_pool = BulletPool(Bowman_AdditionalBullet, size = 50)
     soldier_mage_bullet_pool = BulletPool(Soldier_Mage_AttackBullet, size = 500)
     none_bullet_pool = BulletPool(None_AttackBullet, size = 1000)
     hit_animation_pool = HitAnimationPool(size = 1500)
@@ -173,6 +176,7 @@ def init_object_pool():
     add_object(heal_number_pool, 7)
     add_object(mage_bullet_pool, 7)
     add_object(bowman_bullet_pool, 7)
+    add_object(bowman_additional_bullet_pool, 7)
     add_object(soldier_mage_bullet_pool, 7)
     add_object(none_bullet_pool, 7)
     add_object(hit_animation_pool, 7)

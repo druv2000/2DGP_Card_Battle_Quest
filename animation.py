@@ -115,7 +115,7 @@ class Bullet:
 
     def draw(self):
         if self.is_active:
-            self.image.draw(self.x, self.y, 50, 50)
+            self.image.draw(self.x, self.y, 60, 60)
             # draw_rectangle(*self.get_bb())
 
     def is_alive(self):
@@ -159,6 +159,46 @@ class Bowman_AttackBullet(Bullet):
     def draw(self):
         if self.is_active:
             Bowman_AttackBullet.image.composite_draw(
+                self.rotation, '', self.x, self.y, 80, 80
+            )
+            # draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        size = 5
+        return self.x - size, self.y - size, self.x + size, self.y + size
+
+    def on_character_hit(self, character, bullet):
+        if bullet == self and character == self.target:
+            self.is_active = False
+            self.shooter.total_damage += self.attack_damage
+            object_pool.hit_animation_pool.get(character, 'resource/bowman_bullet_hit.png', 128, 128, 8)
+            object_pool.collision_group_pool.release(self.collision_group)
+
+class Bowman_AdditionalBullet(Bullet):
+    image = None
+
+    def __init__(self):
+        super().__init__()
+        if Bowman_AdditionalBullet.image is None:
+            Bowman_AdditionalBullet.image = load_image('resource/bowman_additional_bullet.png')
+        self.move_speed = 2000
+        self.dir_x = 0
+        self.dir_y = 0
+
+    def set(self, x, y, shooter, target):
+        self.x = x
+        self.y = y
+        self.shooter = shooter
+        self.target = target
+        self.is_active = True
+        self.attack_damage = int(shooter.attack_damage / 2)
+        self.collision_group = object_pool.collision_group_pool.get(self, target, 'bullet')
+        print(f'    DEBUG: bullet set')
+
+
+    def draw(self):
+        if self.is_active:
+            Bowman_AdditionalBullet.image.composite_draw(
                 self.rotation, '', self.x, self.y, 70, 70
             )
             # draw_rectangle(*self.get_bb())
@@ -328,8 +368,9 @@ class HitAnimation:
     def is_alive(self):
         return self.is_active
 
+
 class CardEffectAnimation:
-    def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame, total_time):
+    def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame, total_time, cycle):
         self.x = x
         self.y = y
         self.size_x = size_x
@@ -340,12 +381,23 @@ class CardEffectAnimation:
         self.frame = 0
         self.total_frame = total_frame
         self.total_time = total_time
+        self.cycle = cycle
         self.can_target = False
+        self.elapsed_time = 0
+        self.current_cycle = 0
 
     def update(self):
-        if self.frame >= self.total_frame:
+        self.elapsed_time += game_framework.frame_time
+
+        if self.elapsed_time >= self.total_time:
             game_world.remove_object(self)
-        self.frame = (self.frame + self.total_frame * 1.0 / self.total_time * game_framework.frame_time)
+            return
+
+        self.frame += self.total_frame * game_framework.frame_time / (self.total_time / self.cycle)
+
+        if self.frame >= self.total_frame:
+            self.frame = 0
+            self.current_cycle += 1
 
     def draw(self):
         self.image.clip_draw(
@@ -385,7 +437,7 @@ class WarCryEffectAnimation():
             self.scale_x, self.scale_y
         )
 
-class WarCryEffectAnimation2():
+class FadeOutEffectAnimation():
     def __init__(self, c, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame, total_time):
         self.c = c
         self.x = x

@@ -50,6 +50,7 @@ class StandardHpbarui:
 
         self.HP_frame_image = load_image('resource/HP_frame.png')
         self.HP_white_image = load_image('resource/HP_white.png')
+        self.HP_main_image = load_image('resource/HP_blue.png')
         if self.c.team == 'ally':
             self.HP_main_image = load_image('resource/HP_blue.png')
         else:
@@ -110,7 +111,7 @@ class TotalDamageUI:
         self.p2 = p2
         self.p3 = p3
 
-        self.font = load_font('resource/font/fixedsys.ttf', 40)
+        self.font = load_font('resource/font/fixedsys.ttf', 30)
         self.can_target = False
 
     def update(self):

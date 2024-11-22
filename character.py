@@ -161,7 +161,7 @@ class Attack_target:
                 )
             c.attack_animation_progress = 0
 
-            attack_target(c) # 데미지 처리
+            attack_target(c) # 공격 수행
 
     @staticmethod
     def draw(c):
@@ -191,6 +191,7 @@ class Casting:
         c.rotation = c.original_rotation
         c.cast_animation_progress = 0
         c.can_use_card = True
+        c.is_highlight = False
         if c.current_card and c.card_target:
             x, y = c.card_target
             c.current_card.apply_effect(x, y) # apply effect를 수행
@@ -349,9 +350,14 @@ class Character:
         self.effects = []
 
         self.last_attack_time = get_time()
-        self.animation_speed = 1.0
         self.hit_effect_duration = 3
         self.can_target = True
+
+        self.base_attack_speed = 1.0
+        self.attack_speed_modifiers = []
+
+        self.base_animation_speed = 1.0
+        self.animation_speed_modifiers = []
 
         self.target_search_cooldown = 0.5  # 0.5초마다 타겟 검색
         self.last_target_search_time = 0
@@ -421,6 +427,16 @@ class Character:
                 bowman_rolling_end: Idle
             }
         })
+
+    @property
+    def attack_speed(self):
+        total_modifier = sum(self.attack_speed_modifiers)
+        return self.base_attack_speed * (1 + total_modifier / 100)
+
+    @property
+    def animation_speed(self):
+        total_modifier = sum(self.animation_speed_modifiers)
+        return self.base_animation_speed * (1 + total_modifier / 100)
 
     def update(self):
         self.state_machine.update()

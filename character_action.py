@@ -3,11 +3,12 @@
 import random
 import time
 
+from pico2d import get_time
+
 from effects import StunEffect, ForcedMovementEffect
 from game_world import world
 from globals import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, KNIGHT_BODY_TACKLE_KNOCKBACK_DISTANCE
 from object_pool import *
-from object_pool import get_character_bullet
 
 # =================================================================
 
@@ -65,6 +66,55 @@ def move_to_target(c):
             # 타겟과의 거리가 공격범위 안이라면(공격 가능하다면) 공격
             c.state_machine.add_event(('CAN_ATTACK_TARGET', 0))
 
+
+class BowmanAdditionalAttackObject:
+    def __init__(self, c):
+        self.c = c
+        self.additional_attack = c.additional_attack
+        self.interval = 0.05
+        self.attack_count = 0
+        self.last_update_time = get_time()
+        self.can_target = False
+        self.bullet_positions = self.calculate_bullet_positions()
+
+    def calculate_bullet_positions(self):
+        length = 100  # 선분의 길이
+        positions = []
+        # 방향 벡터 정규화
+        magnitude = math.sqrt(self.c.dir_x ** 2 + self.c.dir_y ** 2)
+        if magnitude == 0:
+            return positions  # 방향이 없으면 빈 리스트 반환
+        normalized_dir_x = self.c.dir_x / magnitude
+        normalized_dir_y = self.c.dir_y / magnitude
+
+        # 캐릭터 방향을 기준으로 4개의 발사 위치 계산
+        offsets = [35, -35, 70, -70]  # 선분 상의 오프셋
+
+        for offset in offsets:
+            x = self.c.x - normalized_dir_y * offset
+            y = self.c.y + normalized_dir_x * offset
+            positions.append((x, y))
+
+        return positions
+
+    def update(self):
+        if self.attack_count >= self.additional_attack:
+            game_world.remove_object(self)
+
+        if get_time() - self.last_update_time >= self.interval:
+            if self.attack_count < len(self.bullet_positions):
+                x, y = self.bullet_positions[self.attack_count]
+                bullet = object_pool.bowman_additional_bullet_pool.get(x, y, self.c, self.c.target)
+
+                if not bullet:
+                    print(f'        WARNING: bullet_pool is empty!')
+                self.attack_count += 1
+                self.last_update_time = get_time()
+
+    def draw(self):
+        pass
+
+
 def attack_target(c):
     from character_list import Soldier_elite
 
@@ -80,6 +130,12 @@ def attack_target(c):
     bullet = get_character_bullet(c)  # 새 bullet 인스턴스 생성
     if not bullet:
         print(f'        WARNING: bullet_pool is empty!')
+
+    # 추가공격 필요 시 실행
+    if hasattr(c, 'additional_attack'):
+        additional_attack = BowmanAdditionalAttackObject(c)
+        game_world.add_object(additional_attack, 1)
+        pass
 
 def perform_body_tackle(c):
     target_distance = math.sqrt((c.card_target_x - c.x) ** 2 + (c.card_target_y - c.y) ** 2)
@@ -104,14 +160,16 @@ def perform_body_tackle(c):
             256, 256,
             250, 250,
             'resource/landing_effect.png',
-            8, 0.25
+            8, 0.25,
+            1
         )
         card_effect_animation_2 = CardEffectAnimation(
             c.x, c.y,
             128, 128,
             400, 400,
             'resource/bowman_bullet_hit.png',
-            8, 0.25
+            8, 0.25,
+            1
         )
         card_effect_area_animation = CardAreaEffectAnimation(
             c.x, c.y,

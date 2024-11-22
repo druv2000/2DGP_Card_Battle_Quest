@@ -5,6 +5,7 @@ from math import radians
 from pico2d import load_image, draw_rectangle, load_font
 from sdl2.examples.gfxdrawing import draw_circles
 
+import game_framework
 import game_world
 import globals
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
@@ -111,6 +112,8 @@ class Clicked:
         if hasattr(c, 'is_summon_obj'):
             global summon_ui
             game_world.remove_object(summon_ui)
+        if hasattr(c, 'target') and c.target:
+            c.target.is_highlight = False
 
     @staticmethod
     def do(c):
@@ -164,17 +167,28 @@ class Clicked:
         # 대상 지정 카드면 대상 하이라이트
         if hasattr(c, 'target'):
             target = None
-            nearby_objects = game_world.grid.get_nearby_objects(c.x, c.y, 120)
+            nearby_objects = game_world.grid.get_nearby_objects(c.x, c.y, 200)
+
+            # 모든 주변 객체의 하이라이트를 해제
             for obj in nearby_objects:
                 if obj.can_target and obj.team == c.user.team:
                     obj.is_highlight = False
+
+            # 마우스 위치에 있는 타겟 찾기
+            for obj in nearby_objects:
+                if obj.can_target and obj.team == c.user.team:
                     x1, y1, x2, y2 = obj.get_bb()
                     if x1 <= c.x <= x2 and y1 <= c.y <= y2:
                         target = obj
+                        break  # 타겟을 찾으면 루프 종료
 
+            # 타겟 업데이트 및 하이라이트 설정
             if target:
                 c.target = target
                 target.is_highlight = True
+            else:
+                # 타겟이 없으면 c.target을 None으로 설정
+                c.target = None
 
 
     @staticmethod
