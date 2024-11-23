@@ -2,13 +2,11 @@
 import math
 from math import radians
 
-import pygame
-from pico2d import load_image, draw_rectangle, load_font
-from sdl2.examples.gfxdrawing import draw_circles
+from pico2d import load_image, draw_rectangle
 
-import game_framework
 import game_world
 import globals
+from character import Dead
 from character_list import Knight, Mage, Bowman
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
     mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card, \
@@ -117,18 +115,26 @@ class Clicked:
 
     @staticmethod
     def do(c):
+        # 캐릭터 사망 시 카드 상태가 Idle로 돌아감
+        if c.user.state_machine.cur_state == Dead:
+            c.state_machine.add_event(('CANNOT_USE_CARD', 0))
+            return
+
+        # 카드에 사거리가 있다면 사거리 안으로 좌표 고정
         if hasattr(c, 'range') and hasattr(c, 'user'):
             c.x, c.y = limit_within_range(c, globals.mouse_x, globals.mouse_y)
         else:
             c.x = globals.mouse_x
             c.y = globals.mouse_y
 
-        # 범위를 제한한 c.x, c.y가 필요하기 때문에 ui.update()가 아닌 여기서 처리함
+        ### 범위를 제한한 c.x, c.y가 필요하기 때문에 ui.update()가 아닌 여기서 처리함 ###
+        # 원형 범위를 가지는 카드라면 원형 범위 ui 생성
         if hasattr(c, 'radius'):
             global area_circle_ui
             area_circle_ui.x = c.x
             area_circle_ui.y = c.y
 
+        # beam형 범위를 가지는 카드라면 beam형 ui생성
         if hasattr(c, 'width') and not hasattr(c, 'length'):
             global area_beam_ui
             area_beam_ui.x = c.x
@@ -141,6 +147,7 @@ class Clicked:
             area_beam_ui.dir_y = (area_beam_ui.y - area_beam_ui.shooter_y) / target_distance
             area_beam_ui.rotation = math.atan2(area_beam_ui.dir_y, area_beam_ui.dir_x)
 
+        # 조절 가능한 직선 범위 ui 생성 (필요하다면)
         if hasattr(c, 'width') and hasattr(c, 'length'):
             global area_straight_ui
             area_straight_ui.x = c.x
@@ -158,7 +165,7 @@ class Clicked:
             area_straight_ui.dir_y = (area_straight_ui.y - area_straight_ui.shooter_y) / target_distance
             area_straight_ui.rotation = math.atan2(area_straight_ui.dir_y, area_straight_ui.dir_x)
 
-
+        # 캐릭터 미리보기가 필요하다면 생성
         if hasattr(c, 'is_summon_obj'):
             global summon_ui
             summon_ui.x = c.x
@@ -214,6 +221,11 @@ class Used:
             if c.target == None:
                 c.state_machine.add_event(('CANNOT_USE_CARD', 0))
                 return
+
+        # 코스트가 현재 마나보다 높을경우 사용 실패
+        if c.cost > globals.cur_mana:
+            c.state_machine.add_event(('CANNOT_USE_CARD', 0))
+            return
 
         from card_manager import card_manager
         card_manager.use_card(c)
@@ -302,7 +314,6 @@ class Card:
             Clicked: {
                 mouse_left_release_in_card_space: Idle,
                 mouse_left_release_out_card_space: Used,
-                cannot_use_card: Idle
             },
             Used: {
                 card_used: InDeck,

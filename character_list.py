@@ -143,6 +143,8 @@ class Golem(Character):
         self.has_attack_animation = False
         self.bullet = None
 
+        self.is_summoned = True
+        self.summoner = None
         self.state_machine.start(Summoned)
 
         self.HP_bar = StandardHpbarui(self)

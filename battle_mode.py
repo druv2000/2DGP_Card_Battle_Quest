@@ -11,7 +11,7 @@ import object_pool
 from background import Background
 from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite, Soldier_boss, Golem
 from player import player
-from ui import TotalDamageUI
+from ui import TotalDamageUI, ManaUI
 
 global knight, mage, bowman
 def init():
@@ -41,6 +41,9 @@ def init():
 
     # boss = Soldier_boss(1500, 550, 'enemy')
     # game_world.add_object(boss, 3)
+
+    mana_ui = ManaUI(250, 100)
+    game_world.add_object(mana_ui, 9)
 
     card_manager.font = load_font('resource/font/fixedsys.ttf', 32)
     card_manager.register_characters(knight, mage, bowman)

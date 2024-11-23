@@ -66,7 +66,7 @@ class AttackSpeedUpTemplate:
         self.sprite_size_y = 360
         pass
 
-class InvincibleTemplate:
+class ShieldTemplate:
     def __init__(self):
         self.name = 'invincible'
         self.image = load_image('resource/invincible_effect.png')
@@ -354,3 +354,46 @@ class InvincibleEffect(Effect):
 
     def draw(self, c):
        pass
+
+class RespiteEffect(Effect):
+    def __init__(self, duration, interval, heal_amount, armor_amount):
+        super().__init__('respite', duration)
+        self.template = ShieldTemplate()
+        self.template.image.opacify(0.5)
+        self.frame = 0
+        self.heal_amount = heal_amount
+        self.armor_amount = armor_amount
+        self.interval = interval
+        self.last_update_time = get_time()
+
+    def apply(self, c):
+        c.armor += self.armor_amount
+        pass
+
+    def remove(self, c):
+        pass
+
+    def update(self, c):
+        if c.armor <= 0:
+            self.is_active = False
+            return
+
+        self.frame = ((self.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time)
+                      % self.template.sprite_count)
+
+        # interval마다 회복 효과 적용
+        if get_time() - self.last_update_time >= self.interval:
+            c.take_heal(self.heal_amount)
+            self.last_update_time = get_time()
+
+
+        if get_time() - self.start_time >= self.duration:
+            self.is_active = False
+
+    def draw(self, c):
+        self.template.image.clip_draw(
+            int(self.frame) * self.template.sprite_size_x, 0,
+            self.template.sprite_size_x, self.template.sprite_size_y,
+            c.x, c.y - 10,
+            100, 100
+        )

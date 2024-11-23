@@ -244,7 +244,10 @@ class None_AttackBullet(Bullet):
 
         self.is_active = False
         self.target.take_damage(self.attack_damage)
-        self.shooter.total_damage += self.attack_damage
+        if hasattr(self.shooter, 'is_summoned'):
+            self.shooter.summoner.total_damage += self.attack_damage
+        else:
+            self.shooter.total_damage += self.attack_damage
 
     def draw(self):
         pass

@@ -8,7 +8,7 @@ from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_Snipe
     WarCryEffectAnimation, FadeOutEffectAnimation
 from card import Card
 from character_list import Golem
-from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, BowmanMaxPowerEffect
+from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, BowmanMaxPowerEffect, RespiteEffect
 from game_world import world, add_object
 from globals import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 
@@ -18,7 +18,7 @@ from globals import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 class BodyTackle(Card):
     def __init__(self):
         from battle_mode import knight
-        super().__init__("Rush", knight, 2, "resource/card_body_tackle.png")
+        super().__init__("Rush", knight, 4, "resource/card_body_tackle.png")
         self.range = 600
         self.damage = self.user.attack_damage + 3
         self.radius = KNIGHT_BODY_TACKLE_RADIUS
@@ -44,7 +44,7 @@ class BodyTackle(Card):
 class WarCry(Card):
     def __init__(self):
         from battle_mode import knight
-        super().__init__("WarCry", knight, 3, "resource/card_war_cry.png")
+        super().__init__("WarCry", knight, 2, "resource/card_war_cry.png")
         self.range = 0
         self.damage = 0
         self.radius = 410
@@ -120,13 +120,38 @@ class WarCry(Card):
         self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
         pass
 
+class Respite(Card):
+    def __init__(self):
+        from battle_mode import knight
+        super().__init__("Respite", knight, 2, "resource/card_respite.png")
+        self.range = 0
+        self.casting_time = 0.1
+        self.target = self.user
+        self.armor_amount = 50
+        self.continuous_heal_amount = 20
+
+    def use(self, x, y):
+        self.user.state_machine.add_event(('CAST_START', self.casting_time))
+        self.user.current_card = self
+        self.user.card_target = (x, y)
+
+    def apply_effect(self, x, y):
+        self.target = self.user
+        self.target.is_highlight = False
+
+        # 방어도 + 힐 효과 적용
+        respite_effect = next((effect for effect in self.target.effects if isinstance(effect, RespiteEffect)), None)
+        if not respite_effect:
+            respite_effect = RespiteEffect(HUGE_TIME, 1.0, self.continuous_heal_amount, self.armor_amount)
+            self.target.add_effect(respite_effect)
+        pass
 
 ####################### MAGE ################################
 
 class Explosion(Card):
     def __init__(self):
         from battle_mode import mage
-        super().__init__("Fireball", mage, 3, "resource/card_fireball.png")
+        super().__init__("Fireball", mage, 2, "resource/card_fireball.png")
         self.range = 650
         self.damage = 20
         self.radius = 100
@@ -178,7 +203,7 @@ class Explosion(Card):
 class SummonGolem(Card):
     def __init__(self):
         from battle_mode import mage
-        super().__init__("SummonGolem", mage, 3, "resource/card_summon_golem.png")
+        super().__init__("SummonGolem", mage, 5, "resource/card_summon_golem.png")
         self.range = 450
         self.damage = 0
         self.radius = 150
@@ -215,6 +240,7 @@ class SummonGolem(Card):
         game_world.add_object(card_effect_area_animation, 1)
 
         golem = Golem(x, y + 120, 'ally')
+        golem.summoner = self.user
         game_world.add_object(golem, 3)
 
         for layer in world:
@@ -324,7 +350,7 @@ class SnipeShot(Card):
 class AdditionalArrow(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("AdditionalArrow", bowman, 3, "resource/card_additional_arrow.png")
+        super().__init__("AdditionalArrow", bowman, 6, "resource/card_additional_arrow.png")
         self.range = 0
         self.casting_time = 0.25
         self.target = self.user
@@ -388,7 +414,7 @@ class AdditionalArrow(Card):
 class Rolling(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("Rolling", bowman, 2, "resource/card_rolling.png")
+        super().__init__("Rolling", bowman, 1, "resource/card_rolling.png")
         self.original_image = self.image
         self.image_uses_1 = load_image('resource/card_rolling_2.png')
         self.range = 250

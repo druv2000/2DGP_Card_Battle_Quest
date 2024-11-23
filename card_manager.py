@@ -4,10 +4,12 @@ import random
 
 from pico2d import load_font
 
+import globals
 from card import Highlight
-from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle, WarCry, VitalitySurge, AdditionalArrow, Rolling
+from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle, WarCry, VitalitySurge, AdditionalArrow, Rolling, \
+    Respite
 from deck import Deck, Hand
-
+from globals import cur_mana
 
 class CardManager:
     def __init__(self):
@@ -32,6 +34,7 @@ class CardManager:
         self.deck.add_card(VitalitySurge())
         self.deck.add_card(AdditionalArrow())
         self.deck.add_card(Rolling())
+        self.deck.add_card(Respite())
         # self.deck.add_card(Rolling())
         # self.deck.add_card(Rolling())
         # self.deck.add_card(Rolling())
@@ -85,6 +88,7 @@ class CardManager:
         if card in self.hand.cards:
             # 카드 사용 -> 덱으로 반환 -> 한장 드로우
             card.state_machine.add_event(('CARD_USED', 0))
+            globals.cur_mana -= card.cost
             card.use(card.x, card.y)
 
             # 여러 번 사용 가능한 카드라면 사용 횟수를 차감한 후 다시 패로 돌아감
