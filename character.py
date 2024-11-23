@@ -7,8 +7,8 @@ from pico2d import get_time, draw_rectangle
 
 import game_world
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
-    update_walk_animation, is_attack_timing, update_cast_animation, perform_body_tackle
-from effects import HitEffect
+    update_walk_animation, is_attack_timing, update_cast_animation, perform_body_tackle, perform_rolling
+from effects import HitEffect, InvincibleEffect
 from game_world import change_object_layer
 from globals import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
 from object_pool import *
@@ -238,6 +238,7 @@ class Dead:
         c.target_rotation = -90 if c.sprite_dir == 1 else 90
 
         c.can_target = False
+        c.can_use_card = False
         change_object_layer(c, 1)
 
         # 활성화된 이펙트 전부 비활성화
@@ -323,13 +324,20 @@ class BowmanRolling:
     @staticmethod
     def enter(c, e):
         c.frame = 0
+        c.can_use_card = False
+        c.card_target_x, c.card_target_y = e[1]
         pass
     @staticmethod
     def exit(c, e):
+        c.card_target_x = None
+        c.card_target_y = None
+        c.can_use_card = True
+        c.rotation = c.original_rotation
         pass
     @staticmethod
     def do(c):
         c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
+        perform_rolling(c)
     @staticmethod
     def draw(c):
         character_draw(c)
@@ -479,7 +487,10 @@ class Character:
 ###########################################################################
 
     def take_damage(self, amount):
-        if self.state_machine.cur_state not in [Dead]:
+
+        # 사망이나 무적 상태가 아닐 경우 실행
+        invincible_effect = next((effect for effect in self.effects if isinstance(effect, InvincibleEffect)), None)
+        if self.state_machine.cur_state not in [Dead] and not invincible_effect:
             damage_to_take = amount
 
             # 1. 방어도에서 우선 피해 경감

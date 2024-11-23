@@ -382,7 +382,33 @@ class AdditionalArrow(Card):
             if bowman_max_power_effect:
                 bowman_max_power_effect.refresh()
             else:
-                bowman_max_power_effect = BowmanMaxPowerEffect(5.0, 50)
-                self.target.add_effect(bowman_max_power_effect)
+                bowman_max_power_effect = BowmanMaxPowerEffect(5.0, 100)
+                self.user.add_effect(bowman_max_power_effect)
 
+class Rolling(Card):
+    def __init__(self):
+        from battle_mode import bowman
+        super().__init__("Rolling", bowman, 2, "resource/card_mage.png")
+        self.range = 250
+        self.radius = 25
+        self.width = 50
+        self.length = self.range
+        self.casting_time = 0.1
+        self.total_uses = 2
+        self.remaining_uses = 2
+        self.is_summon_obj = True # 미리보기가 필요한가
+        self.summon_image_path = 'resource/bowman_sprite.png'
+        self.summon_size_x = 240
+        self.summon_size_y = 240
+        self.summon_scale = 100
+        self.expected_card_area = None
+
+    def use(self, x, y):
+        self.user.state_machine.add_event(('CAST_START', self.casting_time))
+        self.user.current_card = self
+        self.user.card_target = (x, y)
+
+    def apply_effect(self, x, y):
+        self.user.state_machine.add_event(('BOWMAN_ROLLING_START', (x, y)))
+        pass
 

@@ -53,8 +53,11 @@ def bowman_rolling_end(event):
     return event[0] == 'BOWMAN_ROLLING_END'
 
 
-def card_move_to_hand(event):
-    return event[0] == 'CARD_MOVE_TO_HAND'
+def card_return_to_hand(event):
+    return event[0] == 'CARD_RETURN_TO_HAND'
+
+def card_draw(event):
+    return event[0] == 'CARD_DRAW'
 
 def mouse_hover(event):
     return (event[0] == 'MOUSE_HOVER' and

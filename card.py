@@ -2,6 +2,7 @@
 import math
 from math import radians
 
+import pygame
 from pico2d import load_image, draw_rectangle, load_font
 from sdl2.examples.gfxdrawing import draw_circles
 
@@ -9,10 +10,10 @@ import game_framework
 import game_world
 import globals
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
-    mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card, card_move_to_hand
+    mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card, \
+    card_return_to_hand, card_draw
 from ui import RangeCircleUI, AreaCircleUI, AreaBeamUI, SummonUI, AreaStraightUI
 from utils import limit_within_range
-
 
 class Idle:
     @staticmethod
@@ -36,7 +37,6 @@ class Idle:
             c.x, c.y,  # 그려질 위치
             c.draw_size_x, c.draw_size_y  # 그려질 크기
         )
-
         if not c.user.can_use_card:
             c.unable_image.composite_draw(
                 -c.rotation * 3.141592 / 180,  # 회전 각도 (라디안)
@@ -229,6 +229,10 @@ class Used:
 
     @staticmethod
     def draw(c):
+        c.image.draw(
+            c.x, c.y,  # 그려질 위치
+            c.draw_size_x, c.draw_size_y  # 그려질 크기
+        )
         pass
 
 class InDeck:
@@ -239,11 +243,13 @@ class InDeck:
         c.draw_size_x = c.original_size_x * 3 / 4
         c.draw_size_y = c.original_size_y * 3 / 4
 
-
     @staticmethod
     def exit(c, e):
         c.draw_size_x = c.original_size_x
         c.draw_size_y = c.original_size_y
+
+        if hasattr(c, 'total_uses') and card_draw(e):
+            c.remaining_uses = c.total_uses
         pass
 
     @staticmethod
@@ -272,12 +278,13 @@ class Card:
         self.original_y = self.y
         self.image = load_image(image_path)
         self.unable_image = load_image('resource/red_x.png')
-        self.original_size_x = 160
-        self.original_size_y = 240
+        self.original_size_x = 647
+        self.original_size_y = 834
         self.draw_size_x = 160
         self.draw_size_y = 240
         self.rotation = 0
         self.original_rotation = 0
+
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(InDeck)
@@ -296,10 +303,12 @@ class Card:
             },
             Used: {
                 card_used: InDeck,
-                cannot_use_card: Idle
+                cannot_use_card: Idle,
+                card_return_to_hand: Idle
             },
             InDeck: {
-                card_move_to_hand: Idle
+                card_draw: Idle,
+                card_return_to_hand: Idle
             }
         })
 

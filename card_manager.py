@@ -5,7 +5,7 @@ import random
 from pico2d import load_font
 
 from card import Highlight
-from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle, WarCry, VitalitySurge, AdditionalArrow
+from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle, WarCry, VitalitySurge, AdditionalArrow, Rolling
 from deck import Deck, Hand
 
 
@@ -31,6 +31,13 @@ class CardManager:
         self.deck.add_card(SnipeShot())
         self.deck.add_card(VitalitySurge())
         self.deck.add_card(AdditionalArrow())
+        self.deck.add_card(Rolling())
+        # self.deck.add_card(Rolling())
+        # self.deck.add_card(Rolling())
+        # self.deck.add_card(Rolling())
+        # self.deck.add_card(Rolling())
+        # self.deck.add_card(Rolling())
+
 
 
 
@@ -41,7 +48,7 @@ class CardManager:
 
     def draw_card(self):
         card = self.deck.draw_card()
-        card.state_machine.add_event(('CARD_MOVE_TO_HAND', 0))
+        card.state_machine.add_event(('CARD_DRAW', 0))
         if card and self.hand.add_card(card):
             self.update_all_cards()  # 모든 카드 위치 업데이트
             return True
@@ -79,6 +86,13 @@ class CardManager:
             # 카드 사용 -> 덱으로 반환 -> 한장 드로우
             card.state_machine.add_event(('CARD_USED', 0))
             card.use(card.x, card.y)
+
+            # 여러 번 사용 가능한 카드라면 사용 횟수를 차감한 후 다시 패로 돌아감
+            if hasattr(card, 'remaining_uses') and card.remaining_uses > 1:
+                card.remaining_uses -= 1
+                card.state_machine.add_event(('CARD_RETURN_TO_HAND', 0))
+                return
+
             self.hand.remove_card(card)
             self.deck.add_card(card)
 

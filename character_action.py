@@ -5,9 +5,11 @@ import time
 
 from pico2d import get_time
 
-from effects import StunEffect, ForcedMovementEffect
+from effects import StunEffect, ForcedMovementEffect, AttackSpeedUpTemplate, AttackSpeedUpEffect, InvincibleEffect
 from game_world import world
-from globals import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, KNIGHT_BODY_TACKLE_KNOCKBACK_DISTANCE
+from globals import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, KNIGHT_BODY_TACKLE_KNOCKBACK_DISTANCE, \
+    BOWMAN_ROLLING_SPEED, BOWMAN_ROLLING_ROTATE_SPEED, BOWMAN_ROLLING_ATK_SPEED_DURATION, \
+    BOWMAN_ROLLING_ATK_SPEED_INCREMENT
 from object_pool import *
 
 # =================================================================
@@ -150,6 +152,10 @@ def perform_body_tackle(c):
         c.x += c.dir_x * KNIGHT_BODY_TACKLE_RUSH_SPEED * game_framework.frame_time
         c.y += c.dir_y * KNIGHT_BODY_TACKLE_RUSH_SPEED * game_framework.frame_time
         c.rotation = 30 if c.sprite_dir == 1 else -30
+
+        # 돌진 중 무적 상태
+        invincible_effect = InvincibleEffect(0.5)
+        c.add_effect(invincible_effect)
     else:
         c.x = c.card_target_x
         c.y = c.card_target_y
@@ -214,6 +220,41 @@ def perform_body_tackle(c):
 
         if not c.state_machine.event_que:
             c.state_machine.add_event(('KNIGHT_BODY_TACKLE_END', 0))
+
+    c.original_x = c.x
+    c.original_y = c.y
+
+def perform_rolling(c):
+    target_distance = math.sqrt((c.card_target_x - c.x) ** 2 + (c.card_target_y - c.y) ** 2)
+    if target_distance == 0:
+        target_distance += 0.1
+    c.dir_x = (c.card_target_x - c.x) / (target_distance)
+    c.dir_y = (c.card_target_y - c.y) / (target_distance)
+    c.sprite_dir = -1 if c.dir_x < 0 else 1
+
+    if target_distance > 25 if 1.0 / game_framework.frame_time > 50 else 100:
+        # 타겟과의 거리가 일정 수준보다 멀다면 타겟 방향으로 이동
+        c.x += c.dir_x * BOWMAN_ROLLING_SPEED * game_framework.frame_time
+        c.y += c.dir_y * BOWMAN_ROLLING_SPEED * game_framework.frame_time
+        c.rotation += (BOWMAN_ROLLING_ROTATE_SPEED if c.sprite_dir == 1 else -BOWMAN_ROLLING_ROTATE_SPEED) * game_framework.frame_time
+
+        # 돌진 중 무적 적용
+        invincible_effect = InvincibleEffect(0.5)
+        c.add_effect(invincible_effect)
+    else:
+        c.x = c.card_target_x
+        c.y = c.card_target_y
+        if not c.state_machine.event_que:
+            c.state_machine.add_event(('BOWMAN_ROLLING_END', 0))
+
+            # 공격속도 증가
+            attack_speed_up_effect = AttackSpeedUpEffect(
+                BOWMAN_ROLLING_ATK_SPEED_DURATION,
+                BOWMAN_ROLLING_ATK_SPEED_INCREMENT
+            )
+            c.add_effect(attack_speed_up_effect)
+
+
 
     c.original_x = c.x
     c.original_y = c.y

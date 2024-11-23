@@ -57,6 +57,24 @@ class HealTemplate:
         self.sprite_size_y = 256
         pass
 
+class AttackSpeedUpTemplate:
+    def __init__(self):
+        self.name = 'attack_speed_up'
+        self.image = load_image('resource/atk_speed_up_effect.png')
+        self.sprite_count = 4
+        self.sprite_size_x = 360
+        self.sprite_size_y = 360
+        pass
+
+class InvincibleTemplate:
+    def __init__(self):
+        self.name = 'invincible'
+        self.image = load_image('resource/invincible_effect.png')
+        self.sprite_count = 1
+        self.sprite_size_x = 772
+        self.sprite_size_y = 773
+        pass
+
 # ===============================
 
 class Effect:
@@ -286,3 +304,53 @@ class BowmanMaxPowerEffect(Effect):
         c.attack_speed_modifiers.remove(self.attack_speed_amount)
         c.animation_speed_modifiers.remove(self.attack_speed_amount)
         pass
+
+class AttackSpeedUpEffect(Effect):
+    def __init__(self, duration, attack_speed_amount):
+        super().__init__('attack_speed_up', duration)
+        self.template = AttackSpeedUpTemplate()
+        self.attack_speed_amount = attack_speed_amount
+        self.frame = 0
+
+    def apply(self, c):
+        c.attack_speed_modifiers.append(self.attack_speed_amount)
+        c.animation_speed_modifiers.append(self.attack_speed_amount)
+        pass
+
+    def remove(self, c):
+        c.attack_speed_modifiers.remove(self.attack_speed_amount)
+        c.animation_speed_modifiers.remove(self.attack_speed_amount)
+        pass
+
+    def update(self, c):
+        self.frame = ((self.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time)
+                      % self.template.sprite_count)
+
+        if get_time() - self.start_time >= self.duration:
+            self.is_active = False
+
+    def draw(self, c):
+        self.template.image.clip_draw(
+            int(self.frame) * self.template.sprite_size_x, 0,
+            self.template.sprite_size_x, self.template.sprite_size_y,
+            c.x, c.y - 20,
+            100, 200
+        )
+
+class InvincibleEffect(Effect):
+    def __init__(self, duration):
+        super().__init__('invincible', duration)
+        self.frame = 0
+
+    def apply(self, c):
+        pass
+
+    def remove(self, c):
+        pass
+
+    def update(self, c):
+        if get_time() - self.start_time >= self.duration:
+            self.is_active = False
+
+    def draw(self, c):
+       pass
