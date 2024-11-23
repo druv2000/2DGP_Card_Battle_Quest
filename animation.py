@@ -282,7 +282,7 @@ class Bowman_SnipeShotBullet(Bullet):
         self.shooter = shooter
         self.is_active = True
         self.attack_damage = 15
-        self.first_hit_attack_damage = 100
+        self.first_hit_attack_damage = 150
         self.is_first_hit = True
         self.hit_targets.clear()  # 새로운 발사마다 충돌 대상 초기화
 

@@ -90,7 +90,7 @@ class BowmanAdditionalAttackObject:
         normalized_dir_y = self.c.dir_y / magnitude
 
         # 캐릭터 방향을 기준으로 4개의 발사 위치 계산
-        offsets = [35, -35, 70, -70]  # 선분 상의 오프셋
+        offsets = [35, -70, 70, -35]  # 선분 상의 오프셋
 
         for offset in offsets:
             x = self.c.x - normalized_dir_y * offset

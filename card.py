@@ -9,6 +9,7 @@ from sdl2.examples.gfxdrawing import draw_circles
 import game_framework
 import game_world
 import globals
+from character_list import Knight, Mage, Bowman
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
     mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card, \
     card_return_to_hand, card_draw
@@ -51,13 +52,12 @@ class Highlight:
     def enter(c, e):
         c.draw_size_x *= 2.0
         c.draw_size_y *= 2.0
-        c.y = + 250
+        c.y = + 275
         pass
     @staticmethod
     def exit(c, e):
         c.draw_size_x = c.original_size_x
         c.draw_size_y = c.original_size_y
-        c.y -= 100
         pass
     @staticmethod
     def do(c):
@@ -176,11 +176,13 @@ class Clicked:
 
             # 마우스 위치에 있는 타겟 찾기
             for obj in nearby_objects:
+
                 if obj.can_target and obj.team == c.user.team:
                     x1, y1, x2, y2 = obj.get_bb()
                     if x1 <= c.x <= x2 and y1 <= c.y <= y2:
                         target = obj
-                        break  # 타겟을 찾으면 루프 종료
+                        if isinstance(target, Knight) or isinstance(target, Mage) or isinstance(target, Bowman):
+                            break
 
             # 타겟 업데이트 및 하이라이트 설정
             if target:
@@ -250,6 +252,7 @@ class InDeck:
 
         if hasattr(c, 'total_uses') and card_draw(e):
             c.remaining_uses = c.total_uses
+            c.image = c.original_image
         pass
 
     @staticmethod
@@ -278,10 +281,10 @@ class Card:
         self.original_y = self.y
         self.image = load_image(image_path)
         self.unable_image = load_image('resource/red_x.png')
-        self.original_size_x = 647
-        self.original_size_y = 834
-        self.draw_size_x = 160
-        self.draw_size_y = 240
+        self.original_size_x = 200
+        self.original_size_y = 258
+        self.draw_size_x = self.original_size_x
+        self.draw_size_y = self.original_size_y
         self.rotation = 0
         self.original_rotation = 0
 

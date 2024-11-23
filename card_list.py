@@ -1,7 +1,7 @@
 # card_list.py
 import time
 
-from pico2d import get_time
+from pico2d import get_time, load_image
 
 import game_world
 from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_SnipeShotBullet, CardBeamAreaEffectAnimation, \
@@ -245,7 +245,7 @@ class SummonGolem(Card):
 class VitalitySurge(Card):
     def __init__(self):
         from battle_mode import mage
-        super().__init__("VitalitySurge", mage, 3, "resource/card_vitility_surge.png")
+        super().__init__("VitalitySurge", mage, 3, "resource/card_vitality_surge.png")
         self.range = 1000
         self.instant_heal_amount = 20 # 즉시 회복량
         self.continuous_heal_amount = 20 # 틱당 회복량
@@ -324,7 +324,7 @@ class SnipeShot(Card):
 class AdditionalArrow(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("AdditionalArrow", bowman, 3, "resource/card_bowman.png")
+        super().__init__("AdditionalArrow", bowman, 3, "resource/card_additional_arrow.png")
         self.range = 0
         self.casting_time = 0.25
         self.target = self.user
@@ -388,7 +388,9 @@ class AdditionalArrow(Card):
 class Rolling(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("Rolling", bowman, 2, "resource/card_mage.png")
+        super().__init__("Rolling", bowman, 2, "resource/card_rolling.png")
+        self.original_image = self.image
+        self.image_uses_1 = load_image('resource/card_rolling_2.png')
         self.range = 250
         self.radius = 25
         self.width = 50
@@ -410,5 +412,9 @@ class Rolling(Card):
 
     def apply_effect(self, x, y):
         self.user.state_machine.add_event(('BOWMAN_ROLLING_START', (x, y)))
+        if self.remaining_uses == 1:
+            self.image = self.image_uses_1
+        else:
+            self.image = self.original_image
         pass
 
