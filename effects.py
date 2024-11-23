@@ -356,18 +356,16 @@ class InvincibleEffect(Effect):
        pass
 
 class RespiteEffect(Effect):
-    def __init__(self, duration, interval, heal_amount, armor_amount):
+    def __init__(self, duration, interval, heal_amount):
         super().__init__('respite', duration)
         self.template = ShieldTemplate()
         self.template.image.opacify(0.5)
         self.frame = 0
         self.heal_amount = heal_amount
-        self.armor_amount = armor_amount
         self.interval = interval
         self.last_update_time = get_time()
 
     def apply(self, c):
-        c.armor += self.armor_amount
         pass
 
     def remove(self, c):

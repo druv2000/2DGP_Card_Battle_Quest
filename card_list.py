@@ -139,10 +139,12 @@ class Respite(Card):
         self.target = self.user
         self.target.is_highlight = False
 
-        # 방어도 + 힐 효과 적용
+        self.target.armor += self.armor_amount
+
+        # 방어도 힐 효과 적용
         respite_effect = next((effect for effect in self.target.effects if isinstance(effect, RespiteEffect)), None)
         if not respite_effect:
-            respite_effect = RespiteEffect(HUGE_TIME, 1.0, self.continuous_heal_amount, self.armor_amount)
+            respite_effect = RespiteEffect(HUGE_TIME, 1.0, self.continuous_heal_amount)
             self.target.add_effect(respite_effect)
         pass
 

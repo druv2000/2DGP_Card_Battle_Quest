@@ -1,8 +1,10 @@
 # ui.py
 
-from pico2d import load_font, load_image
+from pico2d import load_font, load_image, get_time
 
 import game_framework
+import globals
+from globals import cur_mana, MAX_MANA
 
 
 class MainCharacterHpbarui:
@@ -23,13 +25,18 @@ class MainCharacterHpbarui:
             self.HP_main_image = load_image('resource/HP_red.png')
 
         self.HP_image = self.HP_main_image
-        self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
+        self.cur_hp_state, self.cur_armor_state = self.calculate_hp_state()
         self.can_target = False
+
+    def calculate_hp_state(self):
+        total_health = self.c.max_hp + self.c.armor
+        return (self.c.current_hp / total_health) * 100, ((self.c.current_hp + self.c.armor) / total_health) * 100
 
     def update(self):
         self.x = self.c.original_x
         self.y = self.c.original_y + 50 * self.c.draw_size / 100
-        self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
+        self.cur_hp_state, self.cur_armor_state = self.calculate_hp_state()
+        self.white_frame = 50 - min(50, int(self.cur_armor_state / 2))
         self.main_frame = 50 - min(50, int(self.cur_hp_state / 2))
         if self.main_frame == 50 and self.cur_hp_state > 0:
             self.main_frame = 49
@@ -37,6 +44,7 @@ class MainCharacterHpbarui:
     def draw(self):
         if self.cur_hp_state != 0:
             self.HP_frame_image.draw(self.x, self.y, *self.frame_draw_size)
+            self.HP_white_image.clip_draw(0, self.white_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
             self.HP_image.clip_draw(0, self.main_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
             self.font.draw(self.x - 20, self.y - 15, f'{self.c.current_hp} / {self.c.max_hp}', (255, 255, 255))
 
@@ -101,12 +109,92 @@ class BossHpbarui:
             self.HP_image.clip_draw(0, self.main_frame * 8, 200, 8, self.x, self.y, *self.bar_draw_size)
             self.font.draw(self.x - 60, self.y, f'{self.c.current_hp} / {self.c.max_hp}', (255, 255, 255))
 
+class ManaUI:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.letter_position = (self.x, self.y - 5)
+        self.draw_size = (104, 100)
+        self.decrement = 1000 * game_framework.frame_time
+        self.interval = 1.5
+        self.last_mana_charge = get_time()
+        self.cur_mana_state = 0
+        self.frame = 0
+        self.progress_image = load_image('resource/mana_progress_bar.png')
+        self.frame_image = load_image('resource/mana_circle.png')
+        self.image_0 = load_image('resource/mana_0.png')
+        self.image_1 = load_image('resource/mana_1.png')
+        self.image_2 = load_image('resource/mana_2.png')
+        self.image_3 = load_image('resource/mana_3.png')
+        self.image_4 = load_image('resource/mana_4.png')
+        self.image_5 = load_image('resource/mana_5.png')
+        self.image_6 = load_image('resource/mana_6.png')
+        self.image_7 = load_image('resource/mana_7.png')
+        self.image_8 = load_image('resource/mana_8.png')
+        self.image_9 = load_image('resource/mana_9.png')
+        self.image_10 = load_image('resource/mana_10.png')
+        self.can_target = False
 
+
+    def update(self):
+        size_x, size_y = self.draw_size
+        size_x = max(104, size_x - self.decrement)
+        size_y = max(100, size_y - self.decrement)
+        self.draw_size = (size_x, size_y)
+
+        if globals.cur_mana < MAX_MANA:
+            if get_time() - self.last_mana_charge >= self.interval:
+                globals.cur_mana += 1
+                self.last_mana_charge = get_time()
+                self.cur_mana_state = 0
+                self.frame = self.cur_mana_state
+                self.draw_size = (156, 150)
+                pass
+            else:
+                self.cur_mana_state = (get_time() - self.last_mana_charge) / self.interval * 100
+                self.frame = self.cur_mana_state
+        else:
+            self.cur_mana_state = 100
+            self.frame = self.cur_mana_state
+            self.last_mana_charge = get_time()
+
+    def draw(self):
+        self.progress_image.clip_draw(
+            int(self.frame) * 100, 0,
+            100, 100,
+            self.x, self.y,
+            120, 120
+        )
+
+        self.frame_image.draw(self.x, self.y, 100, 100)
+
+        if globals.cur_mana == 0:
+            self.image_0.draw(*self.letter_position, *self.draw_size)
+        elif globals.cur_mana == 1:
+            self.image_1.draw(*self.letter_position, *self.draw_size)
+        elif globals.cur_mana == 2:
+            self.image_2.draw(*self.letter_position, *self.draw_size)
+        elif globals.cur_mana == 3:
+            self.image_3.draw(*self.letter_position, *self.draw_size)
+        elif globals.cur_mana == 4:
+            self.image_4.draw(*self.letter_position, *self.draw_size)
+        elif globals.cur_mana == 5:
+            self.image_5.draw(*self.letter_position, *self.draw_size)
+        elif globals.cur_mana == 6:
+            self.image_6.draw(*self.letter_position, *self.draw_size)
+        elif globals.cur_mana == 7:
+            self.image_7.draw(*self.letter_position, *self.draw_size)
+        elif globals.cur_mana == 8:
+            self.image_8.draw(*self.letter_position, *self.draw_size)
+        elif globals.cur_mana == 9:
+            self.image_9.draw(*self.letter_position, *self.draw_size)
+        else:
+            self.image_10.draw(*self.letter_position, *self.draw_size)
 
 class TotalDamageUI:
     def __init__(self, p1, p2, p3):
         self.x = 20
-        self.y = 200
+        self.y = 880
         self.p1 = p1
         self.p2 = p2
         self.p3 = p3
@@ -119,9 +207,9 @@ class TotalDamageUI:
 
     def draw(self):
         self.font.draw(self.x, self.y, 'Total Damage:', (0, 0, 0))
-        self.font.draw(self.x, self.y - 60, f'knight: {self.p1.total_damage}', (0, 0, 255))
-        self.font.draw(self.x, self.y - 100, f'mage  : {self.p2.total_damage}', (255, 0, 255))
-        self.font.draw(self.x, self.y - 140, f'bowman: {self.p3.total_damage}', (0, 255, 0))
+        self.font.draw(self.x, self.y - 40, f'knight: {self.p1.total_damage}', (0, 0, 255))
+        self.font.draw(self.x, self.y - 70, f'mage  : {self.p2.total_damage}', (255, 0, 255))
+        self.font.draw(self.x, self.y - 100, f'bowman: {self.p3.total_damage}', (0, 255, 0))
 
 class AreaCircleUI:
     def __init__(self, x, y, r):
