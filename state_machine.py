@@ -1,7 +1,7 @@
 # state_machine.py
 from sdl2 import SDL_MOUSEBUTTONDOWN, SDL_MOUSEMOTION, SDL_BUTTON_LEFT, SDL_MOUSEBUTTONUP
 
-import globals
+import for_global
 
 
 def start_event(event):
@@ -79,14 +79,14 @@ def mouse_leave(event):
 def mouse_left_release_in_card_space(event):
     return  (event[0] == 'MOUSE_LEFT_RELEASE' and
              event[1].type == SDL_MOUSEBUTTONUP and
-             globals.CARD_SPACE_X1 < globals.mouse_x < globals.CARD_SPACE_X2 and
-             globals.CARD_SPACE_Y1 < globals.mouse_y < globals.CARD_SPACE_Y2)
+             for_global.CARD_SPACE_X1 < for_global.mouse_x < for_global.CARD_SPACE_X2 and
+             for_global.CARD_SPACE_Y1 < for_global.mouse_y < for_global.CARD_SPACE_Y2)
 
 def mouse_left_release_out_card_space(event):
     return  (event[0] == 'MOUSE_LEFT_RELEASE' and
              event[1].type == SDL_MOUSEBUTTONUP and
-             (not globals.CARD_SPACE_X1 < globals.mouse_x < globals.CARD_SPACE_X2 or
-             not globals.CARD_SPACE_Y1 < globals.mouse_y < globals.CARD_SPACE_Y2))
+             (not for_global.CARD_SPACE_X1 < for_global.mouse_x < for_global.CARD_SPACE_X2 or
+              not for_global.CARD_SPACE_Y1 < for_global.mouse_y < for_global.CARD_SPACE_Y2))
 
 def cannot_use_card(event):
     return event[0] == 'CANNOT_USE_CARD'

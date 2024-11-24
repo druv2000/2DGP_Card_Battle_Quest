@@ -5,7 +5,7 @@ from math import radians
 from pico2d import load_image, draw_rectangle
 
 import game_world
-import globals
+import for_global
 from character import Dead
 from character_list import Knight, Mage, Bowman
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
@@ -118,10 +118,10 @@ class Clicked:
 
         # 카드에 사거리가 있다면 사거리 안으로 좌표 고정
         if hasattr(c, 'range') and hasattr(c, 'user'):
-            c.x, c.y = limit_within_range(c, globals.mouse_x, globals.mouse_y)
+            c.x, c.y = limit_within_range(c, for_global.mouse_x, for_global.mouse_y)
         else:
-            c.x = globals.mouse_x
-            c.y = globals.mouse_y
+            c.x = for_global.mouse_x
+            c.y = for_global.mouse_y
 
         ### 범위를 제한한 c.x, c.y가 필요하기 때문에 ui.update()가 아닌 여기서 처리함 ###
         # 원형 범위를 가지는 카드라면 원형 범위 ui 생성
@@ -199,7 +199,7 @@ class Clicked:
     @staticmethod
     def draw(c):
         c.image.draw(c.x, c.y, c.draw_size_x, c.draw_size_y)
-        draw_rectangle(globals.CARD_SPACE_X1, globals.CARD_SPACE_Y1, globals.CARD_SPACE_X2, globals.CARD_SPACE_Y2)
+        draw_rectangle(for_global.CARD_SPACE_X1, for_global.CARD_SPACE_Y1, for_global.CARD_SPACE_X2, for_global.CARD_SPACE_Y2)
 
         if not c.user.can_use_card:
             c.unable_image.composite_draw(
@@ -219,7 +219,7 @@ class Used:
                 return
 
         # 코스트가 현재 마나보다 높을경우 사용 실패
-        if c.cost > globals.cur_mana:
+        if c.cost > for_global.cur_mana:
             c.state_machine.add_event(('CANNOT_USE_CARD', 0))
             return
 

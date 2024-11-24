@@ -5,7 +5,7 @@ from tempfile import template
 from pico2d import load_image, get_time
 
 import game_framework
-from globals import FRAME_PER_HIT_ANIMATION, CHARACTER_ANIMATION_PER_TIME, FRAME_PER_TAUNT_ANIMATION, \
+from for_global import FRAME_PER_HIT_ANIMATION, CHARACTER_ANIMATION_PER_TIME, FRAME_PER_TAUNT_ANIMATION, \
     TAUNT_ANIMATION_PER_TIME, HIT_ANIMATION_PER_TIME, HUGE_TIME
 
 

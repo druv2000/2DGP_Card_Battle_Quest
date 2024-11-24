@@ -6,7 +6,7 @@ import pstats
 from pico2d import open_canvas, close_canvas
 import game_framework
 import title_mode as start_mode
-from globals import SCREEN_WIDTH, SCREEN_HEIGHT
+from for_global import SCREEN_WIDTH, SCREEN_HEIGHT
 
 if __name__ == '__main__':
     profiler = cProfile.Profile()

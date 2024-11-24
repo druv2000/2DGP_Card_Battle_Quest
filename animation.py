@@ -10,7 +10,7 @@ from event_system import event_system
 import game_framework
 import object_pool
 
-from globals import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION, CARD_EFFECT_ANIMATION_PER_TIME, \
+from for_global import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION, CARD_EFFECT_ANIMATION_PER_TIME, \
     FRAME_PER_CARD_EFFECT_ANIMATION, SCREEN_WIDTH, SCREEN_HEIGHT
 
 

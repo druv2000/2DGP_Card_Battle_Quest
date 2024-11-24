@@ -4,7 +4,7 @@ from sdl2 import SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT, SDL_BUTT
     SDLK_BACKSPACE, SDLK_e, SDLK_q, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDL_MOUSEBUTTONUP
 
 import game_world
-import globals
+import for_global
 from card import Clicked
 from card_manager import card_manager
 from character_list import Mage, Knight, Bowman, Soldier, Soldier_mage, Soldier_elite, Soldier_boss
@@ -16,7 +16,7 @@ class Player:
 
     def handle_event(self, event):
         if event.type == SDL_MOUSEMOTION:
-            globals.mouse_x, globals.mouse_y = event.x, globals.SCREEN_HEIGHT - event.y
+            for_global.mouse_x, for_global.mouse_y = event.x, for_global.SCREEN_HEIGHT - event.y
             self.handle_card_hover(event)
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT:
@@ -26,19 +26,19 @@ class Player:
             pass
 
         elif event.type == SDL_KEYDOWN and event.key == SDLK_a:
-            self.spawn_enemy_soldier(globals.mouse_x, globals.mouse_y)
+            self.spawn_enemy_soldier(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_s:
-            self.spawn_enemy_soldier_mage(globals.mouse_x, globals.mouse_y)
+            self.spawn_enemy_soldier_mage(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_d:
-            self.spawn_enemy_soldier_elite(globals.mouse_x, globals.mouse_y)
+            self.spawn_enemy_soldier_elite(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_q:
-            self.spawn_knight(globals.mouse_x, globals.mouse_y)
+            self.spawn_knight(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_w:
-            self.spawn_mage(globals.mouse_x, globals.mouse_y)
+            self.spawn_mage(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_e:
-            self.spawn_bowman(globals.mouse_x, globals.mouse_y)
+            self.spawn_bowman(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
-            self.spawn_enemy_boss(globals.mouse_x, globals.mouse_y)
+            self.spawn_enemy_boss(for_global.mouse_x, for_global.mouse_y)
 
     ############################################################
     # manage cards
@@ -46,7 +46,7 @@ class Player:
     def handle_card_hover(self, event):
         hovered_card = None
         for card in card_manager.hand.cards:  # 역순으로 순회하여 위에 있는 카드부터 확인
-            if card.contains_point(globals.mouse_x, globals.mouse_y):
+            if card.contains_point(for_global.mouse_x, for_global.mouse_y):
                 hovered_card = card
                 break  # 가장 위의 카드를 찾았으므로 루프 종료
 
@@ -60,11 +60,11 @@ class Player:
 
     def handle_card_click(self, event):
         for card in card_manager.hand.cards:
-            if card.contains_point(globals.mouse_x, globals.mouse_y):
+            if card.contains_point(for_global.mouse_x, for_global.mouse_y):
                 card.state_machine.add_event(('LEFT_CLICK', event))
 
     def handle_card_release(self, event):
-        globals.mouse_x, globals.mouse_y = event.x, globals.SCREEN_HEIGHT - event.y
+        for_global.mouse_x, for_global.mouse_y = event.x, for_global.SCREEN_HEIGHT - event.y
         for card in card_manager.hand.cards:
 
             # 사용 불가 시 처리

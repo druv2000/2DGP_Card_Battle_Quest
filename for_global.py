@@ -1,4 +1,4 @@
-# globals.py
+# for_global.py
 
 # HUGE_NUMBER
 HUGE_NUMBER = float('inf')
@@ -54,8 +54,14 @@ BOWMAN_ROLLING_ATK_SPEED_INCREMENT = 30
 BOWMAN_ROLLING_ATK_SPEED_DURATION = 3.0
 
 knight_revival_count = 0
+knight_revival_radius = 0
+
 mage_revival_count = 0
+mage_revival_radius = 0
+
 bowman_revival_count = 0
+bowman_revival_radius = 0
+
 MAX_REVIVAL_COUNT = 3
 
 # MANA

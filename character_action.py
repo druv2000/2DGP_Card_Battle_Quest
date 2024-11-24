@@ -7,7 +7,7 @@ from pico2d import get_time
 
 from effects import StunEffect, ForcedMovementEffect, AttackSpeedUpTemplate, AttackSpeedUpEffect, InvincibleEffect
 from game_world import world
-from globals import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, KNIGHT_BODY_TACKLE_KNOCKBACK_DISTANCE, \
+from for_global import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, KNIGHT_BODY_TACKLE_KNOCKBACK_DISTANCE, \
     BOWMAN_ROLLING_SPEED, BOWMAN_ROLLING_ROTATE_SPEED, BOWMAN_ROLLING_ATK_SPEED_DURATION, \
     BOWMAN_ROLLING_ATK_SPEED_INCREMENT
 from object_pool import *

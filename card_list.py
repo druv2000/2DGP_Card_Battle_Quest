@@ -4,7 +4,7 @@ import time
 from pico2d import get_time, load_image
 
 import game_world
-import globals
+import for_global
 from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_SnipeShotBullet, CardBeamAreaEffectAnimation, \
     WarCryEffectAnimation, FadeOutEffectAnimation
 from card import Card
@@ -12,7 +12,7 @@ from character_list import Golem
 from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, BowmanMaxPowerEffect, RespiteEffect, \
     FlameEffect
 from game_world import world, add_object
-from globals import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
+from for_global import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 
 
 ############ knight #####################
@@ -462,13 +462,13 @@ class Rolling(Card):
 
 ################################################################################
 
-class RevivalKnight1(Card):
+class RevivalKnight(Card):
     def __init__(self):
         from battle_mode import knight
-        super().__init__("revival_knight", knight, 3, "resource/card_revival_0.png")
+        super().__init__("revival_knight", knight, 3, "resource/card_revival_knight_0.png")
         self.original_image = self.image
-        self.image_cur_uses_1 = load_image('resource/card_revival_1.png')
-        self.image_cur_uses_2 = load_image('resource/card_revival_2.png')
+        self.image_cur_uses_1 = load_image('resource/card_revival_knight_1.png')
+        self.image_cur_uses_2 = load_image('resource/card_revival_knight_2.png')
 
         self.range = 2000
         self.is_summon_obj = True  # 미리보기가 필요한가
@@ -478,24 +478,27 @@ class RevivalKnight1(Card):
         self.summon_scale = 100
 
     def use(self, x, y):
-        if globals.knight_revival_count == 0:
+        if for_global.knight_revival_count == 0:
             # 카드 사용 효과 애니메이션 출력
-            globals.knight_revival_count += 1
-            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+
+            for_global.knight_revival_count += 1
             self.image = self.image_cur_uses_1
 
-        elif globals.knight_revival_count == 1:
+        elif for_global.knight_revival_count == 1:
             # 카드 사용 효과 애니메이션 출력
-            globals.knight_revival_count += 1
-            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+
+            for_global.knight_revival_count += 1
             self.image = self.image_cur_uses_2
 
-        elif globals.knight_revival_count == 2:
+        elif for_global.knight_revival_count == 2:
             # 카드 사용 효과 애니메이션 출력
-            globals.knight_revival_count = 0
-            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
-            self.user.current_hp = self.user.max_hp
-            self.user.armor += 100
+
+            for_global.knight_revival_count = 0
+            self.user.current_hp = 1
+            self.user.armor += 0
+
+            # self.user.current_hp = self.user.max_hp
+            # self.user.armor += 100
             self.user.x, self.user.y = x, y
             self.user.original_x, self.user.original_y = x, y
             self.user.state_machine.add_event(('REVIVAL', 0))
@@ -519,116 +522,17 @@ class RevivalKnight1(Card):
         # 별도의 캐스팅 과정을 거치지 않으므로 필요없음
         pass
 
-class RevivalKnight2(Card):
+
+class RevivalKnight1(RevivalKnight):
     def __init__(self):
-        from battle_mode import knight
-        super().__init__("revival_knight", knight, 3, "resource/card_revival_0.png")
-        self.original_image = self.image
-        self.image_cur_uses_1 = load_image('resource/card_revival_1.png')
-        self.image_cur_uses_2 = load_image('resource/card_revival_2.png')
+        super().__init__()
 
-        self.range = 2000
-        self.is_summon_obj = True  # 미리보기가 필요한가
-        self.summon_image_path = 'resource/knight_sprite.png'
-        self.summon_size_x = 240
-        self.summon_size_y = 240
-        self.summon_scale = 100
 
-    def use(self, x, y):
-        if globals.knight_revival_count == 0:
-            # 카드 사용 효과 애니메이션 출력
-            globals.knight_revival_count += 1
-            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
-            self.image = self.image_cur_uses_1
-
-        elif globals.knight_revival_count == 1:
-            # 카드 사용 효과 애니메이션 출력
-            globals.knight_revival_count += 1
-            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
-            self.image = self.image_cur_uses_2
-
-        elif globals.knight_revival_count == 2:
-            # 카드 사용 효과 애니메이션 출력
-            globals.knight_revival_count = 0
-            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
-            self.user.current_hp = self.user.max_hp
-            self.user.armor += 100
-            self.user.x, self.user.y = x, y
-            self.user.original_x, self.user.original_y = x, y
-            self.user.state_machine.add_event(('REVIVAL', 0))
-
-            is_in_world = False
-            for layer in world:
-                if self.user in layer:
-                    is_in_world = True
-                    break
-            if is_in_world:
-                game_world.remove_object(self.user)
-                game_world.add_object(self.user, 4)
-            else:
-                game_world.add_object(self.user, 4)
-                game_world.add_object(self.user, 4)
-
-            pass
-        pass
-
-    def apply_effect(self, x, y):
-        # 별도의 캐스팅 과정을 거치지 않으므로 필요없음
-        pass
-
-class RevivalKnight3(Card):
+class RevivalKnight2(RevivalKnight):
     def __init__(self):
-        from battle_mode import knight
-        super().__init__("revival_knight", knight, 3, "resource/card_revival_0.png")
-        self.original_image = self.image
-        self.image_cur_uses_1 = load_image('resource/card_revival_1.png')
-        self.image_cur_uses_2 = load_image('resource/card_revival_2.png')
+        super().__init__()
 
-        self.range = 2000
-        self.is_summon_obj = True  # 미리보기가 필요한가
-        self.summon_image_path = 'resource/knight_sprite.png'
-        self.summon_size_x = 240
-        self.summon_size_y = 240
-        self.summon_scale = 100
 
-    def use(self, x, y):
-        if globals.knight_revival_count == 0:
-            # 카드 사용 효과 애니메이션 출력
-            globals.knight_revival_count += 1
-            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
-            self.image = self.image_cur_uses_1
-
-        elif globals.knight_revival_count == 1:
-            # 카드 사용 효과 애니메이션 출력
-            globals.knight_revival_count += 1
-            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
-            self.image = self.image_cur_uses_2
-
-        elif globals.knight_revival_count == 2:
-            # 카드 사용 효과 애니메이션 출력
-            globals.knight_revival_count = 0
-            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
-            self.user.current_hp = self.user.max_hp
-            self.user.armor += 100
-            self.user.x, self.user.y = x, y
-            self.user.original_x, self.user.original_y = x, y
-            self.user.state_machine.add_event(('REVIVAL', 0))
-
-            is_in_world = False
-            for layer in world:
-                if self.user in layer:
-                    is_in_world = True
-                    break
-            if is_in_world:
-                game_world.remove_object(self.user)
-                game_world.add_object(self.user, 4)
-            else:
-                game_world.add_object(self.user, 4)
-                game_world.add_object(self.user, 4)
-
-            pass
-        pass
-
-    def apply_effect(self, x, y):
-        # 별도의 캐스팅 과정을 거치지 않으므로 필요없음
-        pass
+class RevivalKnight3(RevivalKnight):
+    def __init__(self):
+        super().__init__()

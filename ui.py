@@ -3,8 +3,8 @@
 from pico2d import load_font, load_image, get_time
 
 import game_framework
-import globals
-from globals import cur_mana, MAX_MANA
+import for_global
+from for_global import cur_mana, MAX_MANA
 
 
 class MainCharacterHpbarui:
@@ -143,9 +143,9 @@ class ManaUI:
         size_y = max(100, size_y - self.decrement)
         self.draw_size = (size_x, size_y)
 
-        if globals.cur_mana < MAX_MANA:
+        if for_global.cur_mana < MAX_MANA:
             if get_time() - self.last_mana_charge >= self.interval:
-                globals.cur_mana += 1
+                for_global.cur_mana += 1
                 self.last_mana_charge = get_time()
                 self.cur_mana_state = 0
                 self.frame = self.cur_mana_state
@@ -169,25 +169,25 @@ class ManaUI:
 
         self.frame_image.draw(self.x, self.y, 100, 100)
 
-        if globals.cur_mana == 0:
+        if for_global.cur_mana == 0:
             self.image_0.draw(*self.letter_position, *self.draw_size)
-        elif globals.cur_mana == 1:
+        elif for_global.cur_mana == 1:
             self.image_1.draw(*self.letter_position, *self.draw_size)
-        elif globals.cur_mana == 2:
+        elif for_global.cur_mana == 2:
             self.image_2.draw(*self.letter_position, *self.draw_size)
-        elif globals.cur_mana == 3:
+        elif for_global.cur_mana == 3:
             self.image_3.draw(*self.letter_position, *self.draw_size)
-        elif globals.cur_mana == 4:
+        elif for_global.cur_mana == 4:
             self.image_4.draw(*self.letter_position, *self.draw_size)
-        elif globals.cur_mana == 5:
+        elif for_global.cur_mana == 5:
             self.image_5.draw(*self.letter_position, *self.draw_size)
-        elif globals.cur_mana == 6:
+        elif for_global.cur_mana == 6:
             self.image_6.draw(*self.letter_position, *self.draw_size)
-        elif globals.cur_mana == 7:
+        elif for_global.cur_mana == 7:
             self.image_7.draw(*self.letter_position, *self.draw_size)
-        elif globals.cur_mana == 8:
+        elif for_global.cur_mana == 8:
             self.image_8.draw(*self.letter_position, *self.draw_size)
-        elif globals.cur_mana == 9:
+        elif for_global.cur_mana == 9:
             self.image_9.draw(*self.letter_position, *self.draw_size)
         else:
             self.image_10.draw(*self.letter_position, *self.draw_size)

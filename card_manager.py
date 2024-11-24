@@ -2,8 +2,8 @@
 import math
 import random
 
-import globals
-from card import Highlight
+import for_global
+from card import Highlight, Idle, InDeck
 from card_list import *
 from deck import Deck, Hand
 from event_system import event_system
@@ -97,7 +97,7 @@ class CardManager:
         if card in self.hand.cards:
             # 카드 사용 -> 덱으로 반환 -> 한장 드로우
             card.state_machine.add_event(('CARD_USED', 0))
-            globals.cur_mana -= card.cost
+            for_global.cur_mana -= card.cost
             card.use(card.x, card.y)
 
             # 여러 번 사용 가능한 카드라면 사용 횟수를 차감한 후 다시 패로 돌아감
@@ -119,7 +119,6 @@ class CardManager:
         new_card.rotation = old_card.rotation
         new_card.original_rotation = old_card.original_rotation
         new_card.user = old_card.user
-        new_card.state_machine.cur_state = old_card.state_machine.cur_state
         new_card.draw_size_x, new_card.draw_size_y = old_card.draw_size_x, old_card.draw_size_y
         return new_card
 
@@ -154,13 +153,31 @@ class CardManager:
             self.transform_cards(c, to_revival=False)
 
     def transform_cards(self, character, to_revival):
-        for card_list in [self.hand.cards, self.deck.cards]:
-            for i, card in enumerate(card_list):
-                if card.user == character:
-                    if to_revival and type(card) in self.card_to_revival_map:
-                        card_list[i] = self.replace_card(card, self.card_to_revival_map[type(card)])
-                    elif not to_revival and type(card) in self.revival_to_card_map:
-                        card_list[i] = self.replace_card(card, self.revival_to_card_map[type(card)])
+        for i, card in enumerate(self.hand.cards):
+            if card.user == character:
+                if to_revival and type(card) in self.card_to_revival_map:
+                    self.hand.cards[i] = self.replace_card(card, self.card_to_revival_map[type(card)])
+                    self.hand.cards[i].state_machine.cur_state = Idle
+                    self.hand.cards[i].draw_size_x = self.hand.cards[i].original_size_x
+                    self.hand.cards[i].draw_size_y = self.hand.cards[i].original_size_y
+                elif not to_revival and type(card) in self.revival_to_card_map:
+                    self.hand.cards[i] = self.replace_card(card, self.revival_to_card_map[type(card)])
+                    self.hand.cards[i].state_machine.cur_state = Idle
+                    self.hand.cards[i].draw_size_x = self.hand.cards[i].original_size_x
+                    self.hand.cards[i].draw_size_y = self.hand.cards[i].original_size_y
+
+        for i, card in enumerate(self.deck.cards):
+            if card.user == character:
+                if to_revival and type(card) in self.card_to_revival_map:
+                    self.deck.cards[i] = self.replace_card(card, self.card_to_revival_map[type(card)])
+                    self.deck.cards[i].state_machine.cur_state = InDeck
+                    self.deck.cards[i].draw_size_x = self.deck.cards[i].original_size_x * 3 / 4
+                    self.deck.cards[i].draw_size_y = self.deck.cards[i].original_size_y * 3 / 4
+                elif not to_revival and type(card) in self.revival_to_card_map:
+                    self.deck.cards[i] = self.replace_card(card, self.revival_to_card_map[type(card)])
+                    self.deck.cards[i].state_machine.cur_state = InDeck
+                    self.deck.cards[i].draw_size_x = self.deck.cards[i].original_size_x * 3 / 4
+                    self.deck.cards[i].draw_size_y = self.deck.cards[i].original_size_y * 3 / 4
 
         self.update_all_cards()
 

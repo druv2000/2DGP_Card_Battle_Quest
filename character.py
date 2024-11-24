@@ -10,7 +10,7 @@ from character_action import find_closest_target, move_to_target, attack_target,
     update_walk_animation, is_attack_timing, update_cast_animation, perform_body_tackle, perform_rolling
 from effects import HitEffect, InvincibleEffect
 from game_world import change_object_layer
-from globals import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
+from for_global import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
 from object_pool import *
 from state_machine import *
 from ui import ProgressBar
