@@ -115,10 +115,6 @@ class Clicked:
 
     @staticmethod
     def do(c):
-        # 캐릭터 사망 시 카드 상태가 Idle로 돌아감
-        if c.user.state_machine.cur_state == Dead:
-            c.state_machine.add_event(('CANNOT_USE_CARD', 0))
-            return
 
         # 카드에 사거리가 있다면 사거리 안으로 좌표 고정
         if hasattr(c, 'range') and hasattr(c, 'user'):
@@ -314,6 +310,7 @@ class Card:
             Clicked: {
                 mouse_left_release_in_card_space: Idle,
                 mouse_left_release_out_card_space: Used,
+                cannot_use_card: Idle,
             },
             Used: {
                 card_used: InDeck,

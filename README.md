@@ -1,5 +1,5 @@
 # 2DGP_Card_Battle_Quest
-v.0.1
+v.0.2
 
 ---
 
@@ -8,6 +8,6 @@ v.0.1
 2. build 'card_battle_quest.py'
 
 ## control:
-- mouse_left_click: draw card
-- q, w, e: summon ally (knight, mage, bowman)
+- mouse_left_click: use card (drag & drop)
 - a, s, d: summon enemy (soldier, mage, elite)
+- space: summon boss(no action yet)

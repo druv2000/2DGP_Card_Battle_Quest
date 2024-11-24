@@ -23,7 +23,7 @@ class Knight(Character):
         self.highlight_image = load_image('resource/knight_highlight_sprite.png')
 
         self.max_hp = 300         # max_hp
-        self.current_hp = 300       # current_hp
+        self.current_hp = 1      # current_hp
         self.move_speed = 200       # move pixel per second
         self.attack_range = 100     # pixel
         self.base_attack_speed = 1.3     # attack per second

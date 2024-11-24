@@ -53,6 +53,11 @@ BOWMAN_ROLLING_ROTATE_SPEED = 2000
 BOWMAN_ROLLING_ATK_SPEED_INCREMENT = 30
 BOWMAN_ROLLING_ATK_SPEED_DURATION = 3.0
 
+knight_revival_count = 0
+mage_revival_count = 0
+bowman_revival_count = 0
+MAX_REVIVAL_COUNT = 3
+
 # MANA
 MAX_MANA = 10
 cur_mana = 5

@@ -2,20 +2,29 @@
 import math
 import random
 
-from pico2d import load_font
-
 import globals
 from card import Highlight
-from card_list import Explosion, SummonGolem, SnipeShot, BodyTackle, WarCry, VitalitySurge, AdditionalArrow, Rolling, \
-    Respite
+from card_list import *
 from deck import Deck, Hand
-from globals import cur_mana
+from event_system import event_system
+
 
 class CardManager:
     def __init__(self):
         self.deck = Deck()
         self.hand = Hand()
         self.font_size = 32
+        event_system.add_listener('character_state_change', self.manage_dead)
+
+        self.card_to_revival_map = {
+            BodyTackle: RevivalKnight1,
+            WarCry: RevivalKnight2,
+            Respite: RevivalKnight3,
+            # Add more mappings as needed
+        }
+
+        self.revival_to_card_map = {v: k for k, v in self.card_to_revival_map.items()}
+
 
     def register_characters(self, knight, mage, bowman):
         self.characters = {
@@ -26,22 +35,22 @@ class CardManager:
 
     def init_deck(self):
         # 덱에 카드 추가
-        self.deck.add_card(Explosion())
         self.deck.add_card(BodyTackle())
         self.deck.add_card(WarCry())
+        self.deck.add_card(Respite())
+
+        self.deck.add_card(Explosion())
         self.deck.add_card(SummonGolem())
-        self.deck.add_card(SnipeShot())
         self.deck.add_card(VitalitySurge())
+
+        self.deck.add_card(SnipeShot())
         self.deck.add_card(AdditionalArrow())
         self.deck.add_card(Rolling())
-        self.deck.add_card(Respite())
-        # self.deck.add_card(Rolling())
-        # self.deck.add_card(Rolling())
-        # self.deck.add_card(Rolling())
-        # self.deck.add_card(Rolling())
-        # self.deck.add_card(Rolling())
 
-
+        # 캐릭터 별 소생 카드
+        # self.deck.add_card(RevivalKnight())
+        # self.deck.add_card(RevivalMage())
+        # self.deck.add_card(RevivalBowman())
 
 
         random.shuffle(self.deck.cards)
@@ -80,7 +89,7 @@ class CardManager:
             card.original_y = card.y
             card.original_rotation = card.rotation
 
-            # # 애니메이션 효과를 위해 현재 위치에서 새 위치로 부드럽게 이동
+            # # 애니메이션 효과?
             # self.animate_card_movement(card, new_x, new_y, angle)
 
 
@@ -103,6 +112,19 @@ class CardManager:
             self.draw_card()
             self.update_all_cards()
 
+    def replace_card(self, old_card, new_card_class):
+        new_card = new_card_class()
+        new_card.x, new_card.y = old_card.x, old_card.y
+        new_card.original_x, new_card.original_y = old_card.original_x, old_card.original_y
+        new_card.rotation = old_card.rotation
+        new_card.original_rotation = old_card.original_rotation
+        new_card.user = old_card.user
+        new_card.state_machine.cur_state = old_card.state_machine.cur_state
+        new_card.draw_size_x, new_card.draw_size_y = old_card.draw_size_x, old_card.draw_size_y
+        return new_card
+
+    ##########################################################
+
     def update(self):
         for card in self.hand.cards:
             card.update()
@@ -116,12 +138,30 @@ class CardManager:
         next_card = None
         for card in self.deck.cards:
             next_card = card
-        next_card.draw()
+        if next_card:
+            next_card.draw()
 
         for card in self.hand.cards:
             if card.state_machine.cur_state == Highlight:
                 card.draw()
 
         self.font.draw(1225, 150, 'next card', (255, 255, 255))
+
+    def manage_dead(self, c, cur_state):
+        if cur_state == 'dead':
+            self.transform_cards(c, to_revival=True)
+        elif cur_state == 'alive':
+            self.transform_cards(c, to_revival=False)
+
+    def transform_cards(self, character, to_revival):
+        for card_list in [self.hand.cards, self.deck.cards]:
+            for i, card in enumerate(card_list):
+                if card.user == character:
+                    if to_revival and type(card) in self.card_to_revival_map:
+                        card_list[i] = self.replace_card(card, self.card_to_revival_map[type(card)])
+                    elif not to_revival and type(card) in self.revival_to_card_map:
+                        card_list[i] = self.replace_card(card, self.revival_to_card_map[type(card)])
+
+        self.update_all_cards()
 
 card_manager = CardManager()

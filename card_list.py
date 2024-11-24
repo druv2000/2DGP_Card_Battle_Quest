@@ -4,11 +4,13 @@ import time
 from pico2d import get_time, load_image
 
 import game_world
+import globals
 from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_SnipeShotBullet, CardBeamAreaEffectAnimation, \
     WarCryEffectAnimation, FadeOutEffectAnimation
 from card import Card
 from character_list import Golem
-from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, BowmanMaxPowerEffect, RespiteEffect
+from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, BowmanMaxPowerEffect, RespiteEffect, \
+    FlameEffect
 from game_world import world, add_object
 from globals import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 
@@ -85,14 +87,15 @@ class WarCry(Card):
         )
         game_world.add_object(war_cry_effect_2, 8)
 
+        # 범위 내의 모든 적 오브젝트에게 효과 적용
         for layer in world:
             for obj in layer:
                 if obj.can_target and obj.team != self.user.team:
-                    taunt_effect = next((effect for effect in obj.effects if isinstance(effect, TauntEffect)), None)
-                    hit_effect = next((effect for effect in obj.effects if isinstance(effect, HitEffect)), None)
-                    atk_down_effect = next((effect for effect in obj.effects if isinstance(effect, AtkDownEffect)), None)
                     distance = ((obj.x - x) ** 2 + (obj.y - y) ** 2) ** 0.5
                     if distance <= self.radius:
+                        taunt_effect = next((effect for effect in obj.effects if isinstance(effect, TauntEffect)), None)
+                        hit_effect = next((effect for effect in obj.effects if isinstance(effect, HitEffect)), None)
+                        atk_down_effect = next((effect for effect in obj.effects if isinstance(effect, AtkDownEffect)),None)
                         # 도발 적용
                         if taunt_effect:
                             obj.effects.remove(taunt_effect)
@@ -115,7 +118,6 @@ class WarCry(Card):
                         else:
                             atk_down_effect = AtkDownEffect(5, 3)
                             obj.add_effect(atk_down_effect)
-
 
         self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
         pass
@@ -199,6 +201,13 @@ class Explosion(Card):
                     if distance <= self.radius:
                         self.user.total_damage += self.damage
                         obj.take_damage(self.damage)
+
+                        flame_effect = next((effect for effect in obj.effects if isinstance(effect, FlameEffect)), None)
+                        if flame_effect:
+                            flame_effect.refresh()
+                        else:
+                            flame_effect = FlameEffect(self.user)
+                            obj.add_effect(flame_effect)
 
         self.user.last_attack_time = time.time() # 사용 즉시 공격하지 못하도록
 
@@ -329,6 +338,7 @@ class SnipeShot(Card):
         self.expected_card_area = None
 
     def use(self, x, y):
+        # 캐스팅 중에 예상 범위 표시
         self.expected_card_area = CardBeamAreaEffectAnimation(
             self.user.original_x, self.user.original_y - 20,
             x, y, self.width,
@@ -336,6 +346,7 @@ class SnipeShot(Card):
         )
         game_world.add_object(self.expected_card_area, 1)
 
+        # 캐스팅 시작
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
         self.user.current_card = self
         self.user.card_target = (x, y)
@@ -343,6 +354,7 @@ class SnipeShot(Card):
     def apply_effect(self, x, y):
         game_world.remove_object(self.expected_card_area)
 
+        # 투사체 발사
         snipe_shot_bullet = Bowman_SnipeShotBullet()
         snipe_shot_bullet.set(self.user, self.user.original_x, self.user.original_y - 20, x, y)
         game_world.add_object(snipe_shot_bullet, 7)
@@ -365,6 +377,7 @@ class AdditionalArrow(Card):
     def apply_effect(self, x, y):
         self.target.is_highlight = False
 
+        # 사용된 횟수별로 이펙트를 다르게 설정
         if self.user.additional_attack == 0:
             additional_arrow_effect = FadeOutEffectAnimation(
                 self.user,
@@ -403,6 +416,7 @@ class AdditionalArrow(Card):
             )
         game_world.add_object(additional_arrow_effect, 8)
 
+        # 실제 효과 적용. 최대 투사체에 도달 시 공격속도 증가를 적용
         if self.user.additional_attack < 4:
             self.user.additional_attack = min(4, self.user.additional_attack + 1)
         else:
@@ -446,3 +460,175 @@ class Rolling(Card):
             self.image = self.original_image
         pass
 
+################################################################################
+
+class RevivalKnight1(Card):
+    def __init__(self):
+        from battle_mode import knight
+        super().__init__("revival_knight", knight, 3, "resource/card_revival_0.png")
+        self.original_image = self.image
+        self.image_cur_uses_1 = load_image('resource/card_revival_1.png')
+        self.image_cur_uses_2 = load_image('resource/card_revival_2.png')
+
+        self.range = 2000
+        self.is_summon_obj = True  # 미리보기가 필요한가
+        self.summon_image_path = 'resource/knight_sprite.png'
+        self.summon_size_x = 240
+        self.summon_size_y = 240
+        self.summon_scale = 100
+
+    def use(self, x, y):
+        if globals.knight_revival_count == 0:
+            # 카드 사용 효과 애니메이션 출력
+            globals.knight_revival_count += 1
+            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+            self.image = self.image_cur_uses_1
+
+        elif globals.knight_revival_count == 1:
+            # 카드 사용 효과 애니메이션 출력
+            globals.knight_revival_count += 1
+            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+            self.image = self.image_cur_uses_2
+
+        elif globals.knight_revival_count == 2:
+            # 카드 사용 효과 애니메이션 출력
+            globals.knight_revival_count = 0
+            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+            self.user.current_hp = self.user.max_hp
+            self.user.armor += 100
+            self.user.x, self.user.y = x, y
+            self.user.original_x, self.user.original_y = x, y
+            self.user.state_machine.add_event(('REVIVAL', 0))
+
+            is_in_world = False
+            for layer in world:
+                if self.user in layer:
+                    is_in_world = True
+                    break
+            if is_in_world:
+                game_world.remove_object(self.user)
+                game_world.add_object(self.user, 4)
+            else:
+                game_world.add_object(self.user, 4)
+                game_world.add_object(self.user, 4)
+
+            pass
+        pass
+
+    def apply_effect(self, x, y):
+        # 별도의 캐스팅 과정을 거치지 않으므로 필요없음
+        pass
+
+class RevivalKnight2(Card):
+    def __init__(self):
+        from battle_mode import knight
+        super().__init__("revival_knight", knight, 3, "resource/card_revival_0.png")
+        self.original_image = self.image
+        self.image_cur_uses_1 = load_image('resource/card_revival_1.png')
+        self.image_cur_uses_2 = load_image('resource/card_revival_2.png')
+
+        self.range = 2000
+        self.is_summon_obj = True  # 미리보기가 필요한가
+        self.summon_image_path = 'resource/knight_sprite.png'
+        self.summon_size_x = 240
+        self.summon_size_y = 240
+        self.summon_scale = 100
+
+    def use(self, x, y):
+        if globals.knight_revival_count == 0:
+            # 카드 사용 효과 애니메이션 출력
+            globals.knight_revival_count += 1
+            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+            self.image = self.image_cur_uses_1
+
+        elif globals.knight_revival_count == 1:
+            # 카드 사용 효과 애니메이션 출력
+            globals.knight_revival_count += 1
+            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+            self.image = self.image_cur_uses_2
+
+        elif globals.knight_revival_count == 2:
+            # 카드 사용 효과 애니메이션 출력
+            globals.knight_revival_count = 0
+            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+            self.user.current_hp = self.user.max_hp
+            self.user.armor += 100
+            self.user.x, self.user.y = x, y
+            self.user.original_x, self.user.original_y = x, y
+            self.user.state_machine.add_event(('REVIVAL', 0))
+
+            is_in_world = False
+            for layer in world:
+                if self.user in layer:
+                    is_in_world = True
+                    break
+            if is_in_world:
+                game_world.remove_object(self.user)
+                game_world.add_object(self.user, 4)
+            else:
+                game_world.add_object(self.user, 4)
+                game_world.add_object(self.user, 4)
+
+            pass
+        pass
+
+    def apply_effect(self, x, y):
+        # 별도의 캐스팅 과정을 거치지 않으므로 필요없음
+        pass
+
+class RevivalKnight3(Card):
+    def __init__(self):
+        from battle_mode import knight
+        super().__init__("revival_knight", knight, 3, "resource/card_revival_0.png")
+        self.original_image = self.image
+        self.image_cur_uses_1 = load_image('resource/card_revival_1.png')
+        self.image_cur_uses_2 = load_image('resource/card_revival_2.png')
+
+        self.range = 2000
+        self.is_summon_obj = True  # 미리보기가 필요한가
+        self.summon_image_path = 'resource/knight_sprite.png'
+        self.summon_size_x = 240
+        self.summon_size_y = 240
+        self.summon_scale = 100
+
+    def use(self, x, y):
+        if globals.knight_revival_count == 0:
+            # 카드 사용 효과 애니메이션 출력
+            globals.knight_revival_count += 1
+            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+            self.image = self.image_cur_uses_1
+
+        elif globals.knight_revival_count == 1:
+            # 카드 사용 효과 애니메이션 출력
+            globals.knight_revival_count += 1
+            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+            self.image = self.image_cur_uses_2
+
+        elif globals.knight_revival_count == 2:
+            # 카드 사용 효과 애니메이션 출력
+            globals.knight_revival_count = 0
+            print(f'    DEBUG: revival_count = {globals.knight_revival_count}')
+            self.user.current_hp = self.user.max_hp
+            self.user.armor += 100
+            self.user.x, self.user.y = x, y
+            self.user.original_x, self.user.original_y = x, y
+            self.user.state_machine.add_event(('REVIVAL', 0))
+
+            is_in_world = False
+            for layer in world:
+                if self.user in layer:
+                    is_in_world = True
+                    break
+            if is_in_world:
+                game_world.remove_object(self.user)
+                game_world.add_object(self.user, 4)
+            else:
+                game_world.add_object(self.user, 4)
+                game_world.add_object(self.user, 4)
+
+            pass
+        pass
+
+    def apply_effect(self, x, y):
+        # 별도의 캐스팅 과정을 거치지 않으므로 필요없음
+        pass

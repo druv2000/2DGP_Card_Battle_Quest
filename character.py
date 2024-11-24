@@ -13,8 +13,7 @@ from game_world import change_object_layer
 from globals import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
 from object_pool import *
 from state_machine import *
-from ui import ProgressBar, StandardHpbarui
-
+from ui import ProgressBar
 
 # ============================================================================================
 
@@ -231,14 +230,15 @@ class Stunned:
 class Dead:
     @staticmethod
     def enter(c, e):
+        event_system.trigger('character_state_change', c, 'dead')
         c.is_active = False
+        c.HP_bar.is_active = False
         c.frame = 0
         c.rotation = 0
         c.opacify = 0.5
         c.target_rotation = -90 if c.sprite_dir == 1 else 90
 
         c.can_target = False
-        c.can_use_card = False
         change_object_layer(c, 1)
 
         # 활성화된 이펙트 전부 비활성화
@@ -247,25 +247,32 @@ class Dead:
         c.effects.clear()
     @staticmethod
     def exit(c, e):
+        event_system.trigger('character_state_change', c, 'alive')
+        c.rotation = c.original_rotation
+        c.can_target = True
+        c.is_active = True
+        c.HP_bar.is_active = True
+        c.image.opacify(1.0)
         pass
     @staticmethod
     def do(c):
-        if abs(c.rotation - c.target_rotation) > 10:
-            if c.sprite_dir == 1:
-                c.rotation -= 300 * game_framework.frame_time
-                c.y -= 150 * game_framework.frame_time
-                c.x -= 150 * game_framework.frame_time
+        if c.opacify > 0:
+            if abs(c.rotation - c.target_rotation) > 10:
+                if c.sprite_dir == 1:
+                    c.rotation -= 300 * game_framework.frame_time
+                    c.y -= 150 * game_framework.frame_time
+                    c.x -= 150 * game_framework.frame_time
+                else:
+                    c.rotation += 300 * game_framework.frame_time
+                    c.y -= 150 * game_framework.frame_time
+                    c.x += 150 * game_framework.frame_time
             else:
-                c.rotation += 300 * game_framework.frame_time
-                c.y -= 150 * game_framework.frame_time
-                c.x += 150 * game_framework.frame_time
-        else:
-            c.rotation = c.target_rotation
+                c.rotation = c.target_rotation
 
-        if c.opacify <= 0:
+            c.opacify -= 0.001
+            c.image.opacify(c.opacify)
+        else:
             game_world.remove_object(c)
-        c.opacify -= 0.001
-        c.image.opacify(c.opacify)
 
     @staticmethod
     def draw(c):
@@ -420,7 +427,9 @@ class Character:
                 stunned_end: Idle,
                 dead: Dead
             },
-            Dead: {},
+            Dead: {
+                revival: Idle
+            },
             Summoned: {
                 summon_end: Idle
             },

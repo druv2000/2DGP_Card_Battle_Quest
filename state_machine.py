@@ -31,6 +31,9 @@ def stunned_end(event):
 def dead(event):
     return event[0] == 'DEAD'
 
+def revival(event):
+    return event[0] == 'REVIVAL'
+
 def summon_end(event):
     return event[0] == 'SUMMON_END'
 
@@ -123,7 +126,7 @@ class StateMachine:
 
     def add_event(self, event):
         self.event_que.append(event) # 상태 머신용 이벤트 추가
-        print(f'    DEBUG: - new event {event} is added. in {self.obj}')
+        # print(f'    DEBUG: - new event {event} is added. in {self.obj}')
         pass
 
     def handle_event(self, event):

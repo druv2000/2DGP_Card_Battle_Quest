@@ -75,6 +75,15 @@ class ShieldTemplate:
         self.sprite_size_y = 773
         pass
 
+class FlameTemplate:
+    def __init__(self):
+        self.name = 'flame'
+        self.image = load_image('resource/flame_effect.png')
+        self.sprite_count = 8
+        self.sprite_size_x = 24
+        self.sprite_size_y = 32
+        pass
+
 # ===============================
 
 class Effect:
@@ -384,6 +393,45 @@ class RespiteEffect(Effect):
             c.take_heal(self.heal_amount)
             self.last_update_time = get_time()
 
+
+        if get_time() - self.start_time >= self.duration:
+            self.is_active = False
+
+    def draw(self, c):
+        self.template.image.clip_draw(
+            int(self.frame) * self.template.sprite_size_x, 0,
+            self.template.sprite_size_x, self.template.sprite_size_y,
+            c.x, c.y - 10,
+            100, 100
+        )
+
+class FlameEffect(Effect):
+    def __init__(self, user):
+        super().__init__('flame', 5.0 + 0.1)
+        self.template = FlameTemplate()
+        self.user = user
+        self.frame = 0
+        self.interval = 0.5
+        self.damage = 2
+        self.damage_count = 0
+        self.last_update_time = get_time()
+
+    def apply(self, c):
+        pass
+
+    def remove(self, c):
+        pass
+
+    def update(self, c):
+        self.frame = ((self.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time)
+                      % self.template.sprite_count)
+
+        # interval마다 피해 효과 적용
+        if get_time() - self.last_update_time >= self.interval:
+            c.take_damage(self.damage)
+            self.user.total_damage += self.damage
+            self.last_update_time = get_time()
+            self.damage_count += 1
 
         if get_time() - self.start_time >= self.duration:
             self.is_active = False

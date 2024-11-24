@@ -2,6 +2,9 @@
 
 from pico2d import *
 
+import game_framework
+
+
 class DamageNumber:
     UPDATE_INTERVAL = 10  # 10프레임마다 한 번씩 업데이트
 
@@ -31,7 +34,7 @@ class DamageNumber:
         if self.is_active:
             self.frame_count += 5
             if self.frame_count >= self.UPDATE_INTERVAL:
-                self.y += 1
+                self.y += 100 * game_framework.frame_time
                 self.frame_count = 0  # 프레임 카운터 리셋
             if not self.is_alive():
                 self.is_active = False
@@ -67,7 +70,7 @@ class HealNumber:
         if self.is_active:
             self.frame_count += 5
             if self.frame_count >= self.UPDATE_INTERVAL:
-                self.y += 1
+                self.y += 100 * game_framework.frame_time
                 self.frame_count = 0  # 프레임 카운터 리셋
             if not self.is_alive():
                 self.is_active = False

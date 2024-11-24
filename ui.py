@@ -26,6 +26,7 @@ class MainCharacterHpbarui:
 
         self.HP_image = self.HP_main_image
         self.cur_hp_state, self.cur_armor_state = self.calculate_hp_state()
+        self.is_active = True
         self.can_target = False
 
     def calculate_hp_state(self):
@@ -42,7 +43,7 @@ class MainCharacterHpbarui:
             self.main_frame = 49
 
     def draw(self):
-        if self.cur_hp_state != 0:
+        if self.is_active:
             self.HP_frame_image.draw(self.x, self.y, *self.frame_draw_size)
             self.HP_white_image.clip_draw(0, self.white_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
             self.HP_image.clip_draw(0, self.main_frame * 8, 100, 8, self.x, self.y, *self.bar_draw_size)
@@ -116,7 +117,7 @@ class ManaUI:
         self.letter_position = (self.x, self.y - 5)
         self.draw_size = (104, 100)
         self.decrement = 1000 * game_framework.frame_time
-        self.interval = 1.5
+        self.interval = 0.1
         self.last_mana_charge = get_time()
         self.cur_mana_state = 0
         self.frame = 0
