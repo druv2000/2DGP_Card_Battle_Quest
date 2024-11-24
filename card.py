@@ -50,7 +50,7 @@ class Highlight:
     def enter(c, e):
         c.draw_size_x *= 2.0
         c.draw_size_y *= 2.0
-        c.y = + 275
+        c.y = 275
         pass
     @staticmethod
     def exit(c, e):
@@ -194,7 +194,6 @@ class Clicked:
             else:
                 # 타겟이 없으면 c.target을 None으로 설정
                 c.target = None
-
 
     @staticmethod
     def draw(c):

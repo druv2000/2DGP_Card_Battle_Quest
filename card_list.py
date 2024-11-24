@@ -3,14 +3,16 @@ import time
 
 from pico2d import get_time, load_image
 
+import game_framework
 import game_world
 import for_global
 from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_SnipeShotBullet, CardBeamAreaEffectAnimation, \
-    WarCryEffectAnimation, FadeOutEffectAnimation
+    CircleIncreaseEffect, FadeOutEffectAnimation
 from card import Card
 from character_list import Golem
 from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, BowmanMaxPowerEffect, RespiteEffect, \
-    FlameEffect
+    FlameEffect, StunEffect
+from event_system import event_system
 from game_world import world, add_object
 from for_global import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 
@@ -68,7 +70,7 @@ class WarCry(Card):
 
     def apply_effect(self, x, y):
         game_world.remove_object(self.expected_card_area)
-        war_cry_effect = WarCryEffectAnimation(
+        war_cry_effect = CircleIncreaseEffect(
             x, y,
             680, 680,
             self.radius * 2, self.radius * 2,
@@ -462,6 +464,101 @@ class Rolling(Card):
 
 ################################################################################
 
+class PerformRevivalObject:
+    def __init__(self, character, x, y, radius):
+        self.c = character
+        self.x = x
+        self.y = y - 50
+        self.original_y = self.y
+        self.radius = radius
+
+        self.ankh_image = load_image('resource/revival_effect_1.png')
+        self.wing_image = load_image('resource/revival_effect_2.png')
+        self.ankh_opacify = 0.0
+        self.wing_opacify = 0.0
+        self.ankh_draw_size = (105, 165)
+        self.wing_draw_size = (270, 100)
+        self.ankh_image.opacify(0.0)
+        self.wing_image.opacify(0.0)
+        self.start_time = get_time()
+        self.total_animation_time = 2.0
+        self.animation_progress = 0
+        self.is_revival_performed = False
+        self.can_target = False
+
+    def update(self):
+        # 애니메이션이 완료되면 셀프 삭제
+        self.animation_progress = (get_time() - self.start_time) / self.total_animation_time
+        if self.animation_progress >= 1.0:
+            game_world.remove_object(self)
+
+        # 애니메이션 진행 (0~0.75)
+        if self.animation_progress <= 0.75:
+            self.ankh_opacify += 0.005
+            self.ankh_opacify = min(1.0, self.ankh_opacify)
+            self.ankh_image.opacify(self.ankh_opacify)
+            self.wing_opacify += 0.005
+            self.wing_opacify = min(1.0, self.wing_opacify)
+            self.wing_image.opacify( self.wing_opacify)
+            self.y = self.original_y + 100 * self.animation_progress
+        # 애니메이션 진행 (0.75~1.0)
+        else:
+            # 실제 부활 수행(1회)
+            if not self.is_revival_performed:
+                # 시각 이펙트
+                circle_increase_effect = CircleIncreaseEffect(
+                    self.x, self.original_y,
+                    679, 679,
+                    self.radius*2, self.radius*2,
+                    'resource/revival_effect_3.png',
+                    1, HUGE_TIME
+                )
+                game_world.add_object(circle_increase_effect, 8)
+
+                # 범위 내 적들 기절 적용
+                for layer in world:
+                    for obj in layer:
+                        if obj.can_target and obj.team != self.c.team:
+                            stun_effect = next((effect for effect in obj.effects if isinstance(effect, StunEffect)), None)
+                            if stun_effect:
+                                stun_effect.refresh()
+                            else:
+                                stun_effect = StunEffect(2.0)
+                                obj.add_effect(stun_effect)
+
+                # 부활
+                self.is_revival_performed = True
+                self.c.current_hp = self.c.max_hp
+                self.c.armor += 100
+                self.c.x, self.c.y = self.x, self.original_y
+                self.c.original_x, self.c.original_y = self.c.x, self.c.y
+                self.c.state_machine.add_event(('REVIVAL', 0))
+                is_in_world = False
+                for layer in world:
+                    if self.c in layer:
+                        is_in_world = True
+                        break
+                if is_in_world:
+                    game_world.remove_object(self.c)
+                    game_world.add_object(self.c, 4)
+                else:
+                    game_world.add_object(self.c, 4)
+                    game_world.add_object(self.c, 4)
+
+            # 페이드 아웃
+            self.ankh_draw_size = (210, 330)
+            self.wing_draw_size = (810, 300)
+            self.ankh_opacify -= 0.01
+            self.wing_opacify -= 0.01
+            self.wing_image.opacify(self.ankh_opacify if self.ankh_opacify >= 0 else 0)
+            self.ankh_image.opacify(self.ankh_opacify if self.wing_opacify >= 0 else 0)
+        pass
+
+    def draw(self):
+        self.ankh_image.draw(self.x, self.y, *self.ankh_draw_size)
+        self.wing_image.draw(self.x, self.y, *self.wing_draw_size)
+        pass
+
 class RevivalKnight(Card):
     def __init__(self):
         from battle_mode import knight
@@ -477,62 +574,230 @@ class RevivalKnight(Card):
         self.summon_size_y = 240
         self.summon_scale = 100
 
+        event_system.add_listener('knight_revival_count_changed', self.update_image)
+
     def use(self, x, y):
         if for_global.knight_revival_count == 0:
             # 카드 사용 효과 애니메이션 출력
+            revival_effect = FadeOutEffectAnimation(
+                self.user,
+                self.user.x, self.user.y,
+                211, 333,
+                105, 165,
+                'resource/revival_effect_1.png',
+                1, 0.75
+            )
+            game_world.add_object(revival_effect, 8)
 
             for_global.knight_revival_count += 1
-            self.image = self.image_cur_uses_1
+            event_system.trigger('knight_revival_count_changed', 1)
 
         elif for_global.knight_revival_count == 1:
             # 카드 사용 효과 애니메이션 출력
+            revival_effect = FadeOutEffectAnimation(
+                self.user,
+                self.user.x, self.user.y,
+                211, 333,
+                105, 165,
+                'resource/revival_effect_1.png',
+                1, 0.75
+            )
+            game_world.add_object(revival_effect, 8)
 
             for_global.knight_revival_count += 1
-            self.image = self.image_cur_uses_2
+            event_system.trigger('knight_revival_count_changed', 2)
 
         elif for_global.knight_revival_count == 2:
             # 카드 사용 효과 애니메이션 출력
-
+            revival_animation = PerformRevivalObject(self.user, x, y, self.radius)
+            game_world.add_object(revival_animation, 8)
             for_global.knight_revival_count = 0
-            self.user.current_hp = 1
-            self.user.armor += 0
-
-            # self.user.current_hp = self.user.max_hp
-            # self.user.armor += 100
-            self.user.x, self.user.y = x, y
-            self.user.original_x, self.user.original_y = x, y
-            self.user.state_machine.add_event(('REVIVAL', 0))
-
-            is_in_world = False
-            for layer in world:
-                if self.user in layer:
-                    is_in_world = True
-                    break
-            if is_in_world:
-                game_world.remove_object(self.user)
-                game_world.add_object(self.user, 4)
-            else:
-                game_world.add_object(self.user, 4)
-                game_world.add_object(self.user, 4)
-
-            pass
-        pass
+            event_system.trigger('knight_revival_count_changed', 0)
 
     def apply_effect(self, x, y):
         # 별도의 캐스팅 과정을 거치지 않으므로 필요없음
         pass
 
+    def update_image(self, cur_revival_count):
+        if cur_revival_count == 0:
+            self.image = self.original_image
+        elif cur_revival_count == 1:
+            self.image = self.image_cur_uses_1
+        elif cur_revival_count == 2:
+            self.image = self.image_cur_uses_2
+            self.radius = 2000
+        else:
+            pass
+        pass
 
 class RevivalKnight1(RevivalKnight):
     def __init__(self):
         super().__init__()
-
-
 class RevivalKnight2(RevivalKnight):
     def __init__(self):
         super().__init__()
-
-
 class RevivalKnight3(RevivalKnight):
+    def __init__(self):
+        super().__init__()
+
+class RevivalMage(Card):
+    def __init__(self):
+        from battle_mode import mage
+        super().__init__("revival_mage", mage, 3, "resource/card_revival_mage_0.png")
+        self.original_image = self.image
+        self.image_cur_uses_1 = load_image('resource/card_revival_mage_1.png')
+        self.image_cur_uses_2 = load_image('resource/card_revival_mage_2.png')
+
+        self.range = 2000
+        self.is_summon_obj = True  # 미리보기가 필요한가
+        self.summon_image_path = 'resource/mage_sprite.png'
+        self.summon_size_x = 240
+        self.summon_size_y = 240
+        self.summon_scale = 100
+
+        event_system.add_listener('mage_revival_count_changed', self.update_image)
+
+    def use(self, x, y):
+        if for_global.mage_revival_count == 0:
+            # 카드 사용 효과 애니메이션 출력
+            revival_effect = FadeOutEffectAnimation(
+                self.user,
+                self.user.x, self.user.y,
+                211, 333,
+                105, 165,
+                'resource/revival_effect_1.png',
+                1, 0.75
+            )
+            game_world.add_object(revival_effect, 8)
+
+            for_global.mage_revival_count += 1
+            event_system.trigger('mage_revival_count_changed', 1)
+
+        elif for_global.mage_revival_count == 1:
+            # 카드 사용 효과 애니메이션 출력
+            revival_effect = FadeOutEffectAnimation(
+                self.user,
+                self.user.x, self.user.y,
+                211, 333,
+                105, 165,
+                'resource/revival_effect_1.png',
+                1, 0.75
+            )
+            game_world.add_object(revival_effect, 8)
+
+            for_global.mage_revival_count += 1
+            event_system.trigger('mage_revival_count_changed', 2)
+
+        elif for_global.mage_revival_count == 2:
+            # 카드 사용 효과 애니메이션 출력
+            revival_animation = PerformRevivalObject(self.user, x, y, self.radius)
+            game_world.add_object(revival_animation, 8)
+            for_global.mage_revival_count = 0
+            event_system.trigger('mage_revival_count_changed', 0)
+
+    def apply_effect(self, x, y):
+        # 별도의 캐스팅 과정을 거치지 않으므로 필요없음
+        pass
+
+    def update_image(self, cur_revival_count):
+        if cur_revival_count == 0:
+            self.image = self.original_image
+        elif cur_revival_count == 1:
+            self.image = self.image_cur_uses_1
+        elif cur_revival_count == 2:
+            self.image = self.image_cur_uses_2
+            self.radius = 2000
+        else:
+            pass
+        pass
+
+class RevivalMage1(RevivalMage):
+    def __init__(self):
+        super().__init__()
+class RevivalMage2(RevivalMage):
+    def __init__(self):
+        super().__init__()
+class RevivalMage3(RevivalMage):
+    def __init__(self):
+        super().__init__()
+
+class RevivalBowman(Card):
+    def __init__(self):
+        from battle_mode import bowman
+        super().__init__("revival_bowman", bowman, 3, "resource/card_revival_bowman_0.png")
+        self.original_image = self.image
+        self.image_cur_uses_1 = load_image('resource/card_revival_bowman_1.png')
+        self.image_cur_uses_2 = load_image('resource/card_revival_bowman_2.png')
+
+        self.range = 2000
+        self.is_summon_obj = True  # 미리보기가 필요한가
+        self.summon_image_path = 'resource/bowman_sprite.png'
+        self.summon_size_x = 240
+        self.summon_size_y = 240
+        self.summon_scale = 100
+
+        event_system.add_listener('bowman_revival_count_changed', self.update_image)
+
+    def use(self, x, y):
+        if for_global.bowman_revival_count == 0:
+            # 카드 사용 효과 애니메이션 출력
+            revival_effect = FadeOutEffectAnimation(
+                self.user,
+                self.user.x, self.user.y,
+                211, 333,
+                105, 165,
+                'resource/revival_effect_1.png',
+                1, 0.75
+            )
+            game_world.add_object(revival_effect, 8)
+
+            for_global.bowman_revival_count += 1
+            event_system.trigger('bowman_revival_count_changed', 1)
+
+        elif for_global.bowman_revival_count == 1:
+            # 카드 사용 효과 애니메이션 출력
+            revival_effect = FadeOutEffectAnimation(
+                self.user,
+                self.user.x, self.user.y,
+                211, 333,
+                105, 165,
+                'resource/revival_effect_1.png',
+                1, 0.75
+            )
+            game_world.add_object(revival_effect, 8)
+
+            for_global.bowman_revival_count += 1
+            event_system.trigger('bowman_revival_count_changed', 2)
+
+        elif for_global.bowman_revival_count == 2:
+            # 카드 사용 효과 애니메이션 출력
+            revival_animation = PerformRevivalObject(self.user, x, y, self.radius)
+            game_world.add_object(revival_animation, 8)
+            for_global.bowman_revival_count = 0
+            event_system.trigger('bowman_revival_count_changed', 0)
+
+    def apply_effect(self, x, y):
+        # 별도의 캐스팅 과정을 거치지 않으므로 필요없음
+        pass
+
+    def update_image(self, cur_revival_count):
+        if cur_revival_count == 0:
+            self.image = self.original_image
+        elif cur_revival_count == 1:
+            self.image = self.image_cur_uses_1
+        elif cur_revival_count == 2:
+            self.image = self.image_cur_uses_2
+            self.radius = 2000
+        else:
+            pass
+        pass
+
+class RevivalBowman1(RevivalBowman):
+    def __init__(self):
+        super().__init__()
+class RevivalBowman2(RevivalBowman):
+    def __init__(self):
+        super().__init__()
+class RevivalBowman3(RevivalBowman):
     def __init__(self):
         super().__init__()

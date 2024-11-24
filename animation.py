@@ -410,7 +410,7 @@ class CardEffectAnimation:
             self.scale_x, self.scale_y
         )
 
-class WarCryEffectAnimation():
+class CircleIncreaseEffect():
     def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame, total_time):
         self.x = x
         self.y = y

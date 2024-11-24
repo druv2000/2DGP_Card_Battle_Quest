@@ -20,6 +20,14 @@ class CardManager:
             BodyTackle: RevivalKnight1,
             WarCry: RevivalKnight2,
             Respite: RevivalKnight3,
+
+            Explosion: RevivalMage1,
+            SummonGolem: RevivalMage2,
+            VitalitySurge: RevivalMage3,
+
+            SnipeShot: RevivalBowman1,
+            AdditionalArrow: RevivalBowman2,
+            Rolling: RevivalBowman3,
             # Add more mappings as needed
         }
 
@@ -179,6 +187,5 @@ class CardManager:
                     self.deck.cards[i].draw_size_x = self.deck.cards[i].original_size_x * 3 / 4
                     self.deck.cards[i].draw_size_y = self.deck.cards[i].original_size_y * 3 / 4
 
-        self.update_all_cards()
 
 card_manager = CardManager()
