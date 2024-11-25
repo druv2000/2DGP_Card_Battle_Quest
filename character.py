@@ -459,6 +459,8 @@ class Character:
 
     def update(self):
         self.state_machine.update()
+        self.x = max(0, min(1600, self.x))
+        self.y = max(300, min(900, self.y))
         active_effects = []
         for effect in self.effects:
             if effect.is_active:

@@ -8,7 +8,7 @@ from event_system import event_system
 import game_framework
 import game_world
 import object_pool
-from background import Background
+from background import Background1, Background2
 from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite, Soldier_boss, Golem
 from player import player
 from ui import TotalDamageUI, ManaUI
@@ -25,8 +25,11 @@ def init():
 
     running = True
     # background 생성
-    background = Background(800, 450)
-    game_world.add_object(background, 0)
+    background1 = Background1(800, 450)
+    game_world.add_object(background1, 0)
+
+    background2 = Background2(800, 150)
+    game_world.add_object(background2, 8)
 
     # test: real
     knight = Knight(200, 550, 'ally')
