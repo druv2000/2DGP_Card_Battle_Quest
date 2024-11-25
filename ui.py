@@ -117,7 +117,7 @@ class ManaUI:
         self.letter_position = (self.x, self.y - 5)
         self.draw_size = (104, 100)
         self.decrement = 1000 * game_framework.frame_time
-        self.interval = 0.1
+        self.interval = 1.5
         self.last_mana_charge = get_time()
         self.cur_mana_state = 0
         self.frame = 0

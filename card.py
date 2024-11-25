@@ -115,7 +115,6 @@ class Clicked:
 
     @staticmethod
     def do(c):
-
         # 카드에 사거리가 있다면 사거리 안으로 좌표 고정
         if hasattr(c, 'range') and hasattr(c, 'user'):
             c.x, c.y = limit_within_range(c, for_global.mouse_x, for_global.mouse_y)

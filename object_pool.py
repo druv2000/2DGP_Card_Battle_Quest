@@ -1,6 +1,8 @@
 # object_pool.py
 
 from animation import *
+from bullet import Mage_AttackBullet, Bowman_AttackBullet, Bowman_AdditionalBullet, Soldier_Mage_AttackBullet, \
+    None_AttackBullet
 from collision_group import CollisionGroup
 from damage_number import DamageNumber, HealNumber
 from game_world import add_object, add_collision_pair, remove_collision_object

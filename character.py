@@ -6,9 +6,11 @@ from math import sqrt
 from pico2d import get_time, draw_rectangle
 
 import game_world
+import object_pool
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
     update_walk_animation, is_attack_timing, update_cast_animation, perform_body_tackle, perform_rolling
 from effects import HitEffect, InvincibleEffect
+from event_system import event_system
 from game_world import change_object_layer
 from for_global import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
 from object_pool import *
@@ -71,7 +73,7 @@ class Idle:
         pass
     @staticmethod
     def do(c):
-        if find_closest_target(c) != None:
+        if find_closest_target(c):
             c.target = find_closest_target(c)
             c.state_machine.add_event(('TARGET_FOUND', 0))
         c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8

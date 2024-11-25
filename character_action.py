@@ -5,6 +5,7 @@ import time
 
 from pico2d import get_time
 
+import object_pool
 from effects import StunEffect, ForcedMovementEffect, AttackSpeedUpTemplate, AttackSpeedUpEffect, InvincibleEffect
 from game_world import world
 from for_global import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, KNIGHT_BODY_TACKLE_KNOCKBACK_DISTANCE, \
@@ -254,12 +255,8 @@ def perform_rolling(c):
             )
             c.add_effect(attack_speed_up_effect)
 
-
-
     c.original_x = c.x
     c.original_y = c.y
-
-
 
 # =============== animation ===============
 

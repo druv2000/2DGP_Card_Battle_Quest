@@ -6,8 +6,9 @@ from pico2d import get_time, load_image
 import game_framework
 import game_world
 import for_global
-from animation import CardEffectAnimation, CardAreaEffectAnimation, Bowman_SnipeShotBullet, CardBeamAreaEffectAnimation, \
+from animation import CardEffectAnimation, CardAreaEffectAnimation, CardBeamAreaEffectAnimation, \
     CircleIncreaseEffect, FadeOutEffectAnimation
+from bullet import Bowman_SnipeShotBullet
 from card import Card
 from character_list import Golem
 from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, BowmanMaxPowerEffect, RespiteEffect, \

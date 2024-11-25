@@ -3,7 +3,7 @@
 from pico2d import load_image
 
 import game_world
-from animation import Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
+from bullet import Mage_AttackBullet, Bowman_AttackBullet, Soldier_Mage_AttackBullet
 from character import Character, Summoned
 from ui import StandardHpbarui, MainCharacterHpbarui, BossHpbarui
 
@@ -23,7 +23,7 @@ class Knight(Character):
         self.highlight_image = load_image('resource/knight_highlight_sprite.png')
 
         self.max_hp = 300         # max_hp
-        self.current_hp = 1      # current_hp
+        self.current_hp = 300      # current_hp
         self.move_speed = 200       # move pixel per second
         self.attack_range = 100     # pixel
         self.base_attack_speed = 1.3     # attack per second
