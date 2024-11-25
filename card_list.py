@@ -563,10 +563,14 @@ class PerformRevivalObject:
 class RevivalKnight(Card):
     def __init__(self):
         from battle_mode import knight
-        super().__init__("revival_knight", knight, 3, "resource/card_revival_knight_0.png")
+        super().__init__("revival_knight", knight, 0, "resource/card_revival_knight_0.png")
         self.original_image = self.image
         self.image_cur_uses_1 = load_image('resource/card_revival_knight_1.png')
         self.image_cur_uses_2 = load_image('resource/card_revival_knight_2.png')
+        self.image_cur_uses_3 = load_image('resource/card_revival_knight_3.png')
+        self.image_cur_uses_4 = load_image('resource/card_revival_knight_4.png')
+        self.image_cur_uses_5 = load_image('resource/card_revival_knight_5.png')
+
 
         self.range = 2000
         self.is_summon_obj = True  # 미리보기가 필요한가
@@ -578,7 +582,7 @@ class RevivalKnight(Card):
         event_system.add_listener('knight_revival_count_changed', self.update_image)
 
     def use(self, x, y):
-        if for_global.knight_revival_count == 0:
+        if for_global.knight_revival_count < 5:
             # 카드 사용 효과 애니메이션 출력
             revival_effect = FadeOutEffectAnimation(
                 self.user,
@@ -591,24 +595,9 @@ class RevivalKnight(Card):
             game_world.add_object(revival_effect, 8)
 
             for_global.knight_revival_count += 1
-            event_system.trigger('knight_revival_count_changed', 1)
+            event_system.trigger('knight_revival_count_changed', for_global.knight_revival_count)
 
-        elif for_global.knight_revival_count == 1:
-            # 카드 사용 효과 애니메이션 출력
-            revival_effect = FadeOutEffectAnimation(
-                self.user,
-                self.user.x, self.user.y,
-                211, 333,
-                105, 165,
-                'resource/revival_effect_1.png',
-                1, 0.75
-            )
-            game_world.add_object(revival_effect, 8)
-
-            for_global.knight_revival_count += 1
-            event_system.trigger('knight_revival_count_changed', 2)
-
-        elif for_global.knight_revival_count == 2:
+        elif for_global.knight_revival_count == 5:
             # 카드 사용 효과 애니메이션 출력
             revival_animation = PerformRevivalObject(self.user, x, y, self.radius)
             game_world.add_object(revival_animation, 8)
@@ -626,6 +615,12 @@ class RevivalKnight(Card):
             self.image = self.image_cur_uses_1
         elif cur_revival_count == 2:
             self.image = self.image_cur_uses_2
+        elif cur_revival_count == 3:
+            self.image = self.image_cur_uses_3
+        elif cur_revival_count == 4:
+            self.image = self.image_cur_uses_4
+        elif cur_revival_count == 5:
+            self.image = self.image_cur_uses_5
             self.radius = 2000
         else:
             pass
@@ -644,10 +639,14 @@ class RevivalKnight3(RevivalKnight):
 class RevivalMage(Card):
     def __init__(self):
         from battle_mode import mage
-        super().__init__("revival_mage", mage, 3, "resource/card_revival_mage_0.png")
+        super().__init__("revival_mage", mage, 0, "resource/card_revival_mage_0.png")
         self.original_image = self.image
         self.image_cur_uses_1 = load_image('resource/card_revival_mage_1.png')
         self.image_cur_uses_2 = load_image('resource/card_revival_mage_2.png')
+        self.image_cur_uses_3 = load_image('resource/card_revival_mage_3.png')
+        self.image_cur_uses_4 = load_image('resource/card_revival_mage_4.png')
+        self.image_cur_uses_5 = load_image('resource/card_revival_mage_5.png')
+
 
         self.range = 2000
         self.is_summon_obj = True  # 미리보기가 필요한가
@@ -659,7 +658,7 @@ class RevivalMage(Card):
         event_system.add_listener('mage_revival_count_changed', self.update_image)
 
     def use(self, x, y):
-        if for_global.mage_revival_count == 0:
+        if for_global.mage_revival_count < 5:
             # 카드 사용 효과 애니메이션 출력
             revival_effect = FadeOutEffectAnimation(
                 self.user,
@@ -672,24 +671,8 @@ class RevivalMage(Card):
             game_world.add_object(revival_effect, 8)
 
             for_global.mage_revival_count += 1
-            event_system.trigger('mage_revival_count_changed', 1)
-
-        elif for_global.mage_revival_count == 1:
-            # 카드 사용 효과 애니메이션 출력
-            revival_effect = FadeOutEffectAnimation(
-                self.user,
-                self.user.x, self.user.y,
-                211, 333,
-                105, 165,
-                'resource/revival_effect_1.png',
-                1, 0.75
-            )
-            game_world.add_object(revival_effect, 8)
-
-            for_global.mage_revival_count += 1
-            event_system.trigger('mage_revival_count_changed', 2)
-
-        elif for_global.mage_revival_count == 2:
+            event_system.trigger('mage_revival_count_changed', for_global.mage_revival_count)
+        elif for_global.mage_revival_count == 5:
             # 카드 사용 효과 애니메이션 출력
             revival_animation = PerformRevivalObject(self.user, x, y, self.radius)
             game_world.add_object(revival_animation, 8)
@@ -707,6 +690,12 @@ class RevivalMage(Card):
             self.image = self.image_cur_uses_1
         elif cur_revival_count == 2:
             self.image = self.image_cur_uses_2
+        elif cur_revival_count == 3:
+            self.image = self.image_cur_uses_3
+        elif cur_revival_count == 4:
+            self.image = self.image_cur_uses_4
+        elif cur_revival_count == 5:
+            self.image = self.image_cur_uses_5
             self.radius = 2000
         else:
             pass
@@ -725,10 +714,14 @@ class RevivalMage3(RevivalMage):
 class RevivalBowman(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("revival_bowman", bowman, 3, "resource/card_revival_bowman_0.png")
+        super().__init__("revival_bowman", bowman, 0, "resource/card_revival_bowman_0.png")
         self.original_image = self.image
         self.image_cur_uses_1 = load_image('resource/card_revival_bowman_1.png')
         self.image_cur_uses_2 = load_image('resource/card_revival_bowman_2.png')
+        self.image_cur_uses_3 = load_image('resource/card_revival_bowman_3.png')
+        self.image_cur_uses_4 = load_image('resource/card_revival_bowman_4.png')
+        self.image_cur_uses_5 = load_image('resource/card_revival_bowman_5.png')
+
 
         self.range = 2000
         self.is_summon_obj = True  # 미리보기가 필요한가
@@ -740,7 +733,7 @@ class RevivalBowman(Card):
         event_system.add_listener('bowman_revival_count_changed', self.update_image)
 
     def use(self, x, y):
-        if for_global.bowman_revival_count == 0:
+        if for_global.bowman_revival_count < 5:
             # 카드 사용 효과 애니메이션 출력
             revival_effect = FadeOutEffectAnimation(
                 self.user,
@@ -753,24 +746,9 @@ class RevivalBowman(Card):
             game_world.add_object(revival_effect, 8)
 
             for_global.bowman_revival_count += 1
-            event_system.trigger('bowman_revival_count_changed', 1)
+            event_system.trigger('bowman_revival_count_changed', for_global.bowman_revival_count)
 
-        elif for_global.bowman_revival_count == 1:
-            # 카드 사용 효과 애니메이션 출력
-            revival_effect = FadeOutEffectAnimation(
-                self.user,
-                self.user.x, self.user.y,
-                211, 333,
-                105, 165,
-                'resource/revival_effect_1.png',
-                1, 0.75
-            )
-            game_world.add_object(revival_effect, 8)
-
-            for_global.bowman_revival_count += 1
-            event_system.trigger('bowman_revival_count_changed', 2)
-
-        elif for_global.bowman_revival_count == 2:
+        elif for_global.bowman_revival_count == 5:
             # 카드 사용 효과 애니메이션 출력
             revival_animation = PerformRevivalObject(self.user, x, y, self.radius)
             game_world.add_object(revival_animation, 8)
@@ -788,6 +766,12 @@ class RevivalBowman(Card):
             self.image = self.image_cur_uses_1
         elif cur_revival_count == 2:
             self.image = self.image_cur_uses_2
+        elif cur_revival_count == 3:
+            self.image = self.image_cur_uses_3
+        elif cur_revival_count == 4:
+            self.image = self.image_cur_uses_4
+        elif cur_revival_count == 5:
+            self.image = self.image_cur_uses_5
             self.radius = 2000
         else:
             pass
