@@ -2,6 +2,8 @@
 from sdl2 import SDL_MOUSEBUTTONDOWN, SDL_MOUSEMOTION, SDL_BUTTON_LEFT, SDL_MOUSEBUTTONUP
 
 import for_global
+import game_world
+from ui import CardUseFailedUI
 
 
 def start_event(event):
@@ -89,6 +91,9 @@ def mouse_left_release_out_card_space(event):
               not for_global.CARD_SPACE_Y1 < for_global.mouse_y < for_global.CARD_SPACE_Y2))
 
 def cannot_use_card(event):
+    if event[0] == 'CANNOT_USE_CARD':
+        reason_ui = CardUseFailedUI(event[1])
+        game_world.add_object(reason_ui, 9)
     return event[0] == 'CANNOT_USE_CARD'
 
 def card_used(event):

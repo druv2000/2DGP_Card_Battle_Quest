@@ -3,9 +3,9 @@ import math
 import random
 
 import for_global
-from card import Highlight, Idle, InDeck
+from card import Highlight, Idle, InDeck, Clicked
 from card_list import *
-from deck import Deck, Hand
+from deck import Deck, Hand, Temp
 from event_system import event_system
 
 
@@ -13,6 +13,7 @@ class CardManager:
     def __init__(self):
         self.deck = Deck()
         self.hand = Hand()
+        self.temp = Temp()
         self.font_size = 32
         event_system.add_listener('character_state_change', self.manage_dead)
 
@@ -137,6 +138,8 @@ class CardManager:
             card.update()
         for card in self.deck.cards:
             card.update()
+        for card in self.temp.cards:
+            card.update()
 
     def draw(self):
         for i, card in enumerate(self.hand.cards):
@@ -155,6 +158,9 @@ class CardManager:
         self.font.draw(1225, 150, 'next card', (255, 255, 255))
 
     def manage_dead(self, c, cur_state):
+        for card in self.hand.cards:
+            if card.user == c and card.state_machine.cur_state == Clicked:
+                card.state_machine.add_event(('CANNOT_USE_CARD', 'CHARACTER_DIE'))
         if cur_state == 'dead':
             self.transform_cards(c, to_revival=True)
         elif cur_state == 'alive':
@@ -164,6 +170,7 @@ class CardManager:
         for i, card in enumerate(self.hand.cards):
             if card.user == character:
                 if to_revival and type(card) in self.card_to_revival_map:
+                    self.temp.add_card(self.hand.cards[i])
                     self.hand.cards[i] = self.replace_card(card, self.card_to_revival_map[type(card)])
                     self.hand.cards[i].state_machine.cur_state = Idle
                     self.hand.cards[i].draw_size_x = self.hand.cards[i].original_size_x
@@ -177,6 +184,7 @@ class CardManager:
         for i, card in enumerate(self.deck.cards):
             if card.user == character:
                 if to_revival and type(card) in self.card_to_revival_map:
+                    self.temp.add_card(self.deck.cards[i])
                     self.deck.cards[i] = self.replace_card(card, self.card_to_revival_map[type(card)])
                     self.deck.cards[i].state_machine.cur_state = InDeck
                     self.deck.cards[i].draw_size_x = self.deck.cards[i].original_size_x * 3 / 4

@@ -210,16 +210,16 @@ class Clicked:
 class Used:
     @staticmethod
     def enter(c, e):
+        # 코스트가 현재 마나보다 높을경우 사용 실패
+        if c.cost > for_global.cur_mana:
+            c.state_machine.add_event(('CANNOT_USE_CARD', 'NOT_ENOUGH_MANA'))
+            return
+
         # 대상 지정 카드의 경우 타겟이 없으면 사용실패 - 패로 돌아감
         if hasattr(c, 'target'):
             if c.target == None:
-                c.state_machine.add_event(('CANNOT_USE_CARD', 0))
+                c.state_machine.add_event(('CANNOT_USE_CARD', 'CANNOT_FIND_TARGET'))
                 return
-
-        # 코스트가 현재 마나보다 높을경우 사용 실패
-        if c.cost > for_global.cur_mana:
-            c.state_machine.add_event(('CANNOT_USE_CARD', 0))
-            return
 
         from card_manager import card_manager
         card_manager.use_card(c)

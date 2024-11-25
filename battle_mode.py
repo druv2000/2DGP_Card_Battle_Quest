@@ -42,7 +42,7 @@ def init():
     # boss = Soldier_boss(1500, 550, 'enemy')
     # game_world.add_object(boss, 3)
 
-    mana_ui = ManaUI(250, 100)
+    mana_ui = ManaUI()
     game_world.add_object(mana_ui, 9)
 
     card_manager.font = load_font('resource/font/fixedsys.ttf', 32)

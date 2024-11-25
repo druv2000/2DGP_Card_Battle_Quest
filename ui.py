@@ -4,7 +4,9 @@ from pico2d import load_font, load_image, get_time
 
 import game_framework
 import for_global
-from for_global import cur_mana, MAX_MANA
+import game_world
+from for_global import cur_mana, MAX_MANA, SYSTEM_MESSAGE_UI_POS_X, SYSTEM_MESSAGE_UI_POS_Y, MANA_UI_POS_X, \
+    MANA_UI_POS_Y
 
 
 class MainCharacterHpbarui:
@@ -111,9 +113,9 @@ class BossHpbarui:
             self.font.draw(self.x - 60, self.y, f'{self.c.current_hp} / {self.c.max_hp}', (255, 255, 255))
 
 class ManaUI:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self):
+        self.x = MANA_UI_POS_X
+        self.y = MANA_UI_POS_Y
         self.letter_position = (self.x, self.y - 5)
         self.draw_size = (104, 100)
         self.decrement = 1000 * game_framework.frame_time
@@ -211,6 +213,41 @@ class TotalDamageUI:
         self.font.draw(self.x, self.y - 40, f'knight: {self.p1.total_damage}', (0, 0, 255))
         self.font.draw(self.x, self.y - 70, f'mage  : {self.p2.total_damage}', (255, 0, 255))
         self.font.draw(self.x, self.y - 100, f'bowman: {self.p3.total_damage}', (0, 255, 0))
+
+class CardUseFailedUI:
+    def __init__(self, event):
+        self.x = SYSTEM_MESSAGE_UI_POS_X
+        self.y = SYSTEM_MESSAGE_UI_POS_Y
+        self.image = load_image('resource/message_default.png')
+        self.image_size_x = 3116
+        self.image_size_y = 178
+        if event == 'NOT_ENOUGH_MANA':
+            self.image = load_image('resource/message_not_enough_mana.png')
+        elif event == 'CANNOT_FIND_TARGET':
+            self.image = load_image('resource/message_cannot_find_target.png')
+        self.image.opacify(0.0)
+
+        self.start_time = get_time()
+        self.duration = 0.5
+        self.opacify = 1.0
+        self.opacify_progress = 0.0
+        self.y_progress = 0.0
+        self.can_target = False
+
+    def update(self):
+        time_since_start = get_time() - self.start_time
+        if time_since_start >= self.duration:
+            game_world.remove_object(self)
+            return
+
+        self.opacify_progress = time_since_start / self.duration
+        self.image.opacify(self.opacify_progress)
+        self.y = SYSTEM_MESSAGE_UI_POS_Y + 30 * time_since_start / self.duration
+        pass
+
+    def draw(self):
+        self.image.draw(self.x, self.y, self.image_size_x / 2, self.image_size_y / 2)
+        pass
 
 class AreaCircleUI:
     def __init__(self, x, y, r):
