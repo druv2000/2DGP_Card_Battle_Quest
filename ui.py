@@ -228,7 +228,7 @@ class CardUseFailedUI:
         self.image.opacify(0.0)
 
         self.start_time = get_time()
-        self.duration = 0.5
+        self.duration = 1.0
         self.opacify = 1.0
         self.opacify_progress = 0.0
         self.y_progress = 0.0
@@ -353,7 +353,6 @@ class ProgressBar:
       self.c = character
       self.size_x = 224
       self.size_y = 40
-
       self.image = load_image('resource/cast_progress_bar.png')
       self.frame = 0
       self.total_frame = 39

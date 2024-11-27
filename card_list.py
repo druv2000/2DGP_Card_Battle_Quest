@@ -3,7 +3,6 @@ import time
 
 from pico2d import get_time, load_image
 
-import game_framework
 import game_world
 import for_global
 from animation import CardEffectAnimation, CardAreaEffectAnimation, CardBeamAreaEffectAnimation, \

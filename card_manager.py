@@ -2,6 +2,8 @@
 import math
 import random
 
+from pico2d import load_font
+
 import for_global
 from card import Highlight, Idle, InDeck, Clicked
 from card_list import *
@@ -14,7 +16,6 @@ class CardManager:
         self.deck = Deck()
         self.hand = Hand()
         self.temp = Temp()
-        self.font_size = 32
         event_system.add_listener('character_state_change', self.manage_dead)
 
         self.card_to_revival_map = {

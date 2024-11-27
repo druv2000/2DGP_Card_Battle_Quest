@@ -15,6 +15,7 @@ class Player:
         pass
 
     def handle_event(self, event):
+        # about card
         if event.type == SDL_MOUSEMOTION:
             for_global.mouse_x, for_global.mouse_y = event.x, for_global.SCREEN_HEIGHT - event.y
             self.handle_card_hover(event)
@@ -25,6 +26,7 @@ class Player:
             self.handle_card_release(event)
             pass
 
+        # about ally/enemy
         elif event.type == SDL_KEYDOWN and event.key == SDLK_a:
             self.spawn_enemy_soldier(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_s:

@@ -4,6 +4,7 @@ import random
 from pico2d import *
 
 from card_manager import card_manager
+from enemy_wave_manager import EnemyWaveManager
 from event_system import event_system
 import game_framework
 import game_world
@@ -31,7 +32,7 @@ def init():
     background2 = Background2(800, 150)
     game_world.add_object(background2, 8)
 
-    # test: real
+    # 메인 캐릭터 생성
     knight = Knight(200, 550, 'ally')
     mage = Mage(100, 650, 'ally')
     bowman = Bowman(100, 450, 'ally')
@@ -42,15 +43,18 @@ def init():
     game_world.add_object(bowman, 4)
     game_world.add_object(total_damage_ui, 9)
 
-    # boss = Soldier_boss(1500, 550, 'enemy')
-    # game_world.add_object(boss, 3)
-
+    # 마나 ui
     mana_ui = ManaUI()
     game_world.add_object(mana_ui, 9)
 
+    # 카드 매니저
     card_manager.font = load_font('resource/font/fixedsys.ttf', 32)
     card_manager.register_characters(knight, mage, bowman)
     card_manager.init_deck()
+
+    # 웨이브 매니저
+    enemy_wave_manager = EnemyWaveManager()
+    game_world.add_object(enemy_wave_manager, 0)
 
 #####################################################################
 

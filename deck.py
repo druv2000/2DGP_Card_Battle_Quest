@@ -27,7 +27,7 @@ class Hand:
         self.cards.remove(card)
 
 # 사망/부활 처리 시 대체되는 카드의 state_machine.exit()실행을 보장하기 위한 임시 공간.
-# 없으면 만약 캐릭터 사망 시에 해당 캐릭터 카드가 clicked상태라면, ui가 사라지지 않고 게임월드에 남음
+# 여기로 옮기지 않으면 만약 캐릭터 사망 시에 해당 캐릭터 카드가 clicked 상태일 때, ui가 사라지지 않고 게임 월드에 남음
 class Temp:
     def __init__(self):
         self.cards = []

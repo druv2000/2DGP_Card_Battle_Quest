@@ -1,0 +1,190 @@
+# enemy_wave_manager.py
+from collections import deque
+
+from pico2d import get_time, load_image
+
+import game_framework
+import game_world
+from for_global import MAX_WAVE, WAVE_INTERVAL, FRAME_PER_CHARACTER_ANIMATION, CHARACTER_ANIMATION_PER_TIME, \
+    SCREEN_WIDTH
+from character_list import Soldier, Soldier_mage, Soldier_elite, Soldier_boss
+
+
+class EnemyWaveManager:
+    def __init__(self):
+        self.portal_image = load_image('resource/portal.png')
+        self.interval = WAVE_INTERVAL
+
+        self.start_time = get_time()
+        self.last_wave_time = get_time() - self.interval + 1
+        self.cur_wave = 1
+        self.max_wave = MAX_WAVE
+        self.spawn_queue = deque()
+
+        self.spawn_point_left = (20, 550)
+        self.spawn_point_right = (1580, 550)
+        self.spawn_point_top = (800, 880)
+        self.spawn_point_bottom = (800, 320)
+        self.can_target = False
+        self.active_portals = {}  # 현재 활성화된 포털을 추적하기 위한 딕셔너리
+
+        self.waves = {
+            1: [
+                {
+                    'enemy_type': Soldier,
+                    'count': 5,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 0
+                },
+            ],
+
+            2: [
+                {
+                    'enemy_type': Soldier,
+                    'count': 5,
+                    'spawn_point': 'left',
+                    'duration': 2,
+                    'delay': 0
+                },
+            ],
+
+            3: [
+                {
+                    'enemy_type': Soldier,
+                    'count': 3,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 0
+                },
+                {
+                    'enemy_type': Soldier_mage,
+                    'count': 2,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 2  # 이전 그룹의 2초 duration
+                },
+                {
+                    'enemy_type': Soldier,
+                    'count': 3,
+                    'spawn_point': 'left',
+                    'duration': 2,
+                    'delay': 4
+                },
+            ],
+        }
+
+    def update(self):
+        current_time = get_time()
+
+        # 웨이브 시작 조건 확인
+        if current_time - self.last_wave_time >= self.interval and self.cur_wave <= self.max_wave:
+            self.wave(self.cur_wave)
+            self.cur_wave += 1
+
+        # 기존의 spawn_queue 처리 로직
+        while self.spawn_queue and self.spawn_queue[0][2] <= current_time:
+            enemy_type, position, _ = self.spawn_queue.popleft()
+            self.spawn_enemy(enemy_type, position)
+
+        # 포털 업데이트 및 제거
+        for position, portal in list(self.active_portals.items()):
+            if portal.opacify <= 0.0:
+                del self.active_portals[position]
+
+    def draw(self):
+        pass
+
+    def wave(self, cur_wave):
+        if cur_wave in self.waves:
+            start_time = get_time()
+            wave_end_time = start_time
+            spawn_points_used = set()
+
+            for group in self.waves[cur_wave]:
+                group_end_time = self.spawn_group(group, start_time)
+                wave_end_time = max(wave_end_time, group_end_time)
+                spawn_points_used.add(group['spawn_point'])
+
+            # 사용된 모든 스폰 포인트에 대해 포털 생성
+            for spawn_point in spawn_points_used:
+                portal_position = getattr(self, f'spawn_point_{spawn_point}')
+                portal_duration = wave_end_time - start_time
+                self.add_portal(portal_position, portal_duration)
+
+        self.last_wave_time = get_time()
+
+    def schedule_spawn(self, enemy_type, position, spawn_time):
+        self.spawn_queue.append((enemy_type, position, spawn_time))
+
+    def spawn_group(self, group, start_time):
+        enemy_type = group['enemy_type']
+        count = group['count']
+        spawn_point = getattr(self, f'spawn_point_{group["spawn_point"]}')
+        duration = group['duration']
+        delay = group['delay']
+
+        spawn_interval = duration / count if count > 0 else 0
+
+        for i in range(count):
+            spawn_time = start_time + delay + (i * spawn_interval)
+            self.schedule_spawn(enemy_type, spawn_point, spawn_time)
+
+        return start_time + delay + duration  # 그룹의 마지막 적 생성 시간 반환
+
+    def add_portal(self, position, duration):
+        new_portal = Portal(*position, duration)
+        game_world.add_object(new_portal, 3)
+        self.active_portals[position] = new_portal
+
+    def spawn_enemy(self, enemy_type, position):
+        new_enemy = enemy_type(*position, 'enemy')
+        game_world.add_object(new_enemy, 4)
+        pass
+
+
+
+class Portal:
+    def __init__(self, x, y, duration):
+        self.image = load_image('resource/portal.png')
+        self.opacify = 1.0
+        self.x, self.y = x, y
+        self.size_x, self.size_y = 360, 360
+        self.duration = duration
+        self.start_time = get_time()
+        self.frame = 0
+        self.total_frame = 10
+        self.can_target = 0
+
+    def update(self):
+        if get_time() - self.start_time >= self.duration:
+            self.opacify -=0.01
+            self.image.opacify(self.opacify)
+            if self.opacify <= 0.0:
+                game_world.remove_object(self)
+
+        self.frame = ((self.frame + FRAME_PER_CHARACTER_ANIMATION *
+                      CHARACTER_ANIMATION_PER_TIME *
+                      game_framework.frame_time) %
+                      self.total_frame
+                      )
+
+    def draw(self):
+        if self.x <= SCREEN_WIDTH / 2:
+            self.image.clip_composite_draw(
+                int(self.frame) * self.size_x, 0,
+                self.size_x, self.size_y,
+                0, 'h',
+                self.x, self.y,
+                200, 200
+            )
+        else:
+            self.image.clip_composite_draw(
+                int(self.frame) * self.size_x, 0,
+                self.size_x, self.size_y,
+                0, '',
+                self.x, self.y,
+                200, 200
+            )
+
+        pass
