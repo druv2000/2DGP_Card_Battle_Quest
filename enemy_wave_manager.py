@@ -1,22 +1,26 @@
 # enemy_wave_manager.py
 from collections import deque
 
-from pico2d import get_time, load_image
+from pico2d import get_time, load_image, load_font
 
 import game_framework
 import game_world
 from for_global import MAX_WAVE, WAVE_INTERVAL, FRAME_PER_CHARACTER_ANIMATION, CHARACTER_ANIMATION_PER_TIME, \
-    SCREEN_WIDTH
+    SCREEN_WIDTH, WAVE_TIMER_X, WAVE_TIMER_Y
 from character_list import Soldier, Soldier_mage, Soldier_elite, Soldier_boss
 
 
 class EnemyWaveManager:
     def __init__(self):
+        self.x = WAVE_TIMER_X
+        self.y = WAVE_TIMER_Y
+        self.font = load_font('resource/font/fixedsys.ttf', 50)
+
         self.portal_image = load_image('resource/portal.png')
         self.interval = WAVE_INTERVAL
 
         self.start_time = get_time()
-        self.last_wave_time = get_time() - self.interval + 1
+        self.last_wave_time = get_time() - self.interval - 4
         self.cur_wave = 1
         self.max_wave = MAX_WAVE
         self.spawn_queue = deque()
@@ -72,13 +76,80 @@ class EnemyWaveManager:
                     'delay': 4
                 },
             ],
+
+            4: [
+                {
+                    'enemy_type': Soldier,
+                    'count': 5,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 0
+                },
+                {
+                    'enemy_type': Soldier_mage,
+                    'count': 5,
+                    'spawn_point': 'left',
+                    'duration': 2,
+                    'delay': 3
+                },
+            ],
+
+            5: [
+                {
+                    'enemy_type': Soldier_elite,
+                    'count': 2,
+                    'spawn_point': 'right',
+                    'duration': 1,
+                    'delay': 0
+                },
+                {
+                    'enemy_type': Soldier,
+                    'count': 5,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 0.5
+                },
+                {
+                    'enemy_type': Soldier_mage,
+                    'count': 3,
+                    'spawn_point': 'right',
+                    'duration': 1.5,
+                    'delay': 3
+                },
+            ],
+
+            6: [
+                {
+                    'enemy_type': Soldier,
+                    'count': 7,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 0
+                },
+                {
+                    'enemy_type': Soldier_elite,
+                    'count': 1,
+                    'spawn_point': 'right',
+                    'duration': 1,
+                    'delay': 2.5
+                },
+                {
+                    'enemy_type': Soldier_mage,
+                    'count': 3,
+                    'spawn_point': 'right',
+                    'duration': 1.5,
+                    'delay': 3.5
+                },
+            ],
         }
 
     def update(self):
         current_time = get_time()
 
         # 웨이브 시작 조건 확인
-        if current_time - self.last_wave_time >= self.interval and self.cur_wave <= self.max_wave:
+        self.current_interval = 20 if self.cur_wave % 5 == 0 else self.interval
+        self.current_interval = 15 if (self.cur_wave - 1) % 5 == 0 else self.current_interval
+        if current_time - self.last_wave_time >= self.current_interval and self.cur_wave <= self.max_wave:
             self.wave(self.cur_wave)
             self.cur_wave += 1
 
@@ -93,6 +164,11 @@ class EnemyWaveManager:
                 del self.active_portals[position]
 
     def draw(self):
+        self.font.draw(
+            self.x, self.y,
+            f'{self.current_interval - (get_time() - self.last_wave_time):.1f}',
+            (255, 255, 255)
+        )
         pass
 
     def wave(self, cur_wave):
@@ -127,8 +203,20 @@ class EnemyWaveManager:
         spawn_interval = duration / count if count > 0 else 0
 
         for i in range(count):
+            x, y = spawn_point
+            if group["spawn_point"] in ['right', 'left']:
+                spawn_x = x
+                spawn_y = y + 100 - (200 * i / count)
+                pass
+            elif group["spawn_point"] in ['top', 'bottom']:
+                spawn_x = x + 100 - (200 * i / count)
+                spawn_y = y
+                pass
+            else:
+                spawn_x = x
+                spawn_y = y
             spawn_time = start_time + delay + (i * spawn_interval)
-            self.schedule_spawn(enemy_type, spawn_point, spawn_time)
+            self.schedule_spawn(enemy_type, (spawn_x, spawn_y), spawn_time)
 
         return start_time + delay + duration  # 그룹의 마지막 적 생성 시간 반환
 

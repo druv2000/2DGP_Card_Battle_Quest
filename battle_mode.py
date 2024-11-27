@@ -54,7 +54,7 @@ def init():
 
     # 웨이브 매니저
     enemy_wave_manager = EnemyWaveManager()
-    game_world.add_object(enemy_wave_manager, 0)
+    game_world.add_object(enemy_wave_manager, 9)
 
 #####################################################################
 
