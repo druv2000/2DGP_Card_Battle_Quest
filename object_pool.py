@@ -187,7 +187,8 @@ def init_object_pool():
 
 
 def get_character_bullet(c):
-    from character_list import Mage, Bowman, Soldier_mage
+    from character_list import Mage, Bowman
+    from enemy_soldier_mage import Soldier_mage
 
     global mage_bullet_pool, bowman_bullet_pool, soldier_mage_bullet_pool
     if isinstance(c, Mage):

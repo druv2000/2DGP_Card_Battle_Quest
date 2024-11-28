@@ -5,9 +5,13 @@ from pico2d import get_time, load_image, load_font
 
 import game_framework
 import game_world
+from enemy_soldier_cannon import Soldier_cannon
 from for_global import MAX_WAVE, WAVE_INTERVAL, FRAME_PER_CHARACTER_ANIMATION, CHARACTER_ANIMATION_PER_TIME, \
-    SCREEN_WIDTH, WAVE_TIMER_X, WAVE_TIMER_Y
-from character_list import Soldier, Soldier_mage, Soldier_elite, Soldier_boss
+    SCREEN_WIDTH, WAVE_TIMER_X, WAVE_TIMER_Y, HUGE_TIME
+from enemy_soldier_boss import Soldier_boss
+from enemy_soldier_elite import Soldier_elite
+from enemy_soldier_mage import Soldier_mage
+from enemy_soldier import Soldier
 
 
 class EnemyWaveManager:
@@ -20,7 +24,7 @@ class EnemyWaveManager:
         self.interval = WAVE_INTERVAL
 
         self.start_time = get_time()
-        self.last_wave_time = get_time() - self.interval - 4
+        self.last_wave_time = get_time() - self.interval - HUGE_TIME
         self.cur_wave = 1
         self.max_wave = MAX_WAVE
         self.spawn_queue = deque()
@@ -42,7 +46,6 @@ class EnemyWaveManager:
                     'delay': 0
                 },
             ],
-
             2: [
                 {
                     'enemy_type': Soldier,
@@ -52,11 +55,10 @@ class EnemyWaveManager:
                     'delay': 0
                 },
             ],
-
             3: [
                 {
                     'enemy_type': Soldier,
-                    'count': 3,
+                    'count': 4,
                     'spawn_point': 'right',
                     'duration': 2,
                     'delay': 0
@@ -76,7 +78,6 @@ class EnemyWaveManager:
                     'delay': 4
                 },
             ],
-
             4: [
                 {
                     'enemy_type': Soldier,
@@ -93,7 +94,6 @@ class EnemyWaveManager:
                     'delay': 3
                 },
             ],
-
             5: [
                 {
                     'enemy_type': Soldier_elite,
@@ -117,11 +117,10 @@ class EnemyWaveManager:
                     'delay': 3
                 },
             ],
-
             6: [
                 {
                     'enemy_type': Soldier,
-                    'count': 7,
+                    'count': 5,
                     'spawn_point': 'right',
                     'duration': 2,
                     'delay': 0
@@ -141,14 +140,93 @@ class EnemyWaveManager:
                     'delay': 3.5
                 },
             ],
+            7: [
+                {
+                    'enemy_type': Soldier,
+                    'count': 3,
+                    'spawn_point': 'top',
+                    'duration': 2,
+                    'delay': 0
+                },
+                {
+                    'enemy_type': Soldier,
+                    'count': 3,
+                    'spawn_point': 'bottom',
+                    'duration': 2,
+                    'delay': 2.5
+                },
+            ],
+            8: [
+                {
+                    'enemy_type': Soldier,
+                    'count': 6,
+                    'spawn_point': 'left',
+                    'duration': 2,
+                    'delay': 0
+                },
+                {
+                    'enemy_type': Soldier_elite,
+                    'count': 1,
+                    'spawn_point': 'left',
+                    'duration': 1,
+                    'delay': 1.0
+                },
+            ],
+            9: [
+                {
+                    'enemy_type': Soldier,
+                    'count': 4,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 0
+                },
+                {
+                    'enemy_type': Soldier_mage,
+                    'count': 2,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 2.5
+                },
+            ],
+            10: [
+                {
+                    'enemy_type': Soldier_elite,
+                    'count': 3,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 0
+                },
+                {
+                    'enemy_type': Soldier_mage,
+                    'count': 5,
+                    'spawn_point': 'right',
+                    'duration': 2,
+                    'delay': 2.5
+                },
+                {
+                    'enemy_type': Soldier,
+                    'count': 5,
+                    'spawn_point': 'left',
+                    'duration': 2,
+                    'delay': 5.0
+                },
+                {
+                    'enemy_type': Soldier_cannon,
+                    'count': 1,
+                    'spawn_point': 'left',
+                    'duration': 1,
+                    'delay': 7.5
+                },
+            ],
+
         }
 
     def update(self):
         current_time = get_time()
 
         # 웨이브 시작 조건 확인
-        self.current_interval = 20 if self.cur_wave % 5 == 0 else self.interval
-        self.current_interval = 15 if (self.cur_wave - 1) % 5 == 0 else self.current_interval
+        self.current_interval = 20 if self.cur_wave % 5 == 0 else self.interval # 빅 웨이브 (매 5웨이브)는 20초의 대기시간
+        self.current_interval = 15 if (self.cur_wave - 1) % 5 == 0 else self.current_interval # 빅 웨이브 직후 웨이브는 15초의 대기시간
         if current_time - self.last_wave_time >= self.current_interval and self.cur_wave <= self.max_wave:
             self.wave(self.cur_wave)
             self.cur_wave += 1
@@ -228,6 +306,7 @@ class EnemyWaveManager:
     def spawn_enemy(self, enemy_type, position):
         new_enemy = enemy_type(*position, 'enemy')
         game_world.add_object(new_enemy, 4)
+        game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
         pass
 
 
@@ -258,7 +337,7 @@ class Portal:
                       )
 
     def draw(self):
-        if self.x <= SCREEN_WIDTH / 2:
+        if self.x < SCREEN_WIDTH / 2:
             self.image.clip_composite_draw(
                 int(self.frame) * self.size_x, 0,
                 self.size_x, self.size_y,

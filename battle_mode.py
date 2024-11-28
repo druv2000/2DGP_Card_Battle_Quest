@@ -10,7 +10,11 @@ import game_framework
 import game_world
 import object_pool
 from background import Background1, Background2
-from character_list import Knight, Bowman, Mage, Soldier, Soldier_mage, Soldier_elite, Soldier_boss, Golem
+from character_list import Knight, Bowman, Mage, Golem
+from enemy_soldier_boss import Soldier_boss
+from enemy_soldier_elite import Soldier_elite
+from enemy_soldier_mage import Soldier_mage
+from enemy_soldier import Soldier
 from player import player
 from ui import TotalDamageUI, ManaUI
 
@@ -42,6 +46,11 @@ def init():
     game_world.add_object(mage, 4)
     game_world.add_object(bowman, 4)
     game_world.add_object(total_damage_ui, 9)
+
+    game_world.add_collision_pair('cannon_ball:ally', None, knight)
+    game_world.add_collision_pair('cannon_ball:ally', None, mage)
+    game_world.add_collision_pair('cannon_ball:ally', None, bowman)
+
 
     # 마나 ui
     mana_ui = ManaUI()

@@ -7,7 +7,11 @@ import game_world
 import for_global
 from card import Clicked
 from card_manager import card_manager
-from character_list import Mage, Knight, Bowman, Soldier, Soldier_mage, Soldier_elite, Soldier_boss
+from character_list import Mage, Knight, Bowman
+from enemy_soldier_boss import Soldier_boss
+from enemy_soldier_elite import Soldier_elite
+from enemy_soldier_mage import Soldier_mage
+from enemy_soldier import Soldier
 
 
 class Player:

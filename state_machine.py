@@ -30,6 +30,9 @@ def stunned(event):
 def stunned_end(event):
     return event[0] == 'STUNNED_END'
 
+def cannon_stunned_end(event):
+    return event[0] == 'CANNON_STUNNED_END'
+
 def dead(event):
     return event[0] == 'DEAD'
 

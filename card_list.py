@@ -22,9 +22,9 @@ from for_global import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 class BodyTackle(Card):
     def __init__(self):
         from battle_mode import knight
-        super().__init__("Rush", knight, 4, "resource/card_body_tackle.png")
+        super().__init__("Rush", knight, 3, "resource/card_body_tackle.png")
         self.range = 600
-        self.damage = self.user.attack_damage + 3
+        self.damage = self.user.attack_damage + 8
         self.radius = KNIGHT_BODY_TACKLE_RADIUS
         self.width = 100
         self.length = self.range
@@ -255,6 +255,7 @@ class SummonGolem(Card):
         golem = Golem(x, y + 120, 'ally')
         golem.summoner = self.user
         game_world.add_object(golem, 3)
+        game_world.add_collision_pair('cannon_ball:ally', None, golem)
 
         for layer in world:
             for obj in layer:
@@ -332,7 +333,7 @@ class VitalitySurge(Card):
 class SnipeShot(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("SnipeShot", bowman, 3, "resource/card_snipe_shot.png")
+        super().__init__("SnipeShot", bowman, 2, "resource/card_snipe_shot.png")
         self.range = 2000
         self.damage = 15
         self.width = 50

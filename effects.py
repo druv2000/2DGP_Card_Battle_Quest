@@ -138,7 +138,10 @@ class StunEffect(Effect):
         pass
 
     def remove(self, c):
-        c.state_machine.add_event(('STUNNED_END', 0))
+        if hasattr(c, 'is_cannon'): # soldier_cannon 이라면
+            c.state_machine.add_event(('CANNON_STUNNED_END', 0))
+        else:
+            c.state_machine.add_event(('STUNNED_END', 0))
         pass
 
     def update(self, c):

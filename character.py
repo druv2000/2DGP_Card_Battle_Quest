@@ -7,12 +7,14 @@ from pico2d import get_time, draw_rectangle
 
 import game_world
 import object_pool
+from bullet import Soldier_Cannon_AttackBullet
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
-    update_walk_animation, is_attack_timing, update_cast_animation, perform_body_tackle, perform_rolling
-from effects import HitEffect, InvincibleEffect
+    update_walk_animation, is_attack_timing, update_cast_animation, perform_body_tackle, perform_rolling, \
+    find_farthest_target, update_cannon_shoot_animation
+from effects import HitEffect, InvincibleEffect, TauntEffect
 from event_system import event_system
 from game_world import change_object_layer
-from for_global import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED
+from for_global import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED, HUGE_TIME
 from object_pool import *
 from state_machine import *
 from ui import ProgressBar
@@ -305,6 +307,99 @@ class Summoned:
     def draw(c):
         character_draw(c)
 
+class CannonShoot:
+    @staticmethod
+    def enter(c, e):
+        c.last_shoot_time = get_time()
+        c.cast_duration = 1.0 / c.attack_speed
+        c.width = 50
+        c.cast_progress_bar = ProgressBar(c, c.cast_duration)
+        game_world.add_object(c.cast_progress_bar, 9)
+
+        c.target = find_farthest_target(c)
+        c.target_x = c.target.x
+        c.target_y = c.target.y
+        c.sprite_dir = -1 if c.x > c.target_x else 1
+
+        c.expected_card_area = CardBeamAreaEffectAnimation(
+            c.x, c.y - 20,
+            c.target_x, c.target_y, c.width,
+            0.2, HUGE_TIME
+        )
+        game_world.add_object(c.expected_card_area, 1)
+
+        c.frame = 0
+
+    @staticmethod
+    def exit(c, e):
+        game_world.remove_object(c.cast_progress_bar)
+        c.rotation = c.original_rotation
+        c.cast_animation_progress = 0
+
+        game_world.remove_object(c.cast_progress_bar)
+        game_world.remove_object(c.expected_card_area)
+
+    @staticmethod
+    def do(c):
+        current_time = get_time()
+
+        if c.target:
+            if not c.target.is_active:
+                c.target = find_farthest_target(c)
+                if c.target:
+                    c.target_x, c.target_y = c.target.x, c.target.y
+
+                    # 초기화
+                    game_world.remove_object(c.cast_progress_bar)
+                    c.cast_animation_progress = 0
+                    c.last_shoot_time = current_time
+                    c.cast_progress_bar = ProgressBar(c, c.cast_duration)
+                    game_world.add_object(c.cast_progress_bar, 9)
+
+                    game_world.remove_object(c.expected_card_area)
+                    c.expected_card_area = CardBeamAreaEffectAnimation(
+                        c.x, c.y - 20,
+                        c.target_x, c.target_y, c.width,
+                        0.2, HUGE_TIME
+                    )
+                    game_world.add_object(c.expected_card_area, 1)
+
+            if current_time - c.last_shoot_time >= c.cast_duration:
+                # 발사
+                cannon_bullet = Soldier_Cannon_AttackBullet()
+                cannon_bullet.set(c, c.original_x, c.original_y - 20, c.target_x, c.target_y)
+                game_world.add_object(cannon_bullet, 7)
+
+                # 초기화
+                c.cast_animation_progress = 0
+                c.last_shoot_time = current_time
+                c.attack_cool_time = current_time  # 공격 쿨타임 갱신
+                game_world.remove_object(c.cast_progress_bar)
+                c.cast_progress_bar = ProgressBar(c, c.cast_duration)
+                game_world.add_object(c.cast_progress_bar, 9)
+
+                c.target_x = c.target.x
+                c.target_y = c.target.y
+
+                game_world.remove_object(c.expected_card_area)
+                c.expected_card_area = CardBeamAreaEffectAnimation(
+                    c.x, c.y - 20,
+                    c.target_x, c.target_y, c.width,
+                    0.2, HUGE_TIME
+                )
+                game_world.add_object(c.expected_card_area, 1)
+
+
+            # 캐스팅 애니메이션 업데이트
+            update_cannon_shoot_animation(c, c.cast_duration)
+            c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
+
+
+
+    @staticmethod
+    def draw(c):
+        character_draw(c)
+
 ############################################### 카드 효과
 
 class KnightBodyTackle:
@@ -427,6 +522,7 @@ class Character:
             },
             Stunned: {
                 stunned_end: Idle,
+                cannon_stunned_end: CannonShoot,
                 dead: Dead
             },
             Dead: {
@@ -444,6 +540,10 @@ class Character:
             },
             BowmanRolling: {
                 bowman_rolling_end: Idle
+            },
+            CannonShoot:{
+                dead: Dead,
+                stunned: Stunned,
             }
         })
 

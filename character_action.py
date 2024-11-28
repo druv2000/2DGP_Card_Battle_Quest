@@ -27,8 +27,21 @@ def find_closest_target(c):
                     min_distance = distance
                     closest_enemy = enemy
 
-
     return closest_enemy
+
+def find_farthest_target(c):
+    farthest_enemy = None
+    max_distance = -1
+
+    for layer in world:
+        for enemy in layer:
+            if enemy.can_target and enemy.team != c.team:
+                distance = math.sqrt((enemy.x - c.x) ** 2 + (enemy.y - c.y) ** 2)
+                if distance > max_distance:
+                    max_distance = distance
+                    farthest_enemy = enemy
+
+    return farthest_enemy
 
 def set_new_coord(c):
     # head, hand 등 위치를 현재 캐릭터 위치로 동기화하는 함수
@@ -119,7 +132,7 @@ class BowmanAdditionalAttackObject:
 
 
 def attack_target(c):
-    from character_list import Soldier_elite
+    from enemy_soldier_elite import Soldier_elite
 
     # elite_soldier 일반공격에 stun 적용
     if isinstance(c, Soldier_elite):
@@ -215,7 +228,7 @@ def perform_body_tackle(c):
                             obj.add_effect(forced_movement_effect)
 
                         # 데미지 적용
-                        damage = c.attack_damage - 2
+                        damage = c.attack_damage + 8
                         c.total_damage += damage
                         obj.take_damage(damage)
 
@@ -324,6 +337,30 @@ def update_cast_animation(c, cast_duration):
         # 앞으로 지르는 동안 x 위치 조정
         c.x = c.original_x - rush_distance * 0.8 + rush_distance * forward_progress
         pass
+
+    # 진행률 업데이트
+    c.cast_animation_progress += progress_increment
+
+    # 완료 후 리셋
+    if c.cast_animation_progress >= 1:
+        c.rotation = c.original_rotation
+        c.x = c.original_x  # x 위치를 원래 위치로 복원
+        c.cast_animation_progress = 0
+        c.is_cast_performed = True
+
+def update_cannon_shoot_animation(c, cast_duration):
+    total_animation_time = cast_duration
+    progress_increment = game_framework.frame_time / total_animation_time
+    max_backward_rotation = -30 if c.sprite_dir == 1 else 30
+    max_forward_rotation = 60 if c.sprite_dir == 1 else -60
+    rush_distance = 20 if c.sprite_dir == 1 else -20
+
+    # cast_animation 업데이트
+    if c.cast_animation_progress < 0.8:
+        # (0 ~ 80)천천히 뒤로 눕기
+        target_rotation = max_backward_rotation * (c.cast_animation_progress / 0.8)
+        c.rotation = target_rotation
+        c.x = c.original_x - rush_distance * c.cast_animation_progress
 
     # Calculate animation progress
     c.cast_animation_progress += progress_increment
