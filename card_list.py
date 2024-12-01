@@ -50,7 +50,6 @@ class WarCry(Card):
         from battle_mode import knight
         super().__init__("WarCry", knight, 2, "resource/card_war_cry.png")
         self.range = 0
-        self.damage = 0
         self.radius = 410
         self.casting_time = 0.1
         self.expected_card_area = None
@@ -128,11 +127,12 @@ class Respite(Card):
     def __init__(self):
         from battle_mode import knight
         super().__init__("Respite", knight, 2, "resource/card_respite.png")
-        self.range = 0
+        self.range = 2000
         self.casting_time = 0.1
         self.target = self.user
         self.armor_amount = 50
         self.continuous_heal_amount = 20
+        self.is_self_target_card = True
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -295,6 +295,7 @@ class VitalitySurge(Card):
         self.casting_time = 0.25
         self.expected_card_area = None
         self.target = None
+        self.is_self_target_card = False
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -368,9 +369,10 @@ class AdditionalArrow(Card):
     def __init__(self):
         from battle_mode import bowman
         super().__init__("AdditionalArrow", bowman, 6, "resource/card_additional_arrow.png")
-        self.range = 0
+        self.range = 2000
         self.casting_time = 0.25
         self.target = self.user
+        self.is_self_target_card = True
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -381,19 +383,19 @@ class AdditionalArrow(Card):
         self.target.is_highlight = False
 
         # 사용된 횟수별로 이펙트를 다르게 설정
-        if self.user.additional_attack == 0:
+        if self.target.additional_attack == 0:
             additional_arrow_effect = FadeOutEffectAnimation(
-                self.user,
-                x, y,
+                self.target,
+                self.target.x, self.target.y,
                 340, 340,
                 200, 200,
                 'resource/additional_arrow_effect_1.png',
                 1, 0.75
             )
-        elif self.user.additional_attack == 1:
+        elif self.target.additional_attack == 1:
             additional_arrow_effect = FadeOutEffectAnimation(
                 self.user,
-                x, y,
+                self.target.x, self.target.y,
                 1181, 1084,
                 330, 300,
                 'resource/additional_arrow_effect_2.png',
@@ -401,8 +403,8 @@ class AdditionalArrow(Card):
             )
         elif self.user.additional_attack == 2:
             additional_arrow_effect = FadeOutEffectAnimation(
-                self.user,
-                x, y,
+                self.target,
+                self.target.x, self.target.y,
                 1181, 1084,
                330,300,
                 'resource/additional_arrow_effect_3.png',
@@ -410,8 +412,8 @@ class AdditionalArrow(Card):
             )
         else:
             additional_arrow_effect = FadeOutEffectAnimation(
-                self.user,
-                x, y,
+                self.target,
+                self.target.x, self.target.y,
                 1182, 1084,
                 330, 300,
                 'resource/additional_arrow_effect_4.png',
@@ -420,8 +422,8 @@ class AdditionalArrow(Card):
         game_world.add_object(additional_arrow_effect, 8)
 
         # 실제 효과 적용. 최대 투사체에 도달 시 공격속도 증가를 적용
-        if self.user.additional_attack < 4:
-            self.user.additional_attack = min(4, self.user.additional_attack + 1)
+        if self.target.additional_attack < 4:
+            self.target.additional_attack = min(4, self.user.additional_attack + 1)
         else:
             bowman_max_power_effect = next((effect for effect in self.target.effects if isinstance(effect, BowmanMaxPowerEffect)), None)
             if bowman_max_power_effect:
@@ -468,6 +470,7 @@ class Rolling(Card):
 class PerformRevivalObject:
     def __init__(self, character, x, y, radius):
         self.c = character
+        self.c.can_use_card = False
         self.x = x
         self.y = y - 50
         self.original_y = self.y
@@ -545,6 +548,7 @@ class PerformRevivalObject:
                 else:
                     game_world.add_object(self.c, 4)
                     game_world.add_object(self.c, 4)
+                self.c.can_use_card = True
 
             # 페이드 아웃
             self.ankh_draw_size = (210, 330)

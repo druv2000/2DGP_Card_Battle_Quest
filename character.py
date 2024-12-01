@@ -10,7 +10,7 @@ import object_pool
 from bullet import Soldier_Cannon_AttackBullet
 from character_action import find_closest_target, move_to_target, attack_target, update_attack_animation, \
     update_walk_animation, is_attack_timing, update_cast_animation, perform_body_tackle, perform_rolling, \
-    find_farthest_target, update_cannon_shoot_animation
+    update_cannon_shoot_animation, find_lowest_max_hp_target
 from effects import HitEffect, InvincibleEffect, TauntEffect
 from event_system import event_system
 from game_world import change_object_layer
@@ -316,7 +316,7 @@ class CannonShoot:
         c.cast_progress_bar = ProgressBar(c, c.cast_duration)
         game_world.add_object(c.cast_progress_bar, 9)
 
-        c.target = find_farthest_target(c)
+        c.target = find_lowest_max_hp_target(c)
         c.target_x = c.target.x
         c.target_y = c.target.y
         c.sprite_dir = -1 if c.x > c.target_x else 1
@@ -345,7 +345,7 @@ class CannonShoot:
 
         if c.target:
             if not c.target.is_active:
-                c.target = find_farthest_target(c)
+                c.target = find_lowest_max_hp_target(c)
                 if c.target:
                     c.target_x, c.target_y = c.target.x, c.target.y
 

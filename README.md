@@ -9,5 +9,3 @@ v.0.2
 
 ## control:
 - mouse_left_click: use card (drag & drop)
-- a, s, d: summon enemy (soldier, mage, elite)
-- space: summon boss(no action yet)

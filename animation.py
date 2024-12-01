@@ -1,12 +1,12 @@
 # animation.py
 import math
 
-from pico2d import load_image
+from pico2d import load_image, get_time
 
 import game_world
 import game_framework
 
-from for_global import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION
+from for_global import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION, SCREEN_WIDTH, SCREEN_HEIGHT
 
 
 class AttackAnimation:
@@ -138,7 +138,57 @@ class CardEffectAnimation:
             self.scale_x, self.scale_y
         )
 
-class CircleIncreaseEffect():
+class ScreenAlertAnimation:
+    def __init__(self, image_path, duration, cycle):
+        self.x = SCREEN_WIDTH / 2
+        self.y = SCREEN_HEIGHT / 2
+        self.image = load_image(image_path)
+        self.duration = duration
+        self.cycle = cycle
+        self.last_cycle_time = get_time()
+        self.current_cycle = 0
+
+        self.opacify = 0.0
+        self.image.opacify(self.opacify)
+
+        self.cycle_time = self.duration / self.cycle
+        self.cycle_progress = 0.0
+
+        self.can_target = False
+
+    def update(self):
+        current_time = get_time()
+
+        # 현재 시간과 마지막 사이클 시간의 차이를 계산
+        elapsed_time = current_time - self.last_cycle_time
+
+        # 목표 사이클 수에 도달하면 제거
+        if self.current_cycle >= self.cycle:
+            game_world.remove_object(self)
+            return
+
+        # 한 사이클이 완료되면 사이클 초기화
+        if elapsed_time >= self.cycle_time:
+            self.current_cycle += 1
+            self.last_cycle_time = current_time
+            self.cycle_progress = 0.0
+        else:
+            # 사이클 진행도 계산
+            self.cycle_progress = elapsed_time / self.cycle_time
+
+        # 불투명도 계산
+        if self.cycle_progress <= 0.5:
+            self.opacify = self.cycle_progress  # 0에서 1로
+        else:
+            self.opacify = 1.0 - (self.cycle_progress)  # 1에서 0으로
+
+        self.image.opacify(self.opacify)
+
+    def draw(self):
+        self.image.draw(self.x, self.y, SCREEN_WIDTH, SCREEN_HEIGHT)
+
+
+class CircleIncreaseEffect:
     def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame, total_time):
         self.x = x
         self.y = y
@@ -255,3 +305,4 @@ class CardBeamAreaEffectAnimation:
             self.shooter_x, self.shooter_y,
             self.width * 390, self.width
         )
+

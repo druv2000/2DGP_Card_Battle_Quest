@@ -7,7 +7,7 @@ from ui import BossHpbarui
 
 class Soldier_boss(Character):
     def __init__(self, x, y, team):
-        super().__init__(x, y, team)
+        super().__init__(x - 50, y - 100, team)
         self.sprite_size = 240
         self.draw_size = 200
         self.collision_radius = self.draw_size * (3 / 4)
@@ -18,10 +18,10 @@ class Soldier_boss(Character):
 
         self.max_hp = 2000
         self.current_hp = 2000
-        self.move_speed = 0.0
-        self.attack_range = 0.0
-        self.base_attack_speed = 0.0
-        self.attack_damage = 5
+        self.move_speed = 100
+        self.attack_range = 100
+        self.base_attack_speed = 1.5
+        self.attack_damage = 15
 
         self.armor = 0
 
@@ -29,7 +29,7 @@ class Soldier_boss(Character):
         self.attack_image_path = 'resource/slash4.png'
         self.attack_size_x, self.attack_size_y = 99, 99
         self.attack_offset_x, self.attack_offset_y = 50, 50
-        self.attack_scale_x, self.attack_scale_y = 250, 250
+        self.attack_scale_x, self.attack_scale_y = 500, 500
         self.attack_total_frame = 8
         self.bullet = None
 

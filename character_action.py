@@ -10,7 +10,7 @@ from effects import StunEffect, ForcedMovementEffect, AttackSpeedUpTemplate, Att
 from game_world import world
 from for_global import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, KNIGHT_BODY_TACKLE_KNOCKBACK_DISTANCE, \
     BOWMAN_ROLLING_SPEED, BOWMAN_ROLLING_ROTATE_SPEED, BOWMAN_ROLLING_ATK_SPEED_DURATION, \
-    BOWMAN_ROLLING_ATK_SPEED_INCREMENT
+    BOWMAN_ROLLING_ATK_SPEED_INCREMENT, HUGE_NUMBER
 from object_pool import *
 
 # =================================================================
@@ -29,19 +29,18 @@ def find_closest_target(c):
 
     return closest_enemy
 
-def find_farthest_target(c):
-    farthest_enemy = None
-    max_distance = -1
+def find_lowest_max_hp_target(c):
+    lowest_max_hp_enemy = None
+    min_hp = HUGE_NUMBER
 
     for layer in world:
         for enemy in layer:
             if enemy.can_target and enemy.team != c.team:
-                distance = math.sqrt((enemy.x - c.x) ** 2 + (enemy.y - c.y) ** 2)
-                if distance > max_distance:
-                    max_distance = distance
-                    farthest_enemy = enemy
+                if enemy.max_hp < min_hp:
+                    min_hp = enemy.max_hp
+                    lowest_max_hp_enemy = enemy
 
-    return farthest_enemy
+    return lowest_max_hp_enemy
 
 def set_new_coord(c):
     # head, hand 등 위치를 현재 캐릭터 위치로 동기화하는 함수
@@ -159,6 +158,8 @@ def perform_body_tackle(c):
         target_distance += 0.1
     c.dir_x = (c.card_target_x - c.x) / (target_distance)
     c.dir_y = (c.card_target_y - c.y) / (target_distance)
+    knock_back_dir_x = c.dir_x
+    knock_back_dir_y = c.dir_y
     c.sprite_dir = -1 if c.dir_x < 0 else 1
 
     if target_distance > 25 if 1.0 / game_framework.frame_time > 50 else 100:
@@ -221,10 +222,10 @@ def perform_body_tackle(c):
                         forced_movement_effect = next((effect for effect in obj.effects if isinstance(effect, ForcedMovementEffect)), None)
                         if forced_movement_effect:
                             obj.remove_effect(ForcedMovementEffect)
-                            forced_movement_effect = ForcedMovementEffect(0.4, 500, c.dir_x, c.dir_y)
+                            forced_movement_effect = ForcedMovementEffect(0.4, 500, knock_back_dir_x, knock_back_dir_y)
                             obj.add_effect(forced_movement_effect)
                         else:
-                            forced_movement_effect = ForcedMovementEffect(0.4, 500, c.dir_x, c.dir_y)
+                            forced_movement_effect = ForcedMovementEffect(0.4, 500,  knock_back_dir_x, knock_back_dir_y)
                             obj.add_effect(forced_movement_effect)
 
                         # 데미지 적용
@@ -371,7 +372,3 @@ def update_cannon_shoot_animation(c, cast_duration):
         c.x = c.original_x  # x 위치를 원래 위치로 복원
         c.cast_animation_progress = 0
         c.is_cast_performed = True
-
-
-
-

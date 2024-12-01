@@ -101,6 +101,7 @@ class BossHpbarui:
 
         self.HP_image = self.HP_main_image
         self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
+        self.main_frame = 100 - int(self.cur_hp_state)
         self.can_target = False
 
     def update(self):

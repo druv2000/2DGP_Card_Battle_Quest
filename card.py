@@ -181,13 +181,17 @@ class Clicked:
 
             # 마우스 위치에 있는 타겟 찾기
             for obj in nearby_objects:
-
                 if obj.can_target and obj.team == c.user.team:
                     x1, y1, x2, y2 = obj.get_bb()
                     if x1 <= c.x <= x2 and y1 <= c.y <= y2:
                         target = obj
+                        # 메인 캐릭터 우선 타겟
                         if isinstance(target, Knight) or isinstance(target, Mage) or isinstance(target, Bowman):
                             break
+
+            # 자기 자신 대상 카드라면
+            if c.is_self_target_card:
+                target = c.target
 
             # 타겟 업데이트 및 하이라이트 설정
             if target:

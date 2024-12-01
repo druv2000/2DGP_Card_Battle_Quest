@@ -53,9 +53,14 @@ def run(start_mode):
     stack = [start_mode]
     start_mode.init()
 
-    global frame_time
+    global frame_time, frame_rate
     frame_time = 0.0
     current_time = time.time()
+
+    min_frame_rate = float('inf')
+    max_frame_rate = 0
+    total_frame_rate = 0
+    frame_count = 0
 
     while running:
         stack[-1].handle_events()
@@ -64,7 +69,24 @@ def run(start_mode):
         frame_time = time.time() - current_time
         frame_rate = 1.0 / frame_time
         current_time += frame_time
+
+        if frame_rate > max_frame_rate:
+            max_frame_rate = frame_rate
+
+        if frame_rate < min_frame_rate:
+            min_frame_rate = frame_rate
+
+        total_frame_rate += frame_rate
+        frame_count += 1
+
         # delay(0.1)
+
+    if not running:
+        avr_frame_rate = total_frame_rate / frame_count
+        print(f'avr_frame_rate = {avr_frame_rate}')
+        print(f'max_frame_rate = {max_frame_rate}')
+        print(f'min_frame_rate = {min_frame_rate}')
+
 
     # repeatedly delete the top of the stack
     while (len(stack) > 0):
