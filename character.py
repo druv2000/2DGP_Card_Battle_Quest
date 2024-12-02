@@ -14,7 +14,7 @@ from character_action import find_closest_target, move_to_target, attack_target,
 from effects import HitEffect, InvincibleEffect, TauntEffect
 from event_system import event_system
 from game_world import change_object_layer
-from for_global import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED, HUGE_TIME
+from for_global import CHARACTER_ANIMATION_PER_TIME, KNIGHT_BODY_TACKLE_RUSH_SPEED, HUGE_TIME, alive_character_count
 from object_pool import *
 from state_machine import *
 from ui import ProgressBar
@@ -249,6 +249,7 @@ class Dead:
         for effect in c.effects:
             effect.remove(c)
         c.effects.clear()
+
     @staticmethod
     def exit(c, e):
         event_system.trigger('character_state_change', c, 'alive')

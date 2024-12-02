@@ -1,7 +1,5 @@
 # effects.py
 import math
-from tempfile import template
-
 from pico2d import load_image, get_time
 
 import game_framework

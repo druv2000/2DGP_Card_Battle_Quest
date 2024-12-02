@@ -5,6 +5,7 @@ from pico2d import load_font, load_image, get_time
 import game_framework
 import for_global
 import game_world
+from event_system import event_system
 from for_global import cur_mana, MAX_MANA, SYSTEM_MESSAGE_UI_POS_X, SYSTEM_MESSAGE_UI_POS_Y, MANA_UI_POS_X, \
     MANA_UI_POS_Y
 
@@ -207,6 +208,8 @@ class TotalDamageUI:
         self.font = load_font('resource/font/fixedsys.ttf', 30)
         self.can_target = False
 
+        event_system.add_listener('game_end', self.calculate_total_damage)
+
     def update(self):
         pass
 
@@ -215,6 +218,11 @@ class TotalDamageUI:
         self.font.draw(self.x, self.y - 40, f'knight: {self.p1.total_damage}', (0, 0, 255))
         self.font.draw(self.x, self.y - 70, f'mage  : {self.p2.total_damage}', (255, 0, 255))
         self.font.draw(self.x, self.y - 100, f'bowman: {self.p3.total_damage}', (0, 255, 0))
+
+    def calculate_total_damage(self, type):
+        for_global.knight_total_damage = self.p1.total_damage
+        for_global.mage_total_damage = self.p2.total_damage
+        for_global.bowman_total_damage = self.p3.total_damage
 
 class CardUseFailedUI:
     def __init__(self, event):

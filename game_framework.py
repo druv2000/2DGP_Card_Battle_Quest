@@ -79,8 +79,6 @@ def run(start_mode):
         total_frame_rate += frame_rate
         frame_count += 1
 
-        # delay(0.1)
-
     if not running:
         avr_frame_rate = total_frame_rate / frame_count
         print(f'avr_frame_rate = {avr_frame_rate}')

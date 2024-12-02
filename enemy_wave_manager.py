@@ -3,10 +3,12 @@ from collections import deque
 
 from pico2d import get_time, load_image, load_font
 
+import for_global
 import game_framework
 import game_world
 from animation import ScreenAlertAnimation
 from enemy_soldier_cannon import Soldier_cannon
+from event_system import event_system
 from for_global import MAX_WAVE, WAVE_INTERVAL, FRAME_PER_CHARACTER_ANIMATION, CHARACTER_ANIMATION_PER_TIME, \
     SCREEN_WIDTH, WAVE_TIMER_X, WAVE_TIMER_Y, HUGE_TIME, WAVE_BAR_X, WAVE_BAR_Y
 from enemy_soldier_boss import Soldier_boss
@@ -45,8 +47,11 @@ class EnemyWaveManager:
         self.spawn_point_right = (1580, 550)
         self.spawn_point_top = (800, 880)
         self.spawn_point_bottom = (800, 320)
-        self.can_target = False
         self.active_portals = {}  # 현재 활성화된 포털을 추적하기 위한 딕셔너리
+
+        event_system.add_listener('game_end', self.progress_check)
+        self.can_target = False
+
 
         self.waves = {
             1: [
@@ -440,7 +445,10 @@ class EnemyWaveManager:
         game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
         pass
 
-
+    def progress_check(self, type):
+        for_global.wave_progress_x = self.wave_cursor_x
+        for_global.end_wave = self.cur_wave - 1
+        pass
 
 class Portal:
     def __init__(self, x, y, draw_size, duration):

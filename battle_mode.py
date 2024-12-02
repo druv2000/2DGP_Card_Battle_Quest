@@ -3,18 +3,17 @@ import random
 
 from pico2d import *
 
+import for_global
+import game_over_mode
 from card_manager import card_manager
+from enemy_soldier_boss import Soldier_boss
 from enemy_wave_manager import EnemyWaveManager
 from event_system import event_system
 import game_framework
 import game_world
 import object_pool
 from background import Background1, Background2
-from character_list import Knight, Bowman, Mage, Golem
-from enemy_soldier_boss import Soldier_boss
-from enemy_soldier_elite import Soldier_elite
-from enemy_soldier_mage import Soldier_mage
-from enemy_soldier import Soldier
+from character_list import Knight, Bowman, Mage
 from player import player
 from ui import TotalDamageUI, ManaUI
 
@@ -25,8 +24,7 @@ def init():
 
     object_pool.init_object_pool()
     event_system.add_listener('character_hit', on_character_hit)
-
-
+    event_system.add_listener('character_state_change', game_over_check)
 
     running = True
     # background 생성
@@ -65,35 +63,34 @@ def init():
     enemy_wave_manager = EnemyWaveManager()
     game_world.add_object(enemy_wave_manager, 9)
 
-#####################################################################
-
-    # # test: 100 vs 100 / line_battle
-    # for y in range(350, 450):
-    #     new_bowman = Bowman(100, y, 'ally')
-    #     game_world.add_object(new_bowman, 6)
-    #
-    #     new_knight = Knight(1500, y, 'enemy')
-    #     game_world.add_object(new_knight, 6)
-
-    # # test: 100 vs 100 / random_pos_battle
-    # for y in range(100):
-    #     new_bowman = Bowman(random.randint(0, 1600), random.randint(0, 900), 'ally')
-    #     game_world.add_object(new_bowman, 6)
-    #
-    #     new_knight = Knight(random.randint(0, 1600), random.randint(0, 900), 'enemy')
-    #     game_world.add_object(new_knight, 6)
-
-    # # test: 100 vs 100 / random_pos_battle / only bowman
-    # for y in range(100):
-    #     new_bowman_ally = Bowman(random.randint(0, 1600), random.randint(0, 900), 'ally')
-    #     game_world.add_object(new_bowman_ally, 6)
-    #
-    #     new_bowman_enemy = Bowman(random.randint(0, 1600), random.randint(0, 900), 'enemy')
-    #     game_world.add_object(new_bowman_enemy, 6)
-
 def on_character_hit(character, bullet):
     print(f"Character {character} hit by bullet {bullet}")
-    # 여기에 추가적인 전역 히트 효과를 구현할 수 있습니다 (예: 글로벌 사운드 효과)
+    # 전역 히트 효과
+
+def game_over_check(c, cur_state):
+    # 아군 메인 캐릭터 체크
+    if isinstance(c, Knight) or isinstance(c, Mage) or isinstance(c, Bowman):
+        if cur_state == 'dead':
+            for_global.alive_character_count -= 1
+
+            # 메인 캐릭터 3명 전원 사망 시 게임오버
+            if for_global.alive_character_count == 0:
+                event_system.trigger('game_end', 'game_over')
+                game_framework.change_mode(game_over_mode)
+                pass
+
+            pass
+        elif cur_state == 'alive':
+            for_global.alive_character_count += 1
+            pass
+        else:
+            print(f'        ERROR: unknown event by: character_state_change_event')
+            pass
+
+    # 적 보스 체크
+    if isinstance(c, Soldier_boss) and cur_state == 'dead':
+        # 게임 클리어 로직
+        pass
 
 def finish():
     game_world.clear()

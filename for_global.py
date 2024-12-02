@@ -90,3 +90,18 @@ WAVE_TIMER_Y = 850
 
 WAVE_BAR_X = 800
 WAVE_BAR_Y = 850
+
+# game_over_check
+alive_character_count = 3
+
+# score
+kill_count = 0
+death_count = 0
+
+wave_progress_x = 0
+end_wave = 0
+
+knight_total_damage = 0
+mage_total_damage = 0
+bowman_total_damage = 0
+
