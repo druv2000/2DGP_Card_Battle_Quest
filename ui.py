@@ -20,12 +20,12 @@ class MainCharacterHpbarui:
         self.font_size = 14
         self.font = load_font('resource/font/fixedsys.ttf', self.font_size)
 
-        self.HP_frame_image = load_image('resource/HP_frame.png')
-        self.HP_white_image = load_image('resource/HP_white.png')
+        self.HP_frame_image = load_image('resource/images/HP_frame.png')
+        self.HP_white_image = load_image('resource/images/HP_white.png')
         if self.c.team == 'ally':
-            self.HP_main_image = load_image('resource/HP_blue.png')
+            self.HP_main_image = load_image('resource/images/HP_blue.png')
         else:
-            self.HP_main_image = load_image('resource/HP_red.png')
+            self.HP_main_image = load_image('resource/images/HP_red.png')
 
         self.HP_image = self.HP_main_image
         self.cur_hp_state, self.cur_armor_state = self.calculate_hp_state()
@@ -60,13 +60,13 @@ class StandardHpbarui:
         self.frame_draw_size = (54, 8)
         self.bar_draw_size = (50, 4)
 
-        self.HP_frame_image = load_image('resource/HP_frame.png')
-        self.HP_white_image = load_image('resource/HP_white.png')
-        self.HP_main_image = load_image('resource/HP_blue.png')
+        self.HP_frame_image = load_image('resource/images/HP_frame.png')
+        self.HP_white_image = load_image('resource/images/HP_white.png')
+        self.HP_main_image = load_image('resource/images/HP_blue.png')
         if self.c.team == 'ally':
-            self.HP_main_image = load_image('resource/HP_blue.png')
+            self.HP_main_image = load_image('resource/images/HP_blue.png')
         else:
-            self.HP_main_image = load_image('resource/HP_red.png')
+            self.HP_main_image = load_image('resource/images/HP_red.png')
 
         self.HP_image = self.HP_main_image
         self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
@@ -96,9 +96,9 @@ class BossHpbarui:
         self.font_size = 24
         self.font = load_font('resource/font/fixedsys.ttf', self.font_size)
 
-        self.HP_frame_image = load_image('resource/HP_frame_boss.png')
-        self.HP_white_image = load_image('resource/HP_boss_white.png')
-        self.HP_main_image = load_image('resource/HP_boss_red.png')
+        self.HP_frame_image = load_image('resource/images/HP_frame_boss.png')
+        self.HP_white_image = load_image('resource/images/HP_boss_white.png')
+        self.HP_main_image = load_image('resource/images/HP_boss_red.png')
 
         self.HP_image = self.HP_main_image
         self.cur_hp_state = self.c.current_hp / self.c.max_hp * 100
@@ -126,19 +126,19 @@ class ManaUI:
         self.last_mana_charge = get_time()
         self.cur_mana_state = 0
         self.frame = 0
-        self.progress_image = load_image('resource/mana_progress_bar.png')
-        self.frame_image = load_image('resource/mana_circle.png')
-        self.image_0 = load_image('resource/mana_0.png')
-        self.image_1 = load_image('resource/mana_1.png')
-        self.image_2 = load_image('resource/mana_2.png')
-        self.image_3 = load_image('resource/mana_3.png')
-        self.image_4 = load_image('resource/mana_4.png')
-        self.image_5 = load_image('resource/mana_5.png')
-        self.image_6 = load_image('resource/mana_6.png')
-        self.image_7 = load_image('resource/mana_7.png')
-        self.image_8 = load_image('resource/mana_8.png')
-        self.image_9 = load_image('resource/mana_9.png')
-        self.image_10 = load_image('resource/mana_10.png')
+        self.progress_image = load_image('resource/images/mana_progress_bar.png')
+        self.frame_image = load_image('resource/images/mana_circle.png')
+        self.image_0 = load_image('resource/images/mana_0.png')
+        self.image_1 = load_image('resource/images/mana_1.png')
+        self.image_2 = load_image('resource/images/mana_2.png')
+        self.image_3 = load_image('resource/images/mana_3.png')
+        self.image_4 = load_image('resource/images/mana_4.png')
+        self.image_5 = load_image('resource/images/mana_5.png')
+        self.image_6 = load_image('resource/images/mana_6.png')
+        self.image_7 = load_image('resource/images/mana_7.png')
+        self.image_8 = load_image('resource/images/mana_8.png')
+        self.image_9 = load_image('resource/images/mana_9.png')
+        self.image_10 = load_image('resource/images/mana_10.png')
         self.can_target = False
 
 
@@ -228,15 +228,15 @@ class CardUseFailedUI:
     def __init__(self, event):
         self.x = SYSTEM_MESSAGE_UI_POS_X
         self.y = SYSTEM_MESSAGE_UI_POS_Y
-        self.image = load_image('resource/message_default.png')
+        self.image = load_image('resource/images/message_default.png')
         self.image_size_x = 3116
         self.image_size_y = 178
         if event == 'NOT_ENOUGH_MANA':
-            self.image = load_image('resource/message_not_enough_mana.png')
+            self.image = load_image('resource/images/message_not_enough_mana.png')
         elif event == 'CANNOT_FIND_TARGET':
-            self.image = load_image('resource/message_cannot_find_target.png')
+            self.image = load_image('resource/images/message_cannot_find_target.png')
         elif event == 'CANNOT_USE_NOW':
-            self.image = load_image('resource/message_cannot_use_now.png')
+            self.image = load_image('resource/images/message_cannot_use_now.png')
 
         self.image.opacify(0.0)
 
@@ -267,7 +267,7 @@ class AreaCircleUI:
         self.x = x
         self.y = y
         self.radius = r
-        self.image = load_image('resource/area_circle.png')
+        self.image = load_image('resource/images/area_circle.png')
         self.can_target = False
 
     def update(self):
@@ -284,7 +284,7 @@ class AreaBeamUI:
         self.y = y
         self.width = width
         self.rotation = 0
-        self.image = load_image('resource/area_beam.png')
+        self.image = load_image('resource/images/area_beam.png')
         self.can_target = False
 
     def update(self):
@@ -306,7 +306,7 @@ class AreaStraightUI:
         self.width = width
         self.length = length
         self.rotation = 0
-        self.image = load_image('resource/area_straight.png')
+        self.image = load_image('resource/images/area_straight.png')
         self.can_target = False
 
     def update(self):
@@ -328,7 +328,7 @@ class RangeCircleUI:
         self.x = x
         self.y = y
         self.radius = r
-        self.image = load_image('resource/range_circle.png')
+        self.image = load_image('resource/images/range_circle.png')
         self.can_target = False
 
     def update(self):
@@ -366,7 +366,7 @@ class ProgressBar:
       self.c = character
       self.size_x = 224
       self.size_y = 40
-      self.image = load_image('resource/cast_progress_bar.png')
+      self.image = load_image('resource/images/cast_progress_bar.png')
       self.frame = 0
       self.total_frame = 39
       self.duration = duration

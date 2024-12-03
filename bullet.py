@@ -71,7 +71,7 @@ class Bullet:
         if bullet == self and character == self.target:
             self.is_active = False
             self.shooter.total_damage += self.attack_damage
-            object_pool.hit_animation_pool.get(character, 'resource/mage_bullet_hit.png', 192, 170, 8)
+            object_pool.hit_animation_pool.get(character, 'resource/images/mage_bullet_hit.png', 192, 170, 8)
             object_pool.collision_group_pool.release(self.collision_group)
 
 
@@ -81,7 +81,7 @@ class Mage_AttackBullet(Bullet):
     def __init__(self):
         super().__init__()
         if Mage_AttackBullet.image is None:
-            Mage_AttackBullet.image = load_image('resource/mage_bullet.png')
+            Mage_AttackBullet.image = load_image('resource/images/mage_bullet.png')
         self.move_speed = 750
 
 
@@ -91,7 +91,7 @@ class Bowman_AttackBullet(Bullet):
     def __init__(self):
         super().__init__()
         if Bowman_AttackBullet.image is None:
-            Bowman_AttackBullet.image = load_image('resource/bowman_bullet.png')
+            Bowman_AttackBullet.image = load_image('resource/images/bowman_bullet.png')
         self.move_speed = 2000
         self.dir_x = 0
         self.dir_y = 0
@@ -111,7 +111,7 @@ class Bowman_AttackBullet(Bullet):
         if bullet == self and character == self.target:
             self.is_active = False
             self.shooter.total_damage += self.attack_damage
-            object_pool.hit_animation_pool.get(character, 'resource/bowman_bullet_hit.png', 128, 128, 8)
+            object_pool.hit_animation_pool.get(character, 'resource/images/bowman_bullet_hit.png', 128, 128, 8)
             object_pool.collision_group_pool.release(self.collision_group)
 
 
@@ -121,7 +121,7 @@ class Bowman_AdditionalBullet(Bullet):
     def __init__(self):
         super().__init__()
         if Bowman_AdditionalBullet.image is None:
-            Bowman_AdditionalBullet.image = load_image('resource/bowman_additional_bullet.png')
+            Bowman_AdditionalBullet.image = load_image('resource/images/bowman_additional_bullet.png')
         self.move_speed = 2000
         self.dir_x = 0
         self.dir_y = 0
@@ -152,7 +152,7 @@ class Bowman_AdditionalBullet(Bullet):
         if bullet == self and character == self.target:
             self.is_active = False
             self.shooter.total_damage += self.attack_damage
-            object_pool.hit_animation_pool.get(character, 'resource/bowman_bullet_hit.png', 128, 128, 8)
+            object_pool.hit_animation_pool.get(character, 'resource/images/bowman_bullet_hit.png', 128, 128, 8)
             object_pool.collision_group_pool.release(self.collision_group)
 
 
@@ -162,14 +162,14 @@ class Soldier_Mage_AttackBullet(Bullet):
     def __init__(self):
         super().__init__()
         if Soldier_Mage_AttackBullet.image is None:
-            Soldier_Mage_AttackBullet.image = load_image('resource/soldier_mage_bullet.png')
+            Soldier_Mage_AttackBullet.image = load_image('resource/images/soldier_mage_bullet.png')
         self.move_speed = 750
 
     def on_character_hit(self, character, bullet):
         if bullet == self and character == self.target:
             self.is_active = False
             self.shooter.total_damage += self.attack_damage
-            object_pool.hit_animation_pool.get(character, 'resource/soldier_mage_bullet_hit.png', 192, 170, 8)
+            object_pool.hit_animation_pool.get(character, 'resource/images/soldier_mage_bullet_hit.png', 192, 170, 8)
             object_pool.collision_group_pool.release(self.collision_group)
 
 class Soldier_Cannon_AttackBullet(Bullet):
@@ -178,7 +178,7 @@ class Soldier_Cannon_AttackBullet(Bullet):
     def __init__(self):
         super().__init__()
         if Soldier_Cannon_AttackBullet.image is None:
-            Soldier_Cannon_AttackBullet.image = load_image('resource/soldier_cannon_bullet.png')
+            Soldier_Cannon_AttackBullet.image = load_image('resource/images/soldier_cannon_bullet.png')
         self.move_speed = 2000
         self.dir_x = 0
         self.dir_y = 0
@@ -230,7 +230,7 @@ class Soldier_Cannon_AttackBullet(Bullet):
                 character.x, character.y,
                 128, 128,
                 400, 400,
-                'resource/bowman_bullet_hit.png',
+                'resource/images/bowman_bullet_hit.png',
                 8, 0.25,
                 1
             )
@@ -241,7 +241,7 @@ class None_AttackBullet(Bullet):
 
     def __init__(self):
         super().__init__()
-        self.image = load_image('resource/none_bullet.png')
+        self.image = load_image('resource/images/none_bullet.png')
         self.move_speed = 300
 
     def update(self):
@@ -278,7 +278,7 @@ class Bowman_SnipeShotBullet(Bullet):
     def __init__(self):
         super().__init__()
         if Bowman_SnipeShotBullet.image is None:
-            Bowman_SnipeShotBullet.image = load_image('resource/bowman_snipe_shot_bullet.png')
+            Bowman_SnipeShotBullet.image = load_image('resource/images/bowman_snipe_shot_bullet.png')
         self.move_speed = 4000
         self.dir_x = 0
         self.dir_y = 0
@@ -341,7 +341,7 @@ class Bowman_SnipeShotBullet(Bullet):
                 character.x, character.y,
                 128, 128,
                 400, 400,
-                'resource/bowman_bullet_hit.png',
+                'resource/images/bowman_bullet_hit.png',
                 8, 0.25,
                 1
             )

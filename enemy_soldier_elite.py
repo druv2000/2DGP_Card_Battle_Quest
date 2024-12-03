@@ -12,9 +12,9 @@ class Soldier_elite(Character):
         self.draw_size = 120
         self.collision_radius = self.draw_size * (3 / 4)
 
-        self.image = load_image('resource/elite_soldier_sprite.png')
+        self.image = load_image('resource/images/elite_soldier_sprite.png')
         self.original_image = self.image
-        self.hit_image = load_image('resource/elite_soldier_hit_sprite.png')
+        self.hit_image = load_image('resource/images/elite_soldier_hit_sprite.png')
 
         self.max_hp = 250
         self.current_hp = 250
@@ -26,7 +26,7 @@ class Soldier_elite(Character):
         self.armor = 0
 
         self.has_attack_animation = True
-        self.attack_image_path = 'resource/slash4.png'
+        self.attack_image_path = 'resource/images/slash4.png'
         self.attack_size_x, self.attack_size_y = 99, 99
         self.attack_offset_x, self.attack_offset_y = 50, 50
         self.attack_scale_x, self.attack_scale_y = 250, 250

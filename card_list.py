@@ -22,7 +22,7 @@ from for_global import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 class BodyTackle(Card):
     def __init__(self):
         from battle_mode import knight
-        super().__init__("Rush", knight, 3, "resource/card_body_tackle.png")
+        super().__init__("Rush", knight, 3, "resource/images/card_body_tackle.png")
         self.range = 600
         self.damage = self.user.attack_damage + 8
         self.radius = KNIGHT_BODY_TACKLE_RADIUS
@@ -30,7 +30,7 @@ class BodyTackle(Card):
         self.length = self.range
         self.casting_time = 0.25
         self.is_summon_obj = True # 미리보기가 필요한가
-        self.summon_image_path = 'resource/knight_sprite.png'
+        self.summon_image_path = 'resource/images/Knight_sprite.png'
         self.summon_size_x = 240
         self.summon_size_y = 240
         self.summon_scale = 100
@@ -48,7 +48,7 @@ class BodyTackle(Card):
 class WarCry(Card):
     def __init__(self):
         from battle_mode import knight
-        super().__init__("WarCry", knight, 2, "resource/card_war_cry.png")
+        super().__init__("WarCry", knight, 2, "resource/images/card_war_cry.png")
         self.range = 0
         self.radius = 410
         self.casting_time = 0.1
@@ -58,7 +58,7 @@ class WarCry(Card):
         self.expected_card_area = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/expected_area_effect.png', 0.2,
+            'resource/images/expected_area_effect.png', 0.2,
             HUGE_TIME
         )
         game_world.add_object(self.expected_card_area, 1)
@@ -73,7 +73,7 @@ class WarCry(Card):
             x, y,
             680, 680,
             self.radius * 2, self.radius * 2,
-            'resource/warcry_effect.png',
+            'resource/images/warcry_effect.png',
             1, HUGE_TIME
         )
         game_world.add_object(war_cry_effect, 8)
@@ -83,7 +83,7 @@ class WarCry(Card):
             x, y,
             171, 171,
             200, 200,
-            'resource/warcry_effect_2.png',
+            'resource/images/warcry_effect_2.png',
             1, 0.75
         )
         game_world.add_object(war_cry_effect_2, 8)
@@ -126,7 +126,7 @@ class WarCry(Card):
 class Respite(Card):
     def __init__(self):
         from battle_mode import knight
-        super().__init__("Respite", knight, 2, "resource/card_respite.png")
+        super().__init__("Respite", knight, 2, "resource/images/card_respite.png")
         self.range = 2000
         self.casting_time = 0.1
         self.target = self.user
@@ -157,7 +157,7 @@ class Respite(Card):
 class Explosion(Card):
     def __init__(self):
         from battle_mode import mage
-        super().__init__("Fireball", mage, 2, "resource/card_fireball.png")
+        super().__init__("Fireball", mage, 2, "resource/images/card_fireball.png")
         self.range = 650
         self.damage = 20
         self.radius = 100
@@ -168,7 +168,7 @@ class Explosion(Card):
         self.expected_card_area = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/expected_area_effect.png', 0.2,
+            'resource/images/expected_area_effect.png', 0.2,
             HUGE_TIME
         )
         game_world.add_object(self.expected_card_area, 1)
@@ -184,14 +184,14 @@ class Explosion(Card):
             x, y,
             137, 150,
             300, 300,
-            'resource/explosion_effect.png',
+            'resource/images/explosion_effect.png',
             26, 0.5,
             1
         )
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/expected_area_effect.png', 1.0,
+            'resource/images/expected_area_effect.png', 1.0,
             0.05
         )
         game_world.add_object(card_effect_area_animation, 1)
@@ -216,13 +216,13 @@ class Explosion(Card):
 class SummonGolem(Card):
     def __init__(self):
         from battle_mode import mage
-        super().__init__("SummonGolem", mage, 5, "resource/card_summon_golem.png")
+        super().__init__("SummonGolem", mage, 5, "resource/images/card_summon_golem.png")
         self.range = 450
         self.damage = 0
         self.radius = 150
         self.casting_time = 0.5
         self.is_summon_obj = True
-        self.summon_image_path = 'resource/golem_sprite.png'
+        self.summon_image_path = 'resource/images/golem_sprite.png'
         self.summon_size_x = 240
         self.summon_size_y = 240
         self.summon_scale = 120
@@ -232,7 +232,7 @@ class SummonGolem(Card):
         self.expected_card_area = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/expected_area_effect.png', 0.2,
+            'resource/images/expected_area_effect.png', 0.2,
             HUGE_TIME
         )
         game_world.add_object(self.expected_card_area, 1)
@@ -247,7 +247,7 @@ class SummonGolem(Card):
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,
             self.radius * 2, self.radius * 2,
-            'resource/expected_area_effect.png', 1.0,
+            'resource/images/expected_area_effect.png', 1.0,
             0.05
         )
         game_world.add_object(card_effect_area_animation, 1)
@@ -285,7 +285,7 @@ class SummonGolem(Card):
 class VitalitySurge(Card):
     def __init__(self):
         from battle_mode import mage
-        super().__init__("VitalitySurge", mage, 3, "resource/card_vitality_surge.png")
+        super().__init__("VitalitySurge", mage, 3, "resource/images/card_vitality_surge.png")
         self.range = 1000
         self.instant_heal_amount = 20 # 즉시 회복량
         self.continuous_heal_amount = 20 # 틱당 회복량
@@ -308,7 +308,7 @@ class VitalitySurge(Card):
             x, y - 15,
             360, 360,
             200, 200,
-            'resource/healing_effect_2.png',
+            'resource/images/healing_effect_2.png',
             4, 0.5,
             2.5
         )
@@ -334,7 +334,7 @@ class VitalitySurge(Card):
 class SnipeShot(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("SnipeShot", bowman, 2, "resource/card_snipe_shot.png")
+        super().__init__("SnipeShot", bowman, 2, "resource/images/card_snipe_shot.png")
         self.range = 2000
         self.damage = 15
         self.width = 50
@@ -368,7 +368,7 @@ class SnipeShot(Card):
 class AdditionalArrow(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("AdditionalArrow", bowman, 6, "resource/card_additional_arrow.png")
+        super().__init__("AdditionalArrow", bowman, 6, "resource/images/card_additional_arrow.png")
         self.range = 2000
         self.casting_time = 0.25
         self.target = self.user
@@ -389,7 +389,7 @@ class AdditionalArrow(Card):
                 self.target.x, self.target.y,
                 340, 340,
                 200, 200,
-                'resource/additional_arrow_effect_1.png',
+                'resource/images/additional_arrow_effect_1.png',
                 1, 0.75
             )
         elif self.target.additional_attack == 1:
@@ -398,7 +398,7 @@ class AdditionalArrow(Card):
                 self.target.x, self.target.y,
                 1181, 1084,
                 330, 300,
-                'resource/additional_arrow_effect_2.png',
+                'resource/images/additional_arrow_effect_2.png',
                 1, 0.75
             )
         elif self.user.additional_attack == 2:
@@ -407,7 +407,7 @@ class AdditionalArrow(Card):
                 self.target.x, self.target.y,
                 1181, 1084,
                330,300,
-                'resource/additional_arrow_effect_3.png',
+                'resource/images/additional_arrow_effect_3.png',
                 1, 0.75
             )
         else:
@@ -416,7 +416,7 @@ class AdditionalArrow(Card):
                 self.target.x, self.target.y,
                 1182, 1084,
                 330, 300,
-                'resource/additional_arrow_effect_4.png',
+                'resource/images/additional_arrow_effect_4.png',
                 1, 0.75
             )
         game_world.add_object(additional_arrow_effect, 8)
@@ -435,9 +435,9 @@ class AdditionalArrow(Card):
 class Rolling(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("Rolling", bowman, 1, "resource/card_rolling.png")
+        super().__init__("Rolling", bowman, 1, "resource/images/card_rolling.png")
         self.original_image = self.image
-        self.image_uses_1 = load_image('resource/card_rolling_2.png')
+        self.image_uses_1 = load_image('resource/images/card_rolling_2.png')
         self.range = 250
         self.radius = 25
         self.width = 50
@@ -446,7 +446,7 @@ class Rolling(Card):
         self.total_uses = 2
         self.remaining_uses = 2
         self.is_summon_obj = True # 미리보기가 필요한가
-        self.summon_image_path = 'resource/bowman_sprite.png'
+        self.summon_image_path = 'resource/images/Bowman_sprite.png'
         self.summon_size_x = 240
         self.summon_size_y = 240
         self.summon_scale = 100
@@ -476,8 +476,8 @@ class PerformRevivalObject:
         self.original_y = self.y
         self.radius = radius
 
-        self.ankh_image = load_image('resource/revival_effect_1.png')
-        self.wing_image = load_image('resource/revival_effect_2.png')
+        self.ankh_image = load_image('resource/images/revival_effect_1.png')
+        self.wing_image = load_image('resource/images/revival_effect_2.png')
         self.ankh_opacify = 0.0
         self.wing_opacify = 0.0
         self.ankh_draw_size = (105, 165)
@@ -514,7 +514,7 @@ class PerformRevivalObject:
                     self.x, self.original_y,
                     679, 679,
                     self.radius*2, self.radius*2,
-                    'resource/revival_effect_3.png',
+                    'resource/images/revival_effect_3.png',
                     1, HUGE_TIME
                 )
                 game_world.add_object(circle_increase_effect, 8)
@@ -567,18 +567,18 @@ class PerformRevivalObject:
 class RevivalKnight(Card):
     def __init__(self):
         from battle_mode import knight
-        super().__init__("revival_knight", knight, 0, "resource/card_revival_knight_0.png")
+        super().__init__("revival_knight", knight, 0, "resource/images/card_revival_knight_0.png")
         self.original_image = self.image
-        self.image_cur_uses_1 = load_image('resource/card_revival_knight_1.png')
-        self.image_cur_uses_2 = load_image('resource/card_revival_knight_2.png')
-        self.image_cur_uses_3 = load_image('resource/card_revival_knight_3.png')
-        self.image_cur_uses_4 = load_image('resource/card_revival_knight_4.png')
-        self.image_cur_uses_5 = load_image('resource/card_revival_knight_5.png')
+        self.image_cur_uses_1 = load_image('resource/images/card_revival_knight_1.png')
+        self.image_cur_uses_2 = load_image('resource/images/card_revival_knight_2.png')
+        self.image_cur_uses_3 = load_image('resource/images/card_revival_knight_3.png')
+        self.image_cur_uses_4 = load_image('resource/images/card_revival_knight_4.png')
+        self.image_cur_uses_5 = load_image('resource/images/card_revival_knight_5.png')
 
 
         self.range = 2000
         self.is_summon_obj = True  # 미리보기가 필요한가
-        self.summon_image_path = 'resource/knight_sprite.png'
+        self.summon_image_path = 'resource/images/Knight_sprite.png'
         self.summon_size_x = 240
         self.summon_size_y = 240
         self.summon_scale = 100
@@ -593,7 +593,7 @@ class RevivalKnight(Card):
                 self.user.x, self.user.y,
                 211, 333,
                 105, 165,
-                'resource/revival_effect_1.png',
+                'resource/images/revival_effect_1.png',
                 1, 0.75
             )
             game_world.add_object(revival_effect, 8)
@@ -643,18 +643,18 @@ class RevivalKnight3(RevivalKnight):
 class RevivalMage(Card):
     def __init__(self):
         from battle_mode import mage
-        super().__init__("revival_mage", mage, 0, "resource/card_revival_mage_0.png")
+        super().__init__("revival_mage", mage, 0, "resource/images/card_revival_mage_0.png")
         self.original_image = self.image
-        self.image_cur_uses_1 = load_image('resource/card_revival_mage_1.png')
-        self.image_cur_uses_2 = load_image('resource/card_revival_mage_2.png')
-        self.image_cur_uses_3 = load_image('resource/card_revival_mage_3.png')
-        self.image_cur_uses_4 = load_image('resource/card_revival_mage_4.png')
-        self.image_cur_uses_5 = load_image('resource/card_revival_mage_5.png')
+        self.image_cur_uses_1 = load_image('resource/images/card_revival_mage_1.png')
+        self.image_cur_uses_2 = load_image('resource/images/card_revival_mage_2.png')
+        self.image_cur_uses_3 = load_image('resource/images/card_revival_mage_3.png')
+        self.image_cur_uses_4 = load_image('resource/images/card_revival_mage_4.png')
+        self.image_cur_uses_5 = load_image('resource/images/card_revival_mage_5.png')
 
 
         self.range = 2000
         self.is_summon_obj = True  # 미리보기가 필요한가
-        self.summon_image_path = 'resource/mage_sprite.png'
+        self.summon_image_path = 'resource/images/Mage_sprite.png'
         self.summon_size_x = 240
         self.summon_size_y = 240
         self.summon_scale = 100
@@ -669,7 +669,7 @@ class RevivalMage(Card):
                 self.user.x, self.user.y,
                 211, 333,
                 105, 165,
-                'resource/revival_effect_1.png',
+                'resource/images/revival_effect_1.png',
                 1, 0.75
             )
             game_world.add_object(revival_effect, 8)
@@ -718,18 +718,18 @@ class RevivalMage3(RevivalMage):
 class RevivalBowman(Card):
     def __init__(self):
         from battle_mode import bowman
-        super().__init__("revival_bowman", bowman, 0, "resource/card_revival_bowman_0.png")
+        super().__init__("revival_bowman", bowman, 0, "resource/images/card_revival_bowman_0.png")
         self.original_image = self.image
-        self.image_cur_uses_1 = load_image('resource/card_revival_bowman_1.png')
-        self.image_cur_uses_2 = load_image('resource/card_revival_bowman_2.png')
-        self.image_cur_uses_3 = load_image('resource/card_revival_bowman_3.png')
-        self.image_cur_uses_4 = load_image('resource/card_revival_bowman_4.png')
-        self.image_cur_uses_5 = load_image('resource/card_revival_bowman_5.png')
+        self.image_cur_uses_1 = load_image('resource/images/card_revival_bowman_1.png')
+        self.image_cur_uses_2 = load_image('resource/images/card_revival_bowman_2.png')
+        self.image_cur_uses_3 = load_image('resource/images/card_revival_bowman_3.png')
+        self.image_cur_uses_4 = load_image('resource/images/card_revival_bowman_4.png')
+        self.image_cur_uses_5 = load_image('resource/images/card_revival_bowman_5.png')
 
 
         self.range = 2000
         self.is_summon_obj = True  # 미리보기가 필요한가
-        self.summon_image_path = 'resource/bowman_sprite.png'
+        self.summon_image_path = 'resource/images/Bowman_sprite.png'
         self.summon_size_x = 240
         self.summon_size_y = 240
         self.summon_scale = 100
@@ -744,7 +744,7 @@ class RevivalBowman(Card):
                 self.user.x, self.user.y,
                 211, 333,
                 105, 165,
-                'resource/revival_effect_1.png',
+                'resource/images/revival_effect_1.png',
                 1, 0.75
             )
             game_world.add_object(revival_effect, 8)

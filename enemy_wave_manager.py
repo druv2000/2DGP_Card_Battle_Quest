@@ -20,8 +20,8 @@ from enemy_soldier import Soldier
 class EnemyWaveManager:
     def __init__(self):
         self.font = load_font('resource/font/fixedsys.ttf', 50)
-        self.wave_bar_image = load_image('resource/wave_bar.png')
-        self.wave_cursor_image = load_image('resource/wave_cursor.png')
+        self.wave_bar_image = load_image('resource/images/wave_bar.png')
+        self.wave_cursor_image = load_image('resource/images/wave_cursor.png')
 
         self.timer_x = WAVE_TIMER_X
         self.timer_y = WAVE_TIMER_Y
@@ -397,7 +397,7 @@ class EnemyWaveManager:
 
             # 보스 웨이브 때 경고 시각효과 표시
             if self.cur_wave == self.max_wave:
-                alert_animation = ScreenAlertAnimation('resource/screen_red.png', 3.0, 3)
+                alert_animation = ScreenAlertAnimation('resource/images/screen_red.png', 3.0, 3)
                 game_world.add_object(alert_animation, 9)
                 pass
 
@@ -453,7 +453,7 @@ class EnemyWaveManager:
 
 class Portal:
     def __init__(self, x, y, draw_size, duration):
-        self.image = load_image('resource/portal.png')
+        self.image = load_image('resource/images/portal.png')
         self.opacify = 1.0
         self.x, self.y = x, y
         self.size_x, self.size_y = 360, 360

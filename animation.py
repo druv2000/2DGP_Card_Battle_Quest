@@ -280,7 +280,7 @@ class CardBeamAreaEffectAnimation:
         self.x = x
         self.y = y
         self.width = width
-        self.image = load_image('resource/expected_beam_area_effect.png')
+        self.image = load_image('resource/images/expected_beam_area_effect.png')
         self.image.opacify(opacify)
         self.frame = 0
         self.total_frame = 1

@@ -14,7 +14,7 @@ def draw_effect(c, effect):
 class EffectTemplate:
     def __init__(self):
         self.name = 'example'
-        self.image = load_image('resource/stun_effect.png')
+        self.image = load_image('resource/images/stun_effect.png')
         self.sprite_count = 5
         self.sprite_size_x, sprite_size_y = 50, 36
         pass
@@ -22,7 +22,7 @@ class EffectTemplate:
 class StunTemplate:
     def __init__(self):
         self.name = 'stun'
-        self.image = load_image('resource/stun_effect.png')
+        self.image = load_image('resource/images/stun_effect.png')
         self.sprite_count = 6
         self.sprite_size_x = 50
         self.sprite_size_y = 36
@@ -31,7 +31,7 @@ class StunTemplate:
 class TauntTemplate:
     def __init__(self):
         self.name = 'taunt'
-        self.image = load_image('resource/taunted_effect.png')
+        self.image = load_image('resource/images/taunted_effect.png')
         self.sprite_count = 2
         self.sprite_size_x = 108
         self.sprite_size_y = 108
@@ -40,7 +40,7 @@ class TauntTemplate:
 class AtkDownTemplate:
     def __init__(self):
         self.name = 'atk_down'
-        self.image = load_image('resource/atk_down_effect.png')
+        self.image = load_image('resource/images/atk_down_effect.png')
         self.sprite_count = 5
         self.sprite_size_x = 75
         self.sprite_size_y = 75
@@ -49,7 +49,7 @@ class AtkDownTemplate:
 class HealTemplate:
     def __init__(self):
         self.name = 'heal'
-        self.image = load_image('resource/healing_effect.png')
+        self.image = load_image('resource/images/healing_effect.png')
         self.sprite_count = 12
         self.sprite_size_x = 256
         self.sprite_size_y = 256
@@ -58,7 +58,7 @@ class HealTemplate:
 class AttackSpeedUpTemplate:
     def __init__(self):
         self.name = 'attack_speed_up'
-        self.image = load_image('resource/atk_speed_up_effect.png')
+        self.image = load_image('resource/images/atk_speed_up_effect.png')
         self.sprite_count = 4
         self.sprite_size_x = 360
         self.sprite_size_y = 360
@@ -67,7 +67,7 @@ class AttackSpeedUpTemplate:
 class ShieldTemplate:
     def __init__(self):
         self.name = 'invincible'
-        self.image = load_image('resource/invincible_effect.png')
+        self.image = load_image('resource/images/invincible_effect.png')
         self.sprite_count = 1
         self.sprite_size_x = 772
         self.sprite_size_y = 773
@@ -76,7 +76,7 @@ class ShieldTemplate:
 class FlameTemplate:
     def __init__(self):
         self.name = 'flame'
-        self.image = load_image('resource/flame_effect.png')
+        self.image = load_image('resource/images/flame_effect.png')
         self.sprite_count = 8
         self.sprite_size_x = 24
         self.sprite_size_y = 32
@@ -294,7 +294,7 @@ class VitalitySurgeEffect(Effect):
 class BowmanMaxPowerEffect(Effect):
     def __init__(self, duration, attack_speed_amount):
         super().__init__('bowman_max_power', duration)
-        self.image = load_image('resource/bowman_max_power_sprite.png')
+        self.image = load_image('resource/images/bowman_max_power_sprite.png')
         self.attack_speed_amount = attack_speed_amount
 
     def apply(self, c):

@@ -180,7 +180,7 @@ def perform_body_tackle(c):
             c.x, c.y,
             256, 256,
             250, 250,
-            'resource/landing_effect.png',
+            'resource/images/landing_effect.png',
             8, 0.25,
             1
         )
@@ -188,14 +188,14 @@ def perform_body_tackle(c):
             c.x, c.y,
             128, 128,
             400, 400,
-            'resource/bowman_bullet_hit.png',
+            'resource/images/bowman_bullet_hit.png',
             8, 0.25,
             1
         )
         card_effect_area_animation = CardAreaEffectAnimation(
             c.x, c.y,
             200, 200,
-            'resource/expected_area_effect.png', 1.0,
+            'resource/images/expected_area_effect.png', 1.0,
             0.05
         )
         game_world.add_object(card_effect_animation, 8)

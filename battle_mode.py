@@ -13,7 +13,7 @@ import game_framework
 import game_world
 import object_pool
 from background import Background1, Background2
-from character_list import Knight, Bowman, Mage
+from character_list import Knight, Bowman, Mage, Golem
 from player import player
 from ui import TotalDamageUI, ManaUI
 
@@ -118,7 +118,7 @@ def check_character_state_change(c, cur_state):
             if for_global.alive_character_count == 0:
                 for_global.is_clear = False
                 event_system.trigger('game_end', 'game_over')
-                fade_out_animation = ScreenFadeOutAnimation('resource/screen_black.png', 2.0)
+                fade_out_animation = ScreenFadeOutAnimation('resource/images/screen_black.png', 2.0)
                 game_world.add_object(fade_out_animation, 9)
                 pass
 
@@ -131,13 +131,13 @@ def check_character_state_change(c, cur_state):
             pass
 
     # 적 이라면
-    else:
+    elif not isinstance(c, Golem) and cur_state == 'dead':
         for_global.kill_count += 1
         if isinstance(c, Soldier_boss) and cur_state == 'dead':
             # 보스 사망 시 게임 클리어
             for_global.is_clear = True
             event_system.trigger('game_end', 'game_clear')
-            fade_out_animation = ScreenFadeOutAnimation('resource/screen_white.png', 2.0)
+            fade_out_animation = ScreenFadeOutAnimation('resource/images/screen_white.png', 2.0)
             game_world.add_object(fade_out_animation, 9)
             pass
 

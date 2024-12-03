@@ -17,10 +17,10 @@ class Knight(Character):
         self.draw_size = 100
         self.collision_radius = self.draw_size * (3 / 4)
 
-        self.image = load_image('resource/Knight_sprite.png')
+        self.image = load_image('resource/images/Knight_sprite.png')
         self.original_image = self.image
-        self.hit_image = load_image('resource/Knight_hit_sprite.png')
-        self.highlight_image = load_image('resource/knight_highlight_sprite.png')
+        self.hit_image = load_image('resource/images/Knight_hit_sprite.png')
+        self.highlight_image = load_image('resource/images/knight_highlight_sprite.png')
 
         self.max_hp = 300         # max_hp
         self.current_hp = 300     # current_hp
@@ -31,7 +31,7 @@ class Knight(Character):
         self.armor = 0
 
         self.has_attack_animation = True
-        self.attack_image_path = 'resource/slash1.png'
+        self.attack_image_path = 'resource/images/slash1.png'
         self.attack_size_x, self.attack_size_y = 74, 74
         self.attack_offset_x, self.attack_offset_y = 70, 70
         self.attack_scale_x, self.attack_scale_y = 300, 300
@@ -56,10 +56,10 @@ class Mage(Character):
         self.draw_size = 100
         self.collision_radius = self.draw_size * (3 / 4)
 
-        self.image = load_image('resource/Mage_sprite.png')
+        self.image = load_image('resource/images/Mage_sprite.png')
         self.original_image = self.image
-        self.hit_image = load_image('resource/Mage_hit_sprite.png')
-        self.highlight_image = load_image('resource/mage_highlight_sprite.png')
+        self.hit_image = load_image('resource/images/Mage_hit_sprite.png')
+        self.highlight_image = load_image('resource/images/mage_highlight_sprite.png')
 
         self.max_hp = 200
         self.current_hp = 200
@@ -71,7 +71,7 @@ class Mage(Character):
         self.armor = 0
 
         self.has_attack_animation = True
-        self.attack_image_path = 'resource/slash2.png'
+        self.attack_image_path = 'resource/images/slash2.png'
         self.attack_size_x, self.attack_size_y = 128, 128
         self.attack_offset_x, self.attack_offset_y = 70, 20
         self.attack_scale_x, self.attack_scale_y = 250, 250
@@ -94,10 +94,10 @@ class Bowman(Character):
         self.draw_size = 100
         self.collision_radius = self.draw_size * (3 / 4)
 
-        self.image = load_image('resource/bowman_sprite.png')
+        self.image = load_image('resource/images/bowman_sprite.png')
         self.original_image = self.image
-        self.hit_image = load_image('resource/Bowman_hit_sprite.png')
-        self.highlight_image = load_image('resource/bowman_highlight_sprite.png')
+        self.hit_image = load_image('resource/images/Bowman_hit_sprite.png')
+        self.highlight_image = load_image('resource/images/bowman_highlight_sprite.png')
 
         self.max_hp = 150
         self.current_hp = 150
@@ -126,10 +126,10 @@ class Golem(Character):
         self.draw_size = 120
         self.collision_radius = self.draw_size * (3 / 4)
 
-        self.image = load_image('resource/golem_sprite.png')
+        self.image = load_image('resource/images/golem_sprite.png')
         self.original_image = self.image
-        self.hit_image = load_image('resource/golem_hit_sprite.png')
-        self.highlight_image = load_image('resource/golem_highlight_sprite.png')
+        self.hit_image = load_image('resource/images/golem_hit_sprite.png')
+        self.highlight_image = load_image('resource/images/golem_highlight_sprite.png')
 
         self.max_hp = 200
         self.current_hp = 200

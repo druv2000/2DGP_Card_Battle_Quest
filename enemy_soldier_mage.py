@@ -13,9 +13,9 @@ class Soldier_mage(Character):
         self.draw_size = 100
         self.collision_radius = self.draw_size * (3 / 4)
 
-        self.image = load_image('resource/soldier(mage)_sprite.png')
+        self.image = load_image('resource/images/soldier(mage)_sprite.png')
         self.original_image = self.image
-        self.hit_image = load_image('resource/soldier(mage)_hit_sprite.png')
+        self.hit_image = load_image('resource/images/soldier(mage)_hit_sprite.png')
 
         self.max_hp = 30
         self.current_hp = 30

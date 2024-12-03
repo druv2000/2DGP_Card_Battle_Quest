@@ -12,9 +12,9 @@ class Soldier(Character):
         self.draw_size = 100
         self.collision_radius = self.draw_size * (3 / 4)
 
-        self.image = load_image('resource/soldier(red)_sprite.png')
+        self.image = load_image('resource/images/soldier(red)_sprite.png')
         self.original_image = self.image
-        self.hit_image = load_image('resource/soldier_hit_sprite.png')
+        self.hit_image = load_image('resource/images/soldier_hit_sprite.png')
 
         self.max_hp = 90
         self.current_hp = 90

@@ -300,7 +300,7 @@ class Card:
         self.original_x = self.x
         self.original_y = self.y
         self.image = load_image(image_path)
-        self.unable_image = load_image('resource/red_x.png')
+        self.unable_image = load_image('resource/images/red_x.png')
         self.original_size_x = 200
         self.original_size_y = 258
         self.draw_size_x = self.original_size_x

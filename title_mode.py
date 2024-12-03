@@ -9,7 +9,7 @@ import game_framework
 
 def init():
     global image
-    image = load_image('resource/title.png')
+    image = load_image('resource/images/title.png')
     pass
 
 def finish():

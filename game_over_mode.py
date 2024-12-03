@@ -64,10 +64,10 @@ class DamageBar:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.frame_image = load_image('resource/HP_frame.png')
-        self.knight_image = load_image('resource/damage_bar_knight.png')
-        self.mage_image = load_image('resource/damage_bar_mage.png')
-        self.bowman_image = load_image('resource/damage_bar_bowman.png')
+        self.frame_image = load_image('resource/images/HP_frame.png')
+        self.knight_image = load_image('resource/images/damage_bar_knight.png')
+        self.mage_image = load_image('resource/images/damage_bar_mage.png')
+        self.bowman_image = load_image('resource/images/damage_bar_bowman.png')
         self.knight_damage = for_global.knight_total_damage
         self.mage_damage = for_global.mage_total_damage
         self.bowman_damage = for_global.bowman_total_damage
@@ -112,7 +112,7 @@ class PressSpaceToContinueUI:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.image = load_image('resource/continue_ui.png')
+        self.image = load_image('resource/images/continue_ui.png')
         self.opacify = 1.0
         self.opacify_increment = 0.01
         self.is_active = False
@@ -120,9 +120,6 @@ class PressSpaceToContinueUI:
     def draw(self):
         if self.is_active:
             self.image.draw(self.x, self.y, 1200, 68)
-
-
-
 
 
 def init():
@@ -135,31 +132,31 @@ def init():
         'black_screen',
         SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
         1000, 1000,
-        'resource/screen_black.png'
+        'resource/images/screen_black.png'
     )
     game_over_logo = Image(
         'game_over_logo',
         SCREEN_WIDTH / 2, 450,
         10, 10,
-        'resource/game_over.png'
+        'resource/images/game_over.png'
     )
     game_clear_logo = Image(
         'game_over_logo',
         SCREEN_WIDTH / 2, 450,
         10, 10,
-        'resource/game_clear.png'
+        'resource/images/game_clear.png'
     )
     progress_bar = Image(
         'progress_bar',
         SCREEN_WIDTH / 2, 700,
         3, 3,
-        'resource/wave_bar.png'
+        'resource/images/wave_bar.png'
     )
     progress_cursor = Image(
         'progress_cursor',
         800 - progress_bar.image.w * 3 / 2, 670,
         2, 2,
-        'resource/wave_cursor.png'
+        'resource/images/wave_cursor.png'
     )
     images = [
         black_screen,
@@ -214,7 +211,7 @@ def total_score_check():
     total_score = 0
 
     clear_score = 10000
-    death_penalty = 3000
+    death_penalty = 1500
     kill_score = 100
     damage_3000_score = 1000
     damage_5000_score = 3000
