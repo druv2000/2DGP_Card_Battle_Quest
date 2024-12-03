@@ -161,7 +161,7 @@ class CardManager:
     def manage_dead(self, c, cur_state):
         for card in self.hand.cards:
             if card.user == c and card.state_machine.cur_state == Clicked:
-                card.state_machine.add_event(('CANNOT_USE_CARD', 'CHARACTER_DIE'))
+                card.state_machine.add_event(('CANNOT_USE_CARD', 'CANNOT_USE_NOW'))
         if cur_state == 'dead':
             self.transform_cards(c, to_revival=True)
         elif cur_state == 'alive':

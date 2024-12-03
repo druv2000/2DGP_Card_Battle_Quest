@@ -235,6 +235,9 @@ class CardUseFailedUI:
             self.image = load_image('resource/message_not_enough_mana.png')
         elif event == 'CANNOT_FIND_TARGET':
             self.image = load_image('resource/message_cannot_find_target.png')
+        elif event == 'CANNOT_USE_NOW':
+            self.image = load_image('resource/message_cannot_use_now.png')
+
         self.image.opacify(0.0)
 
         self.start_time = get_time()

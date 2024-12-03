@@ -217,6 +217,11 @@ class Clicked:
 class Used:
     @staticmethod
     def enter(c, e):
+        # 사용자가 카드를 사용할 수 없는 상태면 사용 실패 (기절, 캐스팅 중 등등)
+        if not c.user.can_use_card:
+            c.state_machine.add_event(('CANNOT_USE_CARD', 'CANNOT_USE_NOW'))
+            return
+
         # 코스트가 현재 마나보다 높을경우 사용 실패
         if c.cost > for_global.cur_mana:
             c.state_machine.add_event(('CANNOT_USE_CARD', 'NOT_ENOUGH_MANA'))
@@ -227,6 +232,8 @@ class Used:
             if c.target == None:
                 c.state_machine.add_event(('CANNOT_USE_CARD', 'CANNOT_FIND_TARGET'))
                 return
+
+
 
         from card_manager import card_manager
         card_manager.use_card(c)

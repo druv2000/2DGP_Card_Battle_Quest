@@ -130,11 +130,11 @@ def check_character_state_change(c, cur_state):
             print(f'        ERROR: unknown event by: character_state_change_event')
             pass
 
-    # 적 보스 체크
+    # 적 이라면
     else:
         for_global.kill_count += 1
         if isinstance(c, Soldier_boss) and cur_state == 'dead':
-            # 게임 클리어 로직
+            # 보스 사망 시 게임 클리어
             for_global.is_clear = True
             event_system.trigger('game_end', 'game_clear')
             fade_out_animation = ScreenFadeOutAnimation('resource/screen_white.png', 2.0)

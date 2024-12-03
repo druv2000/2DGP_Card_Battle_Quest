@@ -72,16 +72,8 @@ class Player:
     def handle_card_release(self, event):
         for_global.mouse_x, for_global.mouse_y = event.x, for_global.SCREEN_HEIGHT - event.y
         for card in card_manager.hand.cards:
-
-            # 사용 불가 시 처리
-            if card.state_machine.cur_state == Clicked and not card.user.can_use_card:
-                card.state_machine.add_event(('CANNOT_USE_CARD', 0))
-                return
-
-            # 사용 가능하면
-            if card.state_machine.cur_state == Clicked and card.user.can_use_card:
+            if card.state_machine.cur_state == Clicked:
                 card.state_machine.add_event(('MOUSE_LEFT_RELEASE', event))
-                return
 
     ############################################################
     # spawn object
