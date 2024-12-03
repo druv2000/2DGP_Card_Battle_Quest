@@ -187,7 +187,6 @@ class ScreenAlertAnimation:
     def draw(self):
         self.image.draw(self.x, self.y, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-
 class CircleIncreaseEffect:
     def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, total_frame, total_time):
         self.x = x

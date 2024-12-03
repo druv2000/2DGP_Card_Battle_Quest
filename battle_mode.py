@@ -14,7 +14,6 @@ import game_world
 import object_pool
 from background import Background1, Background2
 from character_list import Knight, Bowman, Mage
-from for_global import kill_count
 from player import player
 from ui import TotalDamageUI, ManaUI
 
@@ -79,6 +78,35 @@ def on_character_hit(character, bullet):
     print(f"Character {character} hit by bullet {bullet}")
     # 전역 히트 효과
 
+###################################################
+
+class ScreenFadeOutAnimation:
+    def __init__(self, image_path, duration):
+        self.x = for_global.SCREEN_WIDTH / 2
+        self.y = for_global.SCREEN_HEIGHT / 2
+        self.image = load_image(image_path)
+        self.duration = duration
+        self.start_time = get_time()
+
+        self.opacify = 0.0
+        self.image.opacify(self.opacify)
+
+        self.can_target = False
+
+    def update(self):
+        current_time = get_time()
+        if current_time - self.start_time >= self.duration:
+            game_framework.change_mode(game_over_mode)
+
+        self.progress = (current_time - self.start_time) / self.duration
+        self.opacify = self.progress
+        self.image.opacify(self.opacify)
+
+    def draw(self):
+        self.image.draw(self.x, self.y, for_global.SCREEN_WIDTH, for_global.SCREEN_HEIGHT)
+
+###################################################
+
 def check_character_state_change(c, cur_state):
     # 아군 메인 캐릭터 체크
     if isinstance(c, Knight) or isinstance(c, Mage) or isinstance(c, Bowman):
@@ -90,7 +118,8 @@ def check_character_state_change(c, cur_state):
             if for_global.alive_character_count == 0:
                 for_global.is_clear = False
                 event_system.trigger('game_end', 'game_over')
-                game_framework.change_mode(game_over_mode)
+                fade_out_animation = ScreenFadeOutAnimation('resource/screen_black.png', 2.0)
+                game_world.add_object(fade_out_animation, 9)
                 pass
 
             pass
@@ -106,9 +135,10 @@ def check_character_state_change(c, cur_state):
         for_global.kill_count += 1
         if isinstance(c, Soldier_boss) and cur_state == 'dead':
             # 게임 클리어 로직
-            event_system.trigger('game_end', 'game_clear')
             for_global.is_clear = True
-            game_framework.change_mode(game_over_mode)
+            event_system.trigger('game_end', 'game_clear')
+            fade_out_animation = ScreenFadeOutAnimation('resource/screen_white.png', 2.0)
+            game_world.add_object(fade_out_animation, 9)
             pass
 
 def finish():
