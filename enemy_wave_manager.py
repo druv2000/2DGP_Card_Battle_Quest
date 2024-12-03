@@ -356,10 +356,11 @@ class EnemyWaveManager:
                 del self.active_portals[position]
 
         wave_cursor_progress = (current_time - self.last_wave_time) / self.current_interval
-        self.wave_cursor_x = self.wave_cursor_start_x + (wave_cursor_progress * self.wave_bar_image.w * self.wave_bar_scale / 15)
+        if self.cur_wave <= self.max_wave:
+            self.wave_cursor_x = self.wave_cursor_start_x + (wave_cursor_progress * self.wave_bar_image.w * self.wave_bar_scale / 15)
 
     def draw(self):
-        if self.cur_wave <= MAX_WAVE:
+        if self.cur_wave <= self.max_wave:
             self.font.draw(
                 self.timer_x, self.timer_y,
                 f'{self.current_interval - (get_time() - self.last_wave_time):.1f}',
@@ -493,5 +494,3 @@ class Portal:
                 self.x, self.y,
                 self.draw_size, self.draw_size
             )
-
-        pass

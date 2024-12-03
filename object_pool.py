@@ -199,6 +199,3 @@ def get_character_bullet(c):
         return soldier_mage_bullet_pool.get(c.x, c.y, c, c.target)
     else:
         return none_bullet_pool.get(c.x, c.y, c, c.target)
-
-
-

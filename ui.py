@@ -382,6 +382,3 @@ class ProgressBar:
                 self.x, self.y,
                 self.size_x / 2, self.size_y / 2
             )
-
-
-

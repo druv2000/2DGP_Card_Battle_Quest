@@ -23,7 +23,7 @@ class Knight(Character):
         self.highlight_image = load_image('resource/knight_highlight_sprite.png')
 
         self.max_hp = 300         # max_hp
-        self.current_hp = 1      # current_hp
+        self.current_hp = 300     # current_hp
         self.move_speed = 200       # move pixel per second
         self.attack_range = 100     # pixel
         self.base_attack_speed = 1.3     # attack per second
@@ -62,7 +62,7 @@ class Mage(Character):
         self.highlight_image = load_image('resource/mage_highlight_sprite.png')
 
         self.max_hp = 200
-        self.current_hp = 2
+        self.current_hp = 200
         self.move_speed = 130
         self.attack_range = 400
         self.base_attack_speed = 1.0
@@ -100,7 +100,7 @@ class Bowman(Character):
         self.highlight_image = load_image('resource/bowman_highlight_sprite.png')
 
         self.max_hp = 150
-        self.current_hp = 1
+        self.current_hp = 150
         self.move_speed = 120
         self.attack_range = 650
         self.base_attack_speed = 1.5
@@ -153,5 +153,3 @@ class Golem(Character):
     def get_bb(self):
         size = self.draw_size
         return self.x - size / 4, self.y - size / 2, self.x + size / 4, self.y + size / 4
-
-

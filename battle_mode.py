@@ -14,6 +14,7 @@ import game_world
 import object_pool
 from background import Background1, Background2
 from character_list import Knight, Bowman, Mage
+from for_global import kill_count
 from player import player
 from ui import TotalDamageUI, ManaUI
 
@@ -24,7 +25,7 @@ def init():
 
     object_pool.init_object_pool()
     event_system.add_listener('character_hit', on_character_hit)
-    event_system.add_listener('character_state_change', game_over_check)
+    event_system.add_listener('character_state_change', check_character_state_change)
 
     running = True
     # background 생성
@@ -63,18 +64,31 @@ def init():
     enemy_wave_manager = EnemyWaveManager()
     game_world.add_object(enemy_wave_manager, 9)
 
+    # 각종 스코어 초기화
+    for_global.total_score = 0
+    for_global.is_clear = False
+    for_global.kill_count = 0
+    for_global.death_count = 0
+    for_global.wave_progress_x = 0
+    for_global.end_wave = 0
+    for_global.knight_total_damage = 0
+    for_global.mage_total_damage = 0
+    for_global.bowman_total_damage = 0
+
 def on_character_hit(character, bullet):
     print(f"Character {character} hit by bullet {bullet}")
     # 전역 히트 효과
 
-def game_over_check(c, cur_state):
+def check_character_state_change(c, cur_state):
     # 아군 메인 캐릭터 체크
     if isinstance(c, Knight) or isinstance(c, Mage) or isinstance(c, Bowman):
         if cur_state == 'dead':
             for_global.alive_character_count -= 1
+            for_global.death_count += 1
 
             # 메인 캐릭터 3명 전원 사망 시 게임오버
             if for_global.alive_character_count == 0:
+                for_global.is_clear = False
                 event_system.trigger('game_end', 'game_over')
                 game_framework.change_mode(game_over_mode)
                 pass
@@ -88,9 +102,14 @@ def game_over_check(c, cur_state):
             pass
 
     # 적 보스 체크
-    if isinstance(c, Soldier_boss) and cur_state == 'dead':
-        # 게임 클리어 로직
-        pass
+    else:
+        for_global.kill_count += 1
+        if isinstance(c, Soldier_boss) and cur_state == 'dead':
+            # 게임 클리어 로직
+            event_system.trigger('game_end', 'game_clear')
+            for_global.is_clear = True
+            game_framework.change_mode(game_over_mode)
+            pass
 
 def finish():
     game_world.clear()

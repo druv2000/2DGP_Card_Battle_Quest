@@ -661,6 +661,3 @@ class Character:
         for effect in self.effects:
             if isinstance(effect, effect_type):
                 effect.remove(self)
-
-
-

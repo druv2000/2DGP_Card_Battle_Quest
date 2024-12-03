@@ -95,6 +95,9 @@ WAVE_BAR_Y = 850
 alive_character_count = 3
 
 # score
+total_score = 0
+is_clear = False
+
 kill_count = 0
 death_count = 0
 
