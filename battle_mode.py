@@ -15,6 +15,7 @@ import object_pool
 from background import Background1, Background2
 from character_list import Knight, Bowman, Mage, Golem
 from player import player
+from sound_manager import sound_manager
 from ui import TotalDamageUI, ManaUI
 
 global knight, mage, bowman
@@ -131,7 +132,7 @@ def check_character_state_change(c, cur_state):
             pass
 
     # 적 이라면
-    elif not isinstance(c, Golem) and cur_state == 'dead':
+    elif c.team == 'enemy':
         for_global.kill_count += 1
         if isinstance(c, Soldier_boss) and cur_state == 'dead':
             # 보스 사망 시 게임 클리어
@@ -155,6 +156,7 @@ def update():
     game_world.handle_collisions()
     game_world.update()
     card_manager.update()
+    sound_manager.update()
 
 def draw():
     clear_canvas()

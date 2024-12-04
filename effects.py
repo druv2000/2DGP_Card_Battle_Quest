@@ -165,8 +165,8 @@ class TauntEffect(Effect):
         self.frame = 0
 
     def apply(self, c):
-        target_distance = math.sqrt((c.target.x - c.x) ** 2 + (c.target.y - c.y) ** 2)
         c.target = self.target
+        target_distance = math.sqrt((c.target.x - c.x) ** 2 + (c.target.y - c.y) ** 2)
         c.dir_x = (c.target.x - c.x) / (target_distance)
         c.dir_y = (c.target.y - c.y) / (target_distance)
         c.sprite_dir = -1 if c.dir_x < 0 else 1

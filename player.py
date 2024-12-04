@@ -1,7 +1,7 @@
 # player.py
 
 from sdl2 import SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT, SDL_KEYDOWN, SDLK_SPACE, \
-    SDLK_BACKSPACE, SDLK_e, SDLK_q, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDL_MOUSEBUTTONUP
+    SDLK_BACKSPACE, SDLK_e, SDLK_q, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDL_MOUSEBUTTONUP, SDLK_f
 
 import game_world
 import for_global
@@ -9,6 +9,7 @@ from card import Clicked
 from card_manager import card_manager
 from character_list import Mage, Knight, Bowman
 from enemy_soldier_boss import Soldier_boss
+from enemy_soldier_cannon import Soldier_cannon
 from enemy_soldier_elite import Soldier_elite
 from enemy_soldier_mage import Soldier_mage
 from enemy_soldier import Soldier
@@ -37,6 +38,8 @@ class Player:
             self.spawn_enemy_soldier_mage(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_d:
             self.spawn_enemy_soldier_elite(for_global.mouse_x, for_global.mouse_y)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_f:
+            self.spawn_enemy_soldier_cannon(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_q:
             self.spawn_knight(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_w:
@@ -102,6 +105,11 @@ class Player:
 
     def spawn_enemy_soldier_elite(self, x, y):
         new_enemy = Soldier_elite(x, y, 'enemy')
+        game_world.add_object(new_enemy, 3)  # 적 추가
+        game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
+
+    def spawn_enemy_soldier_cannon(self, x, y):
+        new_enemy = Soldier_cannon(x, y, 'enemy')
         game_world.add_object(new_enemy, 3)  # 적 추가
         game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
 

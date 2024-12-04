@@ -1,4 +1,4 @@
-from pico2d import load_image
+from pico2d import load_image, load_wav
 
 import game_world
 from character import Character
@@ -35,6 +35,12 @@ class Soldier_elite(Character):
 
         self.HP_bar = StandardHpbarui(self)
         game_world.add_object(self.HP_bar, 8)
+
+        self.attack_sound = load_wav('resource/sounds/soldier_elite_attack.wav')
+        self.attack_sound_duration = 0.13
+
+        self.die_sound = load_wav('resource/sounds/soldier_dead.wav')
+        self.die_sound_duration = 0.45
 
     def get_bb(self):
         size = self.draw_size

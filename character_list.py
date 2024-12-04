@@ -1,6 +1,6 @@
 # character_list.py
 
-from pico2d import load_image
+from pico2d import load_image, load_wav
 
 import game_world
 from bullet import Mage_AttackBullet, Bowman_AttackBullet
@@ -40,6 +40,12 @@ class Knight(Character):
 
         self.HP_bar = MainCharacterHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
+
+        self.attack_sound = load_wav('resource/sounds/knight_attack.wav')
+        self.attack_sound_duration = 0.21
+
+        self.die_sound = load_wav('resource/sounds/soldier_dead.wav')
+        self.die_sound_duration = 0.45
 
     def get_bb(self):
         size = self.draw_size
@@ -81,6 +87,12 @@ class Mage(Character):
         self.HP_bar = MainCharacterHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
 
+        self.attack_sound = load_wav('resource/sounds/mage_bullet_fire.wav')
+        self.attack_sound_duration = 0.21
+
+        self.die_sound = load_wav('resource/sounds/soldier_dead.wav')
+        self.die_sound_duration = 0.45
+
     def get_bb(self):
         size = self.draw_size
         return self.x - size/4, self.y - size/2, self.x + size/4, self.y + size/5
@@ -114,6 +126,12 @@ class Bowman(Character):
 
         self.HP_bar = MainCharacterHpbarui(self)
         game_world.add_object(self.HP_bar, 9)
+
+        self.attack_sound = load_wav('resource/sounds/bowman_bullet_fire.wav')
+        self.attack_sound_duration = 0.13
+
+        self.die_sound = load_wav('resource/sounds/soldier_dead.wav')
+        self.die_sound_duration = 0.45
 
     def get_bb(self):
         size = self.draw_size
@@ -149,6 +167,12 @@ class Golem(Character):
 
         self.HP_bar = StandardHpbarui(self)
         game_world.add_object(self.HP_bar, 8)
+
+        self.attack_sound = load_wav('resource/sounds/soldier_elite_attack.wav')
+        self.attack_sound_duration = 0.13
+
+        self.die_sound = load_wav('resource/sounds/soldier_dead.wav')
+        self.die_sound_duration = 0.45
 
     def get_bb(self):
         size = self.draw_size

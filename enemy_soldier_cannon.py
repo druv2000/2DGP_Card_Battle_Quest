@@ -1,4 +1,4 @@
-from pico2d import load_image
+from pico2d import load_image, load_wav
 
 import game_world
 from bullet import Soldier_Mage_AttackBullet
@@ -37,6 +37,15 @@ class Soldier_cannon(Character):
         self.is_cannon = True
         self.HP_bar = StandardHpbarui(self)
         game_world.add_object(self.HP_bar, 8)
+
+        self.attack_sound = load_wav('resource/sounds/soldier_cannon_bullet_fire.wav')
+        self.attack_sound_duration = 0.49
+
+        self.charge_sound = load_wav('resource/sounds/soldier_cannon_charge.wav')
+        self.charge_sound_duration = 0.59
+
+        self.die_sound = load_wav('resource/sounds/soldier_dead.wav')
+        self.die_sound_duration = 0.45
 
     def get_bb(self):
         size = self.draw_size

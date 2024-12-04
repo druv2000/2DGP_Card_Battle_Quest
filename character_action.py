@@ -3,15 +3,15 @@
 import random
 import time
 
-from pico2d import get_time
-
 import object_pool
-from effects import StunEffect, ForcedMovementEffect, AttackSpeedUpTemplate, AttackSpeedUpEffect, InvincibleEffect
+from effects import StunEffect, ForcedMovementEffect, AttackSpeedUpEffect, InvincibleEffect
 from game_world import world
-from for_global import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, KNIGHT_BODY_TACKLE_KNOCKBACK_DISTANCE, \
+from for_global import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS, \
     BOWMAN_ROLLING_SPEED, BOWMAN_ROLLING_ROTATE_SPEED, BOWMAN_ROLLING_ATK_SPEED_DURATION, \
     BOWMAN_ROLLING_ATK_SPEED_INCREMENT, HUGE_NUMBER
 from object_pool import *
+from sound_manager import sound_manager
+
 
 # =================================================================
 
@@ -118,6 +118,7 @@ class BowmanAdditionalAttackObject:
 
         if get_time() - self.last_update_time >= self.interval:
             if self.attack_count < len(self.bullet_positions):
+                sound_manager.play_sfx(self.c.attack_sound, self.c.attack_sound_duration, 2.0)
                 x, y = self.bullet_positions[self.attack_count]
                 bullet = object_pool.bowman_additional_bullet_pool.get(x, y, self.c, self.c.target)
 
@@ -132,6 +133,14 @@ class BowmanAdditionalAttackObject:
 
 def attack_target(c):
     from enemy_soldier_elite import Soldier_elite
+
+    # SoundManager를 사용하여 사운드 재생
+    if c.attack_sound:
+        sound_manager.play_sfx(
+            c.attack_sound,
+            c.attack_sound_duration,
+            2.0 if c.team == 'ally' else 1.0
+        )
 
     # elite_soldier 일반공격에 stun 적용
     if isinstance(c, Soldier_elite):

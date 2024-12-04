@@ -84,7 +84,6 @@ class Mage_AttackBullet(Bullet):
             Mage_AttackBullet.image = load_image('resource/images/mage_bullet.png')
         self.move_speed = 750
 
-
 class Bowman_AttackBullet(Bullet):
     image = None
 
@@ -135,7 +134,6 @@ class Bowman_AdditionalBullet(Bullet):
         self.attack_damage = int(shooter.attack_damage / 2)
         self.collision_group = object_pool.collision_group_pool.get(self, target, 'bullet')
         print(f'    DEBUG: bullet set')
-
 
     def draw(self):
         if self.is_active:
