@@ -117,6 +117,10 @@ def check_character_state_change(c, cur_state):
 
             # 메인 캐릭터 3명 전원 사망 시 게임오버
             if for_global.alive_character_count == 0:
+
+                sound_manager.sfx_queue.clear()
+                sound_manager.game_over_sfx.play()
+
                 for_global.is_clear = False
                 event_system.trigger('game_end', 'game_over')
                 fade_out_animation = ScreenFadeOutAnimation('resource/images/screen_black.png', 2.0)
@@ -136,6 +140,9 @@ def check_character_state_change(c, cur_state):
         for_global.kill_count += 1
         if isinstance(c, Soldier_boss) and cur_state == 'dead':
             # 보스 사망 시 게임 클리어
+            sound_manager.sfx_queue.clear()
+            sound_manager.game_clear_sfx.play()
+
             for_global.is_clear = True
             event_system.trigger('game_end', 'game_clear')
             fade_out_animation = ScreenFadeOutAnimation('resource/images/screen_white.png', 2.0)
