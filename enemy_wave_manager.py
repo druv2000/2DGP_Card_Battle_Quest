@@ -15,6 +15,7 @@ from enemy_soldier_boss import Soldier_boss
 from enemy_soldier_elite import Soldier_elite
 from enemy_soldier_mage import Soldier_mage
 from enemy_soldier import Soldier
+from sound_manager import sound_manager
 
 
 class EnemyWaveManager:
@@ -441,9 +442,17 @@ class EnemyWaveManager:
         self.active_portals[position] = new_portal
 
     def spawn_enemy(self, enemy_type, position):
+        # 적 생성
         new_enemy = enemy_type(*position, 'enemy')
         game_world.add_object(new_enemy, 4)
         game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
+
+        # 사운드 출력
+        sound_manager.play_sfx(
+            sound_manager.enemy_spawn,
+            0.17,
+            3.0
+        )
         pass
 
     def progress_check(self, type):

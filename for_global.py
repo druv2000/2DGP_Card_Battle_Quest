@@ -109,11 +109,7 @@ knight_total_damage = 0
 mage_total_damage = 0
 bowman_total_damage = 0
 
-# sound
-# CAST_SOUND_025 = load_wav('resource/sounds/cast_sound_025.wav')
-# CAST_SOUND_050 = load_wav('resource/sounds/cast_sound_050.wav')
-# CAST_SOUND_075 = load_wav('resource/sounds/cast_sound_075.wav')
-# CAST_SOUND_100 = load_wav('resource/sounds/cast_sound_100.wav')
+
 
 # HIT_SOUND = load_wav('resource/sounds/hit_sound.wav')
 

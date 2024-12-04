@@ -1,7 +1,7 @@
 # card_list.py
 import time
 
-from pico2d import get_time, load_image
+from pico2d import get_time, load_image, load_wav
 
 import game_world
 import for_global
@@ -15,6 +15,7 @@ from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, 
 from event_system import event_system
 from game_world import world, add_object
 from for_global import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
+from sound_manager import sound_manager
 
 
 ############ knight #####################
@@ -54,6 +55,10 @@ class WarCry(Card):
         self.casting_time = 0.1
         self.expected_card_area = None
 
+        self.effect_sound_1 = load_wav('resource/sounds/card_war_cry_1.wav')
+        self.effect_sound_2 = load_wav('resource/sounds/card_war_cry_2.wav')
+
+
     def use(self, x, y):
         self.expected_card_area = CardAreaEffectAnimation(
             x, y,
@@ -69,6 +74,10 @@ class WarCry(Card):
 
     def apply_effect(self, x, y):
         game_world.remove_object(self.expected_card_area)
+
+        sound_manager.play_sfx(self.effect_sound_1, 0.59, 5.0)
+        sound_manager.play_sfx(self.effect_sound_2, 0.45, 10.0)
+
         war_cry_effect = CircleIncreaseEffect(
             x, y,
             680, 680,
@@ -133,6 +142,7 @@ class Respite(Card):
         self.armor_amount = 50
         self.continuous_heal_amount = 20
         self.is_self_target_card = True
+        self.effect_sound = load_wav('resource/sounds/card_respite.wav')
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -140,9 +150,9 @@ class Respite(Card):
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
+        sound_manager.play_sfx(self.effect_sound, 0.29, 5.0)
         self.target = self.user
         self.target.is_highlight = False
-
         self.target.armor += self.armor_amount
 
         # 방어도 힐 효과 적용
@@ -163,6 +173,7 @@ class Explosion(Card):
         self.radius = 100
         self.casting_time = 1.0
         self.expected_card_area = None
+        self.effect_sound = load_wav('resource/sounds/card_explosion.wav')
 
     def use(self, x, y):
         self.expected_card_area = CardAreaEffectAnimation(
@@ -179,6 +190,8 @@ class Explosion(Card):
 
     def apply_effect(self, x, y):
         game_world.remove_object(self.expected_card_area)
+
+        sound_manager.play_sfx(self.effect_sound, 0.68, 10.0)
 
         card_effect_animation = CardEffectAnimation(
             x, y,
@@ -228,6 +241,8 @@ class SummonGolem(Card):
         self.summon_scale = 120
         self.expected_card_area = None
 
+        self.effect_sound = load_wav('resource/sounds/card_summon_golem.wav')
+
     def use(self, x, y):
         self.expected_card_area = CardAreaEffectAnimation(
             x, y,
@@ -243,6 +258,7 @@ class SummonGolem(Card):
 
     def apply_effect(self, x, y):
         game_world.remove_object(self.expected_card_area)
+        sound_manager.play_sfx(self.effect_sound, 0.37, 5.0, 3)
 
         card_effect_area_animation = CardAreaEffectAnimation(
             x, y,
@@ -340,6 +356,7 @@ class SnipeShot(Card):
         self.width = 50
         self.casting_time = 0.75
         self.expected_card_area = None
+        self.effect_sound = load_wav('resource/sounds/card_snipe_shot.wav')
 
     def use(self, x, y):
         # 캐스팅 중에 예상 범위 표시
@@ -357,6 +374,7 @@ class SnipeShot(Card):
 
     def apply_effect(self, x, y):
         game_world.remove_object(self.expected_card_area)
+        sound_manager.play_sfx(self.effect_sound, 0.29, 5.0)
 
         # 투사체 발사
         snipe_shot_bullet = Bowman_SnipeShotBullet()
@@ -451,6 +469,7 @@ class Rolling(Card):
         self.summon_size_y = 240
         self.summon_scale = 100
         self.expected_card_area = None
+        self.effect_sound = load_wav('resource/sounds/card_rolling.wav')
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -458,6 +477,8 @@ class Rolling(Card):
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
+        sound_manager.play_sfx(self.effect_sound, 0.55, 5.0)
+
         self.user.state_machine.add_event(('BOWMAN_ROLLING_START', (x, y)))
         if self.remaining_uses == 1:
             self.image = self.image_uses_1

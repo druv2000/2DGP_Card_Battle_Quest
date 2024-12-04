@@ -172,17 +172,27 @@ class Attack_target:
 class Casting:
     @staticmethod
     def enter(c, e):
-
         # 방향 설정
         if c.current_card.range == 0:
             pass
         elif c.card_target:
             c.sprite_dir = 1 if c.card_target[0] - c.x >= 0 else -1
 
-        c.cast_start_time = get_time()
+        # 캐스트 사운드 출력 (0.1초 이하면 출력x)
         c.cast_duration = e[1]
+        if 0.1 < c.cast_duration <= 0.25:
+            sound_manager.play_sfx(sound_manager.cast_025, 0.25, 3.0)
+        elif 0.25 < c.cast_duration <= 0.5:
+            sound_manager.play_sfx(sound_manager.cast_050, 0.50, 3.0)
+        elif 0.5 < c.cast_duration <= 0.75:
+            sound_manager.play_sfx(sound_manager.cast_075, 0.75, 3.0)
+        elif 0.75 < c.cast_duration:
+            sound_manager.play_sfx(sound_manager.cast_100, 1.00, 3.0)
+
         c.cast_progress_bar = ProgressBar(c, c.cast_duration)
         game_world.add_object(c.cast_progress_bar, 9)
+        c.cast_start_time = get_time()
+
         c.frame = 0
         c.can_use_card = False
 
@@ -665,6 +675,15 @@ class Character:
         if self.state_machine.cur_state not in [Dead]:
             heal_to_take = amount
             old_hp = self.current_hp
+
+            # 실제로 회복이 적용되었으면 힐 사운드 재생
+            if self.current_hp < self.max_hp:
+                sound_manager.play_sfx(
+                    sound_manager.heal,
+                    0.28,
+                    2.0 if self.team == 'ally' else 1.0
+                )
+
 
             self.current_hp = min(self.max_hp, self.current_hp + heal_to_take)
             event_system.trigger('hp_changed', self, old_hp, self.current_hp)
