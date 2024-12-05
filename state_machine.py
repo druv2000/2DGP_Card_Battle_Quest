@@ -60,6 +60,14 @@ def bowman_rolling_start(event):
 def bowman_rolling_end(event):
     return event[0] == 'BOWMAN_ROLLING_END'
 
+def phase_2_start(event):
+    return event[0] == 'BOSS_HP_BELOW_50%'
+
+def phase_2_pattern_end(event):
+    return event[0] == 'PHASE_2_PATTERN_END'
+
+##########################################################
+# CARD
 
 def card_return_to_hand(event):
     return event[0] == 'CARD_RETURN_TO_HAND'

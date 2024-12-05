@@ -15,9 +15,12 @@ class SoundManager:
         self.cast_100 = None
         self.heal = None
         self.enemy_spawn = None
+        self.wave_alert = None
         self.game_over_sfx = None
         self.game_clear_sfx = None
         self.crash = None
+        self.revival_1 = None
+        self.revival_2 = None
 
     def update(self):
         if self.cast_025 is None:
@@ -27,9 +30,12 @@ class SoundManager:
             self.cast_100 = load_wav('resource/sounds/cast_100.wav')
             self.heal = load_wav('resource/sounds/heal.wav')
             self.enemy_spawn = load_wav('resource/sounds/enemy_spawn.wav')
+            self.wave_alert = load_wav('resource/sounds/wave_alert.wav')
             self.game_over_sfx = load_wav('resource/sounds/game_over_sfx.wav')
             self.game_clear_sfx = load_wav('resource/sounds/game_clear_sfx.wav')
             self.crash = load_wav('resource/sounds/card_body_tackle_2.wav')
+            self.revival_1 = load_wav('resource/sounds/card_revival_1.wav')
+            self.revival_2 = load_wav('resource/sounds/card_revival_2.wav')
 
         current_time = get_time()
         self.sfx_queue = [sfx for sfx in self.sfx_queue if current_time - sfx['start_time'] < sfx['duration']]

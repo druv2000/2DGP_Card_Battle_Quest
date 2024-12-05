@@ -16,7 +16,6 @@ class Background1:
         self.bgm_boss = load_music('resource/sounds/Soul knight OST - Rival.mp3')
         self.bgm_boss.set_volume(20)
         sound_manager.play_music(self.bgm_normal, True)
-
         event_system.add_listener('boss_spawned', self.change_bgm)
 
     def update(self):

@@ -470,6 +470,62 @@ class BowmanRolling:
     def draw(c):
         character_draw(c)
 
+class BossPhase2:
+    @staticmethod
+    def enter(c, e):
+        c.frame = 0
+        c.cur_phase = 2
+        c.move_target_x = 150
+        c.move_target_y = 550
+
+        c.cast_duration = 2.0
+        c.cast_start_time = get_time()
+        cast_progress_bar = ProgressBar(c, c.cast_duration)
+        game_world.add_object(cast_progress_bar, 9)
+
+        c.lean_forward_progress = 0.0
+        pass
+    @staticmethod
+    def exit(c, e):
+        c.is_boss_move_left_side = False
+        c.is_boss_roar = False
+        c.is_boss_summon_portal = False
+        c.move_target_x = None
+        c.move_target_y = None
+        c.rotation = c.original_rotation
+        pass
+    @staticmethod
+    def do(c):
+        c.frame = (c.frame + FRAME_PER_HIT_ANIMATION * CHARACTER_ANIMATION_PER_TIME * game_framework.frame_time * c.animation_speed) % 8
+
+        # 애니메이션 재생 (left_side로 이동 -> 포효 -> 포탈 소환)
+        current_time = get_time()
+        if 0 <= current_time - c.cast_start_time < c.cast_duration:
+            c.cast_animation()
+        elif c.cast_duration <= current_time - c.cast_start_time < c.cast_duration + 1.0:
+            if not c.is_boss_move_left_side:
+                c.move_to()
+        elif c.cast_duration + 1.0 <= current_time - c.cast_start_time < c.cast_duration + 1.5:
+            c.lean_foward(0.5)
+        elif c.cast_duration + 1.5 <= current_time - c.cast_start_time < c.cast_duration + 2.0:
+            if not c.is_boss_roar:
+                c.roar()
+            if not c.is_boss_summon_portals:
+                c.summon_portals((200, 300), (200, 800))
+        elif c.cast_duration + 2.0 <= current_time - c.cast_start_time < c.cast_duration + 4.0:
+            pass
+        elif c.cast_duration + 4.0 <= current_time - c.cast_start_time < c.cast_duration + 15.0:
+            c.rotation = c.original_rotation
+
+        else:
+            # 전부 마쳤으면 Idle상태로 복귀
+            if not c.state_machine.event_que:
+                c.state_machine.add_event(('PHASE_2_PATTERN_END', 0))
+
+    @staticmethod
+    def draw(c):
+        character_draw(c)
+
 # ==============================================
 
 class Character:
@@ -532,21 +588,24 @@ class Character:
                 dead: Dead,
                 cast_start: Casting,
                 knight_body_tackle_start: KnightBodyTackle,
-                bowman_rolling_start: BowmanRolling
+                bowman_rolling_start: BowmanRolling,
+                phase_2_start: BossPhase2
             },
             Move_to_target: {
                 target_lost: Idle,
                 can_attack_target: Attack_target,
                 stunned: Stunned,
                 dead: Dead,
-                cast_start: Casting
+                cast_start: Casting,
+                phase_2_start: BossPhase2
             },
             Attack_target: {
                 target_out_of_range: Move_to_target,
                 target_lost: Idle,
                 stunned: Stunned,
                 dead: Dead,
-                cast_start: Casting
+                cast_start: Casting,
+                phase_2_start: BossPhase2
             },
             Stunned: {
                 stunned_end: Idle,
@@ -572,6 +631,10 @@ class Character:
             CannonShoot:{
                 dead: Dead,
                 stunned: Stunned,
+            },
+            BossPhase2:{
+                phase_2_pattern_end: Idle,
+                dead: Dead,
             }
         })
 

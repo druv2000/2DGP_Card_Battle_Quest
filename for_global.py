@@ -110,7 +110,3 @@ mage_total_damage = 0
 bowman_total_damage = 0
 
 
-
-# HIT_SOUND = load_wav('resource/sounds/hit_sound.wav')
-
-

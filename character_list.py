@@ -7,7 +7,6 @@ from bullet import Mage_AttackBullet, Bowman_AttackBullet
 from character import Character, Summoned
 from ui import StandardHpbarui, MainCharacterHpbarui
 
-
 # ==================== ALLY ==========================================
 
 class Knight(Character):

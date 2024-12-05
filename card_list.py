@@ -538,6 +538,8 @@ class PerformRevivalObject:
         else:
             # 실제 부활 수행(1회)
             if not self.is_revival_performed:
+                sound_manager.play_sfx(sound_manager.revival_2, 1.73, 5.0)
+
                 # 시각 이펙트
                 circle_increase_effect = CircleIncreaseEffect(
                     self.x, self.original_y,
@@ -611,10 +613,10 @@ class RevivalKnight(Card):
         self.summon_size_x = 240
         self.summon_size_y = 240
         self.summon_scale = 100
-
         event_system.add_listener('knight_revival_count_changed', self.update_image)
 
     def use(self, x, y):
+        sound_manager.play_sfx(sound_manager.revival_1, 2.7, 5.0)
         if for_global.knight_revival_count < 5:
             # 카드 사용 효과 애니메이션 출력
             revival_effect = FadeOutEffectAnimation(
@@ -691,6 +693,7 @@ class RevivalMage(Card):
         event_system.add_listener('mage_revival_count_changed', self.update_image)
 
     def use(self, x, y):
+        sound_manager.play_sfx(sound_manager.revival_1, 2.7, 5.0)
         if for_global.mage_revival_count < 5:
             # 카드 사용 효과 애니메이션 출력
             revival_effect = FadeOutEffectAnimation(
@@ -766,6 +769,7 @@ class RevivalBowman(Card):
         event_system.add_listener('bowman_revival_count_changed', self.update_image)
 
     def use(self, x, y):
+        sound_manager.play_sfx(sound_manager.revival_1, 2.7, 5.0)
         if for_global.bowman_revival_count < 5:
             # 카드 사용 효과 애니메이션 출력
             revival_effect = FadeOutEffectAnimation(

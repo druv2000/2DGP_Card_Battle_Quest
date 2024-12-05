@@ -4,17 +4,16 @@ from collections import deque
 from pico2d import get_time, load_image, load_font
 
 import for_global
-import game_framework
 import game_world
 from animation import ScreenAlertAnimation
 from enemy_soldier_cannon import Soldier_cannon
 from event_system import event_system
-from for_global import MAX_WAVE, WAVE_INTERVAL, FRAME_PER_CHARACTER_ANIMATION, CHARACTER_ANIMATION_PER_TIME, \
-    SCREEN_WIDTH, WAVE_TIMER_X, WAVE_TIMER_Y, HUGE_TIME, WAVE_BAR_X, WAVE_BAR_Y
+from for_global import MAX_WAVE, WAVE_INTERVAL, WAVE_TIMER_X, WAVE_TIMER_Y, WAVE_BAR_X, WAVE_BAR_Y
 from enemy_soldier_boss import Soldier_boss
 from enemy_soldier_elite import Soldier_elite
 from enemy_soldier_mage import Soldier_mage
 from enemy_soldier import Soldier
+from portal import Portal
 from sound_manager import sound_manager
 
 
@@ -396,10 +395,11 @@ class EnemyWaveManager:
                 portal_duration = wave_end_time - start_time
                 self.add_portal(portal_position, 200 if cur_wave != self.max_wave else 400, portal_duration)
 
-            # 보스 웨이브 때 경고 시각효과 표시
+            # 보스 웨이브 때 경고 효과 표시
             if self.cur_wave == self.max_wave:
                 alert_animation = ScreenAlertAnimation('resource/images/screen_red.png', 3.0, 3)
                 game_world.add_object(alert_animation, 9)
+                sound_manager.play_sfx(sound_manager.wave_alert, 3.0, 3.0)
                 pass
 
         # 현재 진행 상황 반영
@@ -463,47 +463,3 @@ class EnemyWaveManager:
         for_global.wave_progress_x = self.wave_cursor_x
         for_global.end_wave = self.cur_wave - 1
         pass
-
-class Portal:
-    def __init__(self, x, y, draw_size, duration):
-        self.image = load_image('resource/images/portal.png')
-        self.opacify = 1.0
-        self.x, self.y = x, y
-        self.size_x, self.size_y = 360, 360
-        self.draw_size = draw_size
-        self.duration = duration
-        self.start_time = get_time()
-        self.frame = 0
-        self.total_frame = 10
-        self.can_target = 0
-
-    def update(self):
-        if get_time() - self.start_time >= self.duration:
-            self.opacify -=0.01
-            self.image.opacify(self.opacify)
-            if self.opacify <= 0.0:
-                game_world.remove_object(self)
-
-        self.frame = ((self.frame + FRAME_PER_CHARACTER_ANIMATION *
-                      CHARACTER_ANIMATION_PER_TIME *
-                      game_framework.frame_time) %
-                      self.total_frame
-                      )
-
-    def draw(self):
-        if self.x < SCREEN_WIDTH / 2:
-            self.image.clip_composite_draw(
-                int(self.frame) * self.size_x, 0,
-                self.size_x, self.size_y,
-                0, 'h',
-                self.x, self.y,
-                self.draw_size, self.draw_size
-            )
-        else:
-            self.image.clip_composite_draw(
-                int(self.frame) * self.size_x, 0,
-                self.size_x, self.size_y,
-                0, '',
-                self.x, self.y,
-                self.draw_size, self.draw_size
-            )

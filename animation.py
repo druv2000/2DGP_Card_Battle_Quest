@@ -6,7 +6,7 @@ from pico2d import load_image, get_time
 import game_world
 import game_framework
 
-from for_global import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION, SCREEN_WIDTH, SCREEN_HEIGHT
+from for_global import HIT_ANIMATION_PER_TIME, FRAME_PER_HIT_ANIMATION, SCREEN_WIDTH, SCREEN_HEIGHT, HUGE_TIME
 
 
 class AttackAnimation:
@@ -305,3 +305,36 @@ class CardBeamAreaEffectAnimation:
             self.width * 390, self.width
         )
 
+class RoarEffect:
+    def __init__(self, x, y, size_x, size_y, scale_x, scale_y, image_path, remaining_effects, interval):
+        self.x = x
+        self.y = y
+        self.size_x = size_x
+        self.size_y = size_y
+        self.scale_x = scale_x
+        self.scale_y = scale_y
+        self.image_path = image_path
+        self.remaining_effects = remaining_effects
+        self.interval = interval
+        self.can_target = False
+        self.start_time = get_time()
+
+    def update(self):
+        if self.remaining_effects <= 0:
+            game_world.remove_object(self)
+
+        current_time = get_time()
+        if current_time - self.start_time >= self.interval:
+            new_effect = CircleIncreaseEffect(
+                self.x, self.y,
+                self.size_x, self.size_y,
+                self.scale_x, self.scale_y,
+                self.image_path,
+                1, HUGE_TIME
+            )
+            game_world.add_object(new_effect, 8)
+            self.start_time = current_time
+            self.remaining_effects -= 1
+
+    def draw(self):
+        pass

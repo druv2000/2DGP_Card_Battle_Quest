@@ -2,7 +2,7 @@
 from uniform_grid import UniformGrid
 
 # world[0]: layer 0 - background
-# world[1]: layer 1 - team_color
+# world[1]: layer 1 - area_ui
 # world[2]: layer 2 -
 # world[3]: layer 3 - enemy_character
 # world[4]: layer 4 - ally_character
