@@ -12,7 +12,6 @@ from for_global import KNIGHT_BODY_TACKLE_RUSH_SPEED, KNIGHT_BODY_TACKLE_RADIUS,
 from object_pool import *
 from sound_manager import sound_manager
 
-
 # =================================================================
 
 def find_closest_target(c):
@@ -184,6 +183,13 @@ def perform_body_tackle(c):
         c.x = c.card_target_x
         c.y = c.card_target_y
 
+        # 충돌 사운드 출력
+        sound_manager.play_sfx(
+            sound_manager.crash,
+            0.48,
+            10.0
+        )
+
         # 충돌 애니메이션 출력
         card_effect_animation = CardEffectAnimation(
             c.x, c.y,
@@ -212,7 +218,6 @@ def perform_body_tackle(c):
         game_world.add_object(card_effect_area_animation, 1)
 
         # 충돌 범위 내 적들 데미지 + 기절
-
         for layer in world:
             for obj in layer:
                 if obj.can_target and obj.team != c.team:

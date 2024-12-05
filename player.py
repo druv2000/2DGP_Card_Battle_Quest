@@ -13,6 +13,7 @@ from enemy_soldier_cannon import Soldier_cannon
 from enemy_soldier_elite import Soldier_elite
 from enemy_soldier_mage import Soldier_mage
 from enemy_soldier import Soldier
+from event_system import event_system
 
 
 class Player:
@@ -117,6 +118,7 @@ class Player:
         new_enemy = Soldier_boss(x, y, 'enemy')
         game_world.add_object(new_enemy, 3)
         game_world.add_collision_pair('snipe_bullet:enemy', None, new_enemy)
+        event_system.trigger('boss_spawned', 'boss_spawned')
 
 
 player = Player()

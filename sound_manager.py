@@ -1,9 +1,12 @@
 from pico2d import get_time, load_wav
 
+from event_system import event_system
+
 
 class SoundManager:
     def __init__(self):
         self.sfx_queue = []
+        self.current_music = None
 
         # 글로벌 사운드 (모든 오브젝트가 공유)
         self.cast_025 = None
@@ -14,6 +17,7 @@ class SoundManager:
         self.enemy_spawn = None
         self.game_over_sfx = None
         self.game_clear_sfx = None
+        self.crash = None
 
     def update(self):
         if self.cast_025 is None:
@@ -25,16 +29,22 @@ class SoundManager:
             self.enemy_spawn = load_wav('resource/sounds/enemy_spawn.wav')
             self.game_over_sfx = load_wav('resource/sounds/game_over_sfx.wav')
             self.game_clear_sfx = load_wav('resource/sounds/game_clear_sfx.wav')
+            self.crash = load_wav('resource/sounds/card_body_tackle_2.wav')
 
         current_time = get_time()
         self.sfx_queue = [sfx for sfx in self.sfx_queue if current_time - sfx['start_time'] < sfx['duration']]
         self.normalize_sfx_volume()
 
-    def play_music(self, music, time, is_repeat):
+    def play_music(self, music, is_repeat, time=1):
         if is_repeat:
             music.repeat_play()
         else:
             music.play(time)
+        self.current_music = music
+
+    def stop_music(self):
+        if self.current_music:
+            self.current_music.stop()
 
     def play_sfx(self, sfx, duration, priority=1.0, time=1):
         sfx_instance = {

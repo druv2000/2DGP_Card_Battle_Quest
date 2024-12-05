@@ -4,7 +4,7 @@ import random
 from pico2d import *
 
 import for_global
-import game_over_mode
+import result_mode
 from card_manager import card_manager
 from enemy_soldier_boss import Soldier_boss
 from enemy_wave_manager import EnemyWaveManager
@@ -15,7 +15,7 @@ import object_pool
 from background import Background1, Background2
 from character_list import Knight, Bowman, Mage, Golem
 from player import player
-from sound_manager import sound_manager
+from sound_manager import sound_manager, SoundManager
 from ui import TotalDamageUI, ManaUI
 
 global knight, mage, bowman
@@ -97,7 +97,7 @@ class ScreenFadeOutAnimation:
     def update(self):
         current_time = get_time()
         if current_time - self.start_time >= self.duration:
-            game_framework.change_mode(game_over_mode)
+            game_framework.change_mode(result_mode)
 
         self.progress = (current_time - self.start_time) / self.duration
         self.opacify = self.progress
@@ -117,7 +117,7 @@ def check_character_state_change(c, cur_state):
 
             # 메인 캐릭터 3명 전원 사망 시 게임오버
             if for_global.alive_character_count == 0:
-
+                sound_manager.stop_music()
                 sound_manager.sfx_queue.clear()
                 sound_manager.game_over_sfx.play()
 
@@ -140,6 +140,7 @@ def check_character_state_change(c, cur_state):
         for_global.kill_count += 1
         if isinstance(c, Soldier_boss) and cur_state == 'dead':
             # 보스 사망 시 게임 클리어
+            sound_manager.stop_music()
             sound_manager.sfx_queue.clear()
             sound_manager.game_clear_sfx.play()
 

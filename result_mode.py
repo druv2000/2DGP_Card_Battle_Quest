@@ -1,4 +1,4 @@
-# game_over_mode.py
+# result_mode.py
 
 from pico2d import clear_canvas, update_canvas, get_events, load_image, load_font, get_time
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE, SDLK_SPACE

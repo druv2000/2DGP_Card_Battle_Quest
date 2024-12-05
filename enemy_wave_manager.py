@@ -453,6 +453,10 @@ class EnemyWaveManager:
             0.17,
             3.0
         )
+
+        # 보스면
+        if enemy_type == Soldier_boss:
+            event_system.trigger('boss_spawned', 'boss_spawned')
         pass
 
     def progress_check(self, type):

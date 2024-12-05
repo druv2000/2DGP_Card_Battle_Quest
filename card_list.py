@@ -13,7 +13,7 @@ from character_list import Golem
 from effects import TauntEffect, HitEffect, AtkDownEffect, VitalitySurgeEffect, BowmanMaxPowerEffect, RespiteEffect, \
     FlameEffect, StunEffect
 from event_system import event_system
-from game_world import world, add_object
+from game_world import world
 from for_global import HUGE_TIME, KNIGHT_BODY_TACKLE_RADIUS
 from sound_manager import sound_manager
 
@@ -36,6 +36,7 @@ class BodyTackle(Card):
         self.summon_size_y = 240
         self.summon_scale = 100
         self.expected_card_area = None
+        self.effect_sound_1 = load_wav('resource/sounds/card_body_tackle_1.wav')
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -43,6 +44,11 @@ class BodyTackle(Card):
         self.user.card_target = (x, y)
 
     def apply_effect(self, x, y):
+        # sound_manager.play_sfx(
+        #     self.effect_sound_1,
+        #     0.25,
+        #     2.0
+        # )
         self.user.state_machine.add_event(('KNIGHT_BODY_TACKLE_START', (x, y)))
         pass
 
@@ -388,9 +394,10 @@ class AdditionalArrow(Card):
         from battle_mode import bowman
         super().__init__("AdditionalArrow", bowman, 6, "resource/images/card_additional_arrow.png")
         self.range = 2000
-        self.casting_time = 0.25
+        self.casting_time = 0.1
         self.target = self.user
         self.is_self_target_card = True
+        self.effect_sound = load_wav('resource/sounds/card_additional_arrow.wav')
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -399,6 +406,7 @@ class AdditionalArrow(Card):
 
     def apply_effect(self, x, y):
         self.target.is_highlight = False
+        sound_manager.play_sfx(self.effect_sound, 0.51, 5.0)
 
         # 사용된 횟수별로 이펙트를 다르게 설정
         if self.target.additional_attack == 0:
