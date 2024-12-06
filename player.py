@@ -78,22 +78,22 @@ class Player:
                 card_manager.hand.cards[4].state_machine.add_event(('KEY_UP', 0))
 
         # 적/아군 소환 (각종 테스트용. 배포 버전에서는 지워야 함)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_a:
-            self.spawn_enemy_soldier(for_global.mouse_x, for_global.mouse_y)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_s:
-            self.spawn_enemy_soldier_mage(for_global.mouse_x, for_global.mouse_y)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_d:
-            self.spawn_enemy_soldier_elite(for_global.mouse_x, for_global.mouse_y)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_f:
-            self.spawn_enemy_soldier_cannon(for_global.mouse_x, for_global.mouse_y)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_q:
-            self.spawn_knight(for_global.mouse_x, for_global.mouse_y)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_w:
-            self.spawn_mage(for_global.mouse_x, for_global.mouse_y)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_e:
-            self.spawn_bowman(for_global.mouse_x, for_global.mouse_y)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
-            self.spawn_enemy_boss(for_global.mouse_x, for_global.mouse_y)
+        # elif event.type == SDL_KEYDOWN and event.key == SDLK_a:
+        #     self.spawn_enemy_soldier(for_global.mouse_x, for_global.mouse_y)
+        # elif event.type == SDL_KEYDOWN and event.key == SDLK_s:
+        #     self.spawn_enemy_soldier_mage(for_global.mouse_x, for_global.mouse_y)
+        # elif event.type == SDL_KEYDOWN and event.key == SDLK_d:
+        #     self.spawn_enemy_soldier_elite(for_global.mouse_x, for_global.mouse_y)
+        # elif event.type == SDL_KEYDOWN and event.key == SDLK_f:
+        #     self.spawn_enemy_soldier_cannon(for_global.mouse_x, for_global.mouse_y)
+        # elif event.type == SDL_KEYDOWN and event.key == SDLK_q:
+        #     self.spawn_knight(for_global.mouse_x, for_global.mouse_y)
+        # elif event.type == SDL_KEYDOWN and event.key == SDLK_w:
+        #     self.spawn_mage(for_global.mouse_x, for_global.mouse_y)
+        # elif event.type == SDL_KEYDOWN and event.key == SDLK_e:
+        #     self.spawn_bowman(for_global.mouse_x, for_global.mouse_y)
+        # elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
+        #     self.spawn_enemy_boss(for_global.mouse_x, for_global.mouse_y)
 
     ############################################################
     # manage cards
