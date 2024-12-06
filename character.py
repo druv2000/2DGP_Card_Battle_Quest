@@ -511,7 +511,7 @@ class BossPhase2:
             if not c.is_boss_roar:
                 c.roar()
             if not c.is_boss_summon_portals:
-                c.summon_portals((200, 300), (200, 800))
+                c.summon_portals((500, 300), (500, 800))
         elif c.cast_duration + 2.0 <= current_time - c.cast_start_time < c.cast_duration + 3.0:
             pass
         elif c.cast_duration + 3.0 <= current_time - c.cast_start_time < c.cast_duration + 15.0:

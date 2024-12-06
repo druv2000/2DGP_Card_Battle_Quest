@@ -430,7 +430,5 @@ def handle_events():
                 game_framework.quit()
 
 def play_score_sound():
-    sound_manager.play_sfx(
-        sound_manager.score,
-        0.46
-    )
+    sound_manager.score.set_volume(32)
+    sound_manager.score.play()

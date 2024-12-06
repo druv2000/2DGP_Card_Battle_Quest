@@ -36,7 +36,7 @@ class BodyTackle(Card):
         self.summon_size_y = 240
         self.summon_scale = 100
         self.expected_card_area = None
-        self.effect_sound_1 = load_wav('resource/sounds/card_body_tackle_1.wav')
+        # self.effect_sound_1 = load_wav('resource/sounds/card_body_tackle_1.wav') # 없는게 나은듯
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -60,6 +60,8 @@ class WarCry(Card):
         self.radius = 410
         self.casting_time = 0.1
         self.expected_card_area = None
+        self.key_words = ['taunt']
+
 
         self.effect_sound_1 = load_wav('resource/sounds/card_war_cry_1.wav')
         self.effect_sound_2 = load_wav('resource/sounds/card_war_cry_2.wav')
@@ -149,6 +151,8 @@ class Respite(Card):
         self.continuous_heal_amount = 20
         self.is_self_target_card = True
         self.effect_sound = load_wav('resource/sounds/card_respite.wav')
+        self.key_words = ['armor']
+
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))
@@ -180,6 +184,8 @@ class Explosion(Card):
         self.casting_time = 1.0
         self.expected_card_area = None
         self.effect_sound = load_wav('resource/sounds/card_explosion.wav')
+        self.key_words = ['flame']
+
 
     def use(self, x, y):
         self.expected_card_area = CardAreaEffectAnimation(
@@ -248,6 +254,8 @@ class SummonGolem(Card):
         self.expected_card_area = None
 
         self.effect_sound = load_wav('resource/sounds/card_summon_golem.wav')
+        self.key_words = ['taunt']
+
 
     def use(self, x, y):
         self.expected_card_area = CardAreaEffectAnimation(
@@ -478,6 +486,7 @@ class Rolling(Card):
         self.summon_scale = 100
         self.expected_card_area = None
         self.effect_sound = load_wav('resource/sounds/card_rolling.wav')
+        self.key_words = ['charges']
 
     def use(self, x, y):
         self.user.state_machine.add_event(('CAST_START', self.casting_time))

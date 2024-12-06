@@ -51,19 +51,40 @@ class Highlight:
         c.draw_size_x *= 2.0
         c.draw_size_y *= 2.0
         c.y = 275
+        c.tooltip_offset_x = c.draw_size_x / 2 + 120
+        c.tooltip_offset_y = c.draw_size_y / 2 - 75
         pass
     @staticmethod
     def exit(c, e):
         c.draw_size_x = c.original_size_x
         c.draw_size_y = c.original_size_y
+        c.tooltip_offset_x = 0
+        c.tooltip_offset_y = 0
         pass
     @staticmethod
     def do(c):
         pass
     @staticmethod
     def draw(c):
+        c.tooltip_offset_y = c.draw_size_y / 2 - 75
         c.image.draw(c.x, c.y, c.draw_size_x, c.draw_size_y)
-        pass
+        for key_word in c.key_words:
+            tooltip_image = None
+            if key_word == 'taunt':
+                tooltip_image = c.tooltip_taunt_image
+            elif key_word == 'armor':
+                tooltip_image = c.tooltip_armor_image
+            elif key_word == 'flame':
+                tooltip_image = c.tooltip_flame_image
+            elif key_word == 'charges':
+                tooltip_image = c.tooltip_charges_image
+            else:
+                print(f'ERROR: 정의되지 않은 카드 키워드 확인: {key_word}')
+                continue
+
+            if tooltip_image:
+                tooltip_image.draw(c.x + c.tooltip_offset_x, c.y + c.tooltip_offset_y, 240, 80)
+                c.tooltip_offset_y -= 90
 
 class Clicked:
     @staticmethod
@@ -307,7 +328,13 @@ class Card:
         self.draw_size_y = self.original_size_y
         self.rotation = 0
         self.original_rotation = 0
-
+        self.key_words = []
+        self.tooltip_offset_x = 0
+        self.tooltip_offset_y = 0
+        self.tooltip_taunt_image = load_image('resource/images/tooltip_taunt.png')
+        self.tooltip_flame_image = load_image('resource/images/tooltip_flame.png')
+        self.tooltip_armor_image = load_image('resource/images/tooltip_armor.png')
+        self.tooltip_charges_image = load_image('resource/images/tooltip_charges.png')
 
         self.state_machine = StateMachine(self)
         self.state_machine.start(InDeck)

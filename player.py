@@ -1,7 +1,7 @@
 # player.py
 
 from sdl2 import SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT, SDL_KEYDOWN, SDLK_SPACE, \
-    SDLK_BACKSPACE, SDLK_e, SDLK_q, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDL_MOUSEBUTTONUP, SDLK_f, SDLK_1, SDL_KEYUP, \
+    SDLK_e, SDLK_q, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDL_MOUSEBUTTONUP, SDLK_f, SDLK_1, SDL_KEYUP, \
     SDLK_2, SDLK_3, SDLK_4, SDLK_5
 
 import game_world
@@ -77,7 +77,7 @@ class Player:
                 self.active_key = None
                 card_manager.hand.cards[4].state_machine.add_event(('KEY_UP', 0))
 
-        # 적/아군 소환 (배포 버전에서는 지워야 함)
+        # 적/아군 소환 (각종 테스트용. 배포 버전에서는 지워야 함)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_a:
             self.spawn_enemy_soldier(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_s:
