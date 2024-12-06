@@ -38,7 +38,7 @@ class EnemyWaveManager:
         self.interval = WAVE_INTERVAL
         self.start_time = get_time()
         self.last_wave_time = get_time()
-        self.cur_wave = 1
+        self.cur_wave = 0
         self.max_wave = MAX_WAVE
         self.total_wave_duration = 185
         self.spawn_queue = deque()

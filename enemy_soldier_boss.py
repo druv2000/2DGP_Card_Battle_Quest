@@ -1,16 +1,14 @@
 import math
-from collections import deque
 import random
 
 from pico2d import load_image, load_wav, get_time
 
 import game_framework
 import game_world
-from animation import RoarEffect
+from animation import RoarEffect, ScreenAlertAnimation
 from character import Character
 from effects import InvincibleEffect, ForcedMovementEffect, StunEffect
 from enemy_soldier import Soldier
-from enemy_soldier_elite import Soldier_elite
 from enemy_soldier_mage import Soldier_mage
 from for_global import KNIGHT_BODY_TACKLE_RUSH_SPEED, HUGE_TIME
 from game_world import world
@@ -65,6 +63,13 @@ class Soldier_boss(Character):
         self.die_sound = load_wav('resource/sounds/soldier_dead.wav')
         self.die_sound_duration = 0.45
 
+        self.roar_sound = load_wav('resource/sounds/soldier_boss_roar.wav')
+        self.roar_sound.set_volume(32)
+        self.roar_sound_duration = 1.92
+
+        self.charge_sound = load_wav('resource/sounds/soldier_boss_charge.wav')
+        self.charge_sound_duation = 0.20
+
         self.portal_spawn_timer = 0
         self.portal_spawn_interval = 2.0
         self.portal_duration = HUGE_TIME  # 포탈이 유지되는 시간
@@ -83,6 +88,16 @@ class Soldier_boss(Character):
         if self.cur_phase == 1 and self.current_hp <= self.max_hp / 2:
             if not self.state_machine.event_que:
                 self.state_machine.add_event(('BOSS_HP_BELOW_50%', 0))
+
+                # 경고 효과
+                alert_animation = ScreenAlertAnimation('resource/images/screen_red.png', 2.0, 2)
+                game_world.add_object(alert_animation, 9)
+                sound_manager.play_sfx(
+                    self.charge_sound,
+                    self.charge_sound_duation,
+                    5.0,
+                    10
+                )
 
     def update_portals(self):
         current_time = get_time()
@@ -180,6 +195,8 @@ class Soldier_boss(Character):
         )
         game_world.add_object(war_cry_effect, 8)
 
+        self.roar_sound.play()
+
         for layer in world:
             for obj in layer:
                 if obj.can_target and obj.team != self.team:
@@ -188,10 +205,10 @@ class Soldier_boss(Character):
                     push_effect = next((effect for effect in obj.effects if isinstance(effect, ForcedMovementEffect)), None)
                     if push_effect:
                         obj.remove_effect(ForcedMovementEffect)
-                        forced_movement_effect = ForcedMovementEffect(3.0, 1500, 1.0, 0.0)
+                        forced_movement_effect = ForcedMovementEffect(5.0, 1500, 1.0, 0.0)
                         obj.add_effect(forced_movement_effect)
                     else:
-                        forced_movement_effect = ForcedMovementEffect(3.0, 1500, 1.0, 0.0)
+                        forced_movement_effect = ForcedMovementEffect(5.0, 1500, 1.0, 0.0)
                         obj.add_effect(forced_movement_effect)
 
                     # 스턴 적용
@@ -199,7 +216,7 @@ class Soldier_boss(Character):
                     if stun_effect:
                         stun_effect.refresh()
                     else:
-                        stun_effect = StunEffect(2.0)
+                        stun_effect = StunEffect(5.0)
                         obj.add_effect(stun_effect)
 
         self.is_boss_roar = True

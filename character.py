@@ -512,11 +512,10 @@ class BossPhase2:
                 c.roar()
             if not c.is_boss_summon_portals:
                 c.summon_portals((200, 300), (200, 800))
-        elif c.cast_duration + 2.0 <= current_time - c.cast_start_time < c.cast_duration + 4.0:
+        elif c.cast_duration + 2.0 <= current_time - c.cast_start_time < c.cast_duration + 3.0:
             pass
-        elif c.cast_duration + 4.0 <= current_time - c.cast_start_time < c.cast_duration + 15.0:
+        elif c.cast_duration + 3.0 <= current_time - c.cast_start_time < c.cast_duration + 15.0:
             c.rotation = c.original_rotation
-
         else:
             # 전부 마쳤으면 Idle상태로 복귀
             if not c.state_machine.event_que:

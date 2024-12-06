@@ -171,14 +171,12 @@ def init():
 
 
     global fonts
-    global main_font, sub_font, retry_font
+    global main_font, sub_font
     main_font = load_font('resource/font/fixedsys.ttf', 50)
     sub_font = load_font('resource/font/D2coding.ttf', 32)
-    retry_font = load_font('resource/font/fixedsys.ttf', 50)
     fonts = [
         main_font,
         sub_font,
-        retry_font
     ]
 
     global cur_wave, total_score
@@ -216,6 +214,7 @@ def total_score_check():
     damage_3000_score = 1000
     damage_5000_score = 3000
     damage_7000_score = 5000
+    damage_9000_score = 7000
 
 
 
@@ -270,6 +269,18 @@ def total_score_check():
         total_score += damage_7000_score * damage_over_7000_count
         sub_scores.append('damage_7000+')
 
+    # 9000+ 데미지 보너스 점수 추가 (캐릭터별)
+    damage_over_9000_count = 0
+    if for_global.knight_total_damage >= 9000:
+        damage_over_9000_count += 1
+    if for_global.mage_total_damage >= 9000:
+        damage_over_9000_count += 1
+    if for_global.bowman_total_damage >= 9000:
+        damage_over_9000_count += 1
+    if damage_over_9000_count > 0:
+        total_score += damage_9000_score * damage_over_9000_count
+        sub_scores.append('damage_9000+')
+
     # 결과 화면에 점수 추가
     x = (800 - progress_bar.image.w * 3 / 2)
     y = 500
@@ -323,6 +334,15 @@ def total_score_check():
                 '기록적인 피해 기록(7000)',
                 damage_over_7000_count,
                    damage_7000_score * damage_over_7000_count
+            )
+
+        elif score == 'damage_9000+':
+            sub_score = SubScore(
+                x, y - offset_y,
+                sub_font,
+                '압도적인 피해 기록(9000)',
+                damage_over_9000_count,
+                   damage_9000_score * damage_over_9000_count
             )
 
         if sub_score:
