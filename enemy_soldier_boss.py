@@ -91,7 +91,7 @@ class Soldier_boss(Character):
 
                 # 경고 효과
                 alert_animation = ScreenAlertAnimation('resource/images/screen_red.png', 2.0, 2)
-                game_world.add_object(alert_animation, 9)
+                game_world.add_object(alert_animation, 10)
                 sound_manager.play_sfx(
                     self.charge_sound,
                     self.charge_sound_duation,
@@ -125,10 +125,9 @@ class Soldier_boss(Character):
             self.rotation = target_rotation
             self.x = self.original_x - rush_distance * self.cast_animation_progress
 
-        # Calculate animation progress
         self.cast_animation_progress += progress_increment
 
-        # Reset animation when completed
+        # 애니메이션 완료 후 각종 상태 초기화
         if self.cast_animation_progress >= 1:
             self.rotation = self.original_rotation
             self.x = self.original_x  # x 위치를 원래 위치로 복원
@@ -186,14 +185,14 @@ class Soldier_boss(Character):
 
     def roar(self):
         self.rotation = -30 if self.sprite_dir == 1 else 30
-        war_cry_effect = RoarEffect(
+        roar_effect = RoarEffect(
             self.x, self.y,
             680, 680,
             5000, 5000,
             'resource/images/warcry_effect.png',
             5, 0.1
         )
-        game_world.add_object(war_cry_effect, 8)
+        game_world.add_object(roar_effect, 8)
 
         self.roar_sound.play()
 

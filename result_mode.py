@@ -4,9 +4,10 @@ from pico2d import clear_canvas, update_canvas, get_events, load_image, load_fon
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE, SDLK_SPACE
 
 import for_global
-import title_mode
 import game_framework
 from for_global import SCREEN_WIDTH, SCREEN_HEIGHT
+from sound_manager import sound_manager
+from ui import PressSpaceToContinueUI
 
 
 class Image:
@@ -107,19 +108,6 @@ class DamageBar:
                                f'{char_type}: {damage} ({percentage:.1f}%)', (255, 255, 255))
 
                 y_offset -= 80
-
-class PressSpaceToContinueUI:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.image = load_image('resource/images/continue_ui.png')
-        self.opacify = 1.0
-        self.opacify_increment = 0.01
-        self.is_active = False
-
-    def draw(self):
-        if self.is_active:
-            self.image.draw(self.x, self.y, 1200, 68)
 
 
 def init():
@@ -376,17 +364,10 @@ def resume():
     pass
 
 def update():
-    update_timeline()
     global continue_ui
-    if continue_ui.is_active:
-        if continue_ui.opacify <= 0.0:
-            continue_ui.opacify_increment = abs(continue_ui.opacify_increment)
-        elif continue_ui.opacify >= 1.0:
-            continue_ui.opacify_increment = -abs(continue_ui.opacify_increment)
+    update_timeline()
+    continue_ui.update()
 
-        continue_ui.opacify += continue_ui.opacify_increment
-        continue_ui.opacify = max(0.0, min(1.0, continue_ui.opacify))
-        continue_ui.image.opacify(continue_ui.opacify)
 
 def update_timeline():
     cur_time = get_time()
@@ -403,17 +384,30 @@ def update_timeline():
         x_increment = (for_global.wave_progress_x - (800 - progress_bar.image.w * 3 / 2)) / game_framework.frame_rate / 2.5
         progress_cursor.x += x_increment
     elif 5.5 <= cur_time - start_time < 6.5:
+        if not main_score.is_active:
+            play_score_sound()
         main_score.is_active = True
     elif 6.5 <= cur_time - start_time < 7.5:
+        if not scores[0].is_active:
+            play_score_sound()
         for sub_score in scores:
             sub_score.is_active = True
     elif 7.5 <= cur_time - start_time < 8.5:
+        if not damage_bar.is_active:
+            play_score_sound()
         damage_bar.is_active = True
     elif 8.5 <= cur_time - start_time < 9.0:
-        continue_ui.is_active = True
+        if not continue_ui.is_active:
+            if for_global.is_clear:
+                sound_manager.win.set_volume(32)
+                sound_manager.win.play()
+            else:
+                sound_manager.lose.set_volume(32)
+                sound_manager.lose.play()
+            continue_ui.is_active = True
+
         global can_continue
         can_continue = True
-
     pass
 
 def draw():
@@ -434,3 +428,9 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
             if can_continue:
                 game_framework.quit()
+
+def play_score_sound():
+    sound_manager.play_sfx(
+        sound_manager.score,
+        0.46
+    )

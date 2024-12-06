@@ -10,7 +10,7 @@ from character import Dead
 from character_list import Knight, Mage, Bowman
 from state_machine import StateMachine, mouse_hover, left_click, mouse_leave, \
     mouse_left_release_in_card_space, mouse_left_release_out_card_space, card_used, cannot_use_card, \
-    card_return_to_hand, card_draw
+    card_return_to_hand, card_draw, card_selected_by_keyboard, card_released_by_keyboard
 from ui import RangeCircleUI, AreaCircleUI, AreaBeamUI, SummonUI, AreaStraightUI
 from utils import limit_within_range
 
@@ -313,15 +313,18 @@ class Card:
         self.state_machine.start(InDeck)
         self.state_machine.set_transitions({
             Idle: {
-                mouse_hover: Highlight
+                mouse_hover: Highlight,
+                card_selected_by_keyboard: Clicked
             },
             Highlight: {
                 mouse_leave: Idle,
-                left_click: Clicked
+                left_click: Clicked,
+                card_selected_by_keyboard: Clicked
             },
             Clicked: {
                 mouse_left_release_in_card_space: Idle,
                 mouse_left_release_out_card_space: Used,
+                card_released_by_keyboard: Idle,
                 cannot_use_card: Idle,
             },
             Used: {

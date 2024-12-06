@@ -38,7 +38,7 @@ class EnemyWaveManager:
         self.interval = WAVE_INTERVAL
         self.start_time = get_time()
         self.last_wave_time = get_time()
-        self.cur_wave = 0
+        self.cur_wave = 1
         self.max_wave = MAX_WAVE
         self.total_wave_duration = 185
         self.spawn_queue = deque()
@@ -398,7 +398,7 @@ class EnemyWaveManager:
             # 보스 웨이브 때 경고 효과 표시
             if self.cur_wave == self.max_wave:
                 alert_animation = ScreenAlertAnimation('resource/images/screen_red.png', 3.0, 3)
-                game_world.add_object(alert_animation, 9)
+                game_world.add_object(alert_animation, 10)
                 sound_manager.play_sfx(sound_manager.wave_alert, 3.0, 3.0)
                 pass
 

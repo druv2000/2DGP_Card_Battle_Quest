@@ -385,3 +385,28 @@ class ProgressBar:
                 self.x, self.y,
                 self.size_x / 2, self.size_y / 2
             )
+
+
+class PressSpaceToContinueUI:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.image = load_image('resource/images/continue_ui.png')
+        self.opacify = 1.0
+        self.opacify_increment = 0.01
+        self.is_active = False
+
+    def draw(self):
+        if self.is_active:
+            self.image.draw(self.x, self.y, 1200, 68)
+
+    def update(self):
+        if self.is_active:
+            if self.opacify <= 0.0:
+                self.opacify_increment = abs(self.opacify_increment)
+            elif self.opacify >= 1.0:
+                self.opacify_increment = -abs(self.opacify_increment)
+
+            self.opacify += self.opacify_increment
+            self.opacify = max(0.0, min(1.0, self.opacify))
+            self.image.opacify(self.opacify)

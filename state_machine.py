@@ -84,6 +84,12 @@ def left_click(event):
             event[1].type == SDL_MOUSEBUTTONDOWN and
             event[1].button == SDL_BUTTON_LEFT)
 
+def card_selected_by_keyboard(event):
+    return event[0] == 'KEY_DOWN'
+
+def card_released_by_keyboard(event):
+    return event[0] == 'KEY_UP'
+
 def mouse_leave(event):
     global mouse_x, mouse_y
     return (event[0] == 'MOUSE_LEAVE' and

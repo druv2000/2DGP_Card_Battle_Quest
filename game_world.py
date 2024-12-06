@@ -9,8 +9,9 @@ from uniform_grid import UniformGrid
 # ...
 # world[8]: layer 8 - effect
 # world[9]: layer 9 - ui
+# world[10]: for alert, fade_out
 
-world = [[] for _ in range(10)]
+world = [[] for _ in range(11)]
 collision_pairs = {}
 grid = UniformGrid(1600, 900, 100)  # 1600x900 게임 화면, 100x100 셀 크기
 

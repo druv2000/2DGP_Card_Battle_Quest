@@ -20,14 +20,12 @@ from ui import TotalDamageUI, ManaUI
 
 global knight, mage, bowman
 def init():
-    global running
     global knight, mage, bowman
 
     object_pool.init_object_pool()
     event_system.add_listener('character_hit', on_character_hit)
     event_system.add_listener('character_state_change', check_character_state_change)
 
-    running = True
     # background 생성
     background1 = Background1(800, 450)
     game_world.add_object(background1, 0)
@@ -124,7 +122,7 @@ def check_character_state_change(c, cur_state):
                 for_global.is_clear = False
                 event_system.trigger('game_end', 'game_over')
                 fade_out_animation = ScreenFadeOutAnimation('resource/images/screen_black.png', 2.0)
-                game_world.add_object(fade_out_animation, 9)
+                game_world.add_object(fade_out_animation, 10)
                 pass
 
             pass
@@ -147,7 +145,7 @@ def check_character_state_change(c, cur_state):
             for_global.is_clear = True
             event_system.trigger('game_end', 'game_clear')
             fade_out_animation = ScreenFadeOutAnimation('resource/images/screen_white.png', 2.0)
-            game_world.add_object(fade_out_animation, 9)
+            game_world.add_object(fade_out_animation, 10)
             pass
 
 def finish():

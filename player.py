@@ -1,7 +1,8 @@
 # player.py
 
 from sdl2 import SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT, SDL_KEYDOWN, SDLK_SPACE, \
-    SDLK_BACKSPACE, SDLK_e, SDLK_q, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDL_MOUSEBUTTONUP, SDLK_f
+    SDLK_BACKSPACE, SDLK_e, SDLK_q, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDL_MOUSEBUTTONUP, SDLK_f, SDLK_1, SDL_KEYUP, \
+    SDLK_2, SDLK_3, SDLK_4, SDLK_5
 
 import game_world
 import for_global
@@ -18,10 +19,12 @@ from event_system import event_system
 
 class Player:
     def __init__(self):
+        self.active_key = None  # 현재 활성화된 키를 추적하는 변수
         pass
 
     def handle_event(self, event):
-        # about card
+        # 카드 조작
+        # 마우스로 조작
         if event.type == SDL_MOUSEMOTION:
             for_global.mouse_x, for_global.mouse_y = event.x, for_global.SCREEN_HEIGHT - event.y
             self.handle_card_hover(event)
@@ -32,7 +35,49 @@ class Player:
             self.handle_card_release(event)
             pass
 
-        # about ally/enemy
+        # 키보드로 조작
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_1:
+            if self.active_key is None:
+                self.active_key = event.key
+                card_manager.hand.cards[0].state_machine.add_event(('KEY_DOWN', 0))
+        elif event.type == SDL_KEYUP and event.key == SDLK_1:
+            if self.active_key == event.key:
+                self.active_key = None
+                card_manager.hand.cards[0].state_machine.add_event(('KEY_UP', 0))
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_2:
+            if self.active_key is None:
+                self.active_key = event.key
+                card_manager.hand.cards[1].state_machine.add_event(('KEY_DOWN', 0))
+        elif event.type == SDL_KEYUP and event.key == SDLK_2:
+            if self.active_key == event.key:
+                self.active_key = None
+                card_manager.hand.cards[1].state_machine.add_event(('KEY_UP', 0))
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_3:
+            if self.active_key is None:
+                self.active_key = event.key
+                card_manager.hand.cards[2].state_machine.add_event(('KEY_DOWN', 0))
+        elif event.type == SDL_KEYUP and event.key == SDLK_3:
+            if self.active_key == event.key:
+                self.active_key = None
+                card_manager.hand.cards[2].state_machine.add_event(('KEY_UP', 0))
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_4:
+            if self.active_key is None:
+                self.active_key = event.key
+                card_manager.hand.cards[3].state_machine.add_event(('KEY_DOWN', 0))
+        elif event.type == SDL_KEYUP and event.key == SDLK_4:
+            if self.active_key == event.key:
+                self.active_key = None
+                card_manager.hand.cards[3].state_machine.add_event(('KEY_UP', 0))
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_5:
+            if self.active_key is None:
+                self.active_key = event.key
+                card_manager.hand.cards[4].state_machine.add_event(('KEY_DOWN', 0))
+        elif event.type == SDL_KEYUP and event.key == SDLK_5:
+            if self.active_key == event.key:
+                self.active_key = None
+                card_manager.hand.cards[4].state_machine.add_event(('KEY_UP', 0))
+
+        # 적/아군 소환 (배포 버전에서는 지워야 함)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_a:
             self.spawn_enemy_soldier(for_global.mouse_x, for_global.mouse_y)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_s:

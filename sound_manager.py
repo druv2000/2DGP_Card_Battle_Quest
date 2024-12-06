@@ -21,6 +21,9 @@ class SoundManager:
         self.crash = None
         self.revival_1 = None
         self.revival_2 = None
+        self.score = None
+        self.win = None
+        self.lose = None
 
     def update(self):
         if self.cast_025 is None:
@@ -36,6 +39,10 @@ class SoundManager:
             self.crash = load_wav('resource/sounds/card_body_tackle_2.wav')
             self.revival_1 = load_wav('resource/sounds/card_revival_1.wav')
             self.revival_2 = load_wav('resource/sounds/card_revival_2.wav')
+            self.score = load_wav('resource/sounds/result_score.wav')
+            self.win = load_wav('resource/sounds/result_win.wav')
+            self.lose = load_wav('resource/sounds/result_lose.wav')
+
 
         current_time = get_time()
         self.sfx_queue = [sfx for sfx in self.sfx_queue if current_time - sfx['start_time'] < sfx['duration']]
